@@ -24,6 +24,7 @@ def connect_to_database():
         connection()
         return True, "Connection successful!"
     except mysql.connector.Error as err:
-        return False, f"Connection failed: {err}"
+        print(f"Error: {err}")
+        return False, f"Connection failed due to MySQL connection error!"
     
 print(connect_to_database())

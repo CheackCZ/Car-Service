@@ -7,6 +7,8 @@ sys.path.append(os.path.abspath(os.path.join(current_dir, "..")))
 import customtkinter as ctk
 from src.connection import connect_to_database
 
+from dash import Dashboard
+
 
 class Landing(ctk.CTk):
     
@@ -28,24 +30,25 @@ class Landing(ctk.CTk):
 
         status = ctk.CTkLabel(self, text=text, font=("Poppins", 12, "bold"), text_color="green", wraplength=400)
         if success:
-            status.configure(text_color="green")    
-            
-            self.button.configure(text="Continue")
-            self.button.place(relx=0.5, y=120, anchor="n")
+            self.button_configuration("Continue", self.open_dashboard)
         else:
             status.configure(text_color="red")    
-            
-            self.button.configure(text="Exit")
-            self.button.configure(command=self.destroy)        
-            
-            self.button.place(relx=0.5, y=120, anchor="n")
+            self.button_configuration("Exit", self.destroy)
             
         status.place(relx=0.5, y=75, anchor="n")
+        self.button.place(relx=0.5, y=120, anchor="n")
 
 
+    def button_configuration(self, text, command):
+        self.button.configure(text=text, command=command)
+        
+    def open_dashboard(self):
+        self.destroy()  
+        dashboard = Dashboard()
+        dashboard.mainloop()
 
 # Run the application
 if __name__ == "__main__":
     app = Landing()
-    app.after(500, app.test_connection())
+    app.after(500, app.test_connection)
     app.mainloop()
