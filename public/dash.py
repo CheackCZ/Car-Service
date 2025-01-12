@@ -1,6 +1,7 @@
 import customtkinter as ctk
 
 from sidebar import Sidebar
+from content import Content
 
 class Dashboard(ctk.CTk):
     
@@ -13,12 +14,18 @@ class Dashboard(ctk.CTk):
         
         # Creates a main window with title and geometry
         self.title("Car Service")
-        self.geometry("720x480")
+        self.geometry("960x480")
         self.resizable(False, False)
 
-        # Sidebar on the left with the menu
+        # Sidebar on the left with the menu 
         self.sidebar = Sidebar(master=self)
         self.sidebar.place(x = 0, y = 0)
+        
+        # Main content on the right side
+        self.content = Content(master=self)
+        self.content.place(x = 200, y = 20)
+
+
 
 # Run the application
 if __name__ == "__main__":

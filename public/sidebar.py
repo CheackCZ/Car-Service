@@ -8,56 +8,44 @@ class Sidebar(ctk.CTkFrame):
 
         # Label with database name
         self.db_name_label = ctk.CTkLabel(self, text="Service", font=("Poppins", 16, "bold"), text_color="white", wraplength=160, justify="left")
-        self.db_name_label.place(x = 10, y = 20)
-        
-        # Scrollable frame with all tables in given database
-        self.tables_container = ctk.CTkScrollableFrame(self, width=140, height=self.tables_container_height())
-        self.tables_container.place(x = 10, y = self.tables_container_y())
-        
-        # Treeview with the tables and its attibutes in the scrollable frame
-        self.treeview = ttk.Treeview(self.tables_container, height=6, show="tree")
-        self.treeview.grid()
-        self.style_treeview()
-        
-        # Insert data
-        self.treeview.insert('', '0', 'i1', text ='Python')
-        self.treeview.insert('', '1', 'i2', text ='Customtkinter')
-        self.treeview.insert('', '2', 'i3', text ='Tkinter')
-        self.treeview.insert('i2', 'end', 'Frame', text ='Frame')
-        self.treeview.insert('i2', 'end', 'Label', text ='Label')
-        self.treeview.insert('i3', 'end', 'Treeview', text ='Treeview')
-        self.treeview.move('i2', 'i1', 'end')
-        self.treeview.move('i3', 'i1', 'end')
-        
-    def tables_container_height(self):
-        self.update_idletasks()
-        db_name_height = self.db_name_label.winfo_height()
-        calculated_height = self._current_height - (db_name_height + 50)
-        return calculated_height
-    
-    def tables_container_y(self):
-        db_name_y = self.db_name_label.winfo_y() 
-        db_name_height = self.db_name_label.winfo_height()  
-        
-        return db_name_y + db_name_height + 10
-    
-    
-    def style_treeview(self):
-        bg_color = self._apply_appearance_mode(ctk.ThemeManager.theme["CTkScrollableFrame"]["fg_color"])
-        text_color = self._apply_appearance_mode(ctk.ThemeManager.theme["CTkLabel"]["text_color"])
-        selected_color = self._apply_appearance_mode(ctk.ThemeManager.theme["CTkButton"]["fg_color"])
+        self.db_name_label.place(x = 20, y = 20)
 
-        treestyle = ttk.Style()
-        treestyle.theme_use('default')
-        treestyle.configure(
-            "Treeview", 
-            background=bg_color, 
-            foreground=text_color, 
-            fieldbackground=bg_color, 
-            borderwidth=0
-        )
-        treestyle.map(
-            "Treeview", 
-            background=[("selected", selected_color)], 
-            foreground=[("selected", text_color)]
-        )
+        # Add Button
+        self.add_button = ctk.CTkButton(self, text="Add Employee", border_width=2, border_color="#3B8ED0", corner_radius=20, fg_color="transparent", cursor="hand2")
+        self.add_button.place(x=20, y=60)
+
+        # Edit Button
+        self.edit_button = ctk.CTkButton(self, text="Edit Employee", border_width=2, border_color="#3B8ED0", corner_radius=20, fg_color="transparent", cursor="hand2")
+        self.edit_button.place(x=20, y=100)
+
+        # Remove Button
+        self.remove_button = ctk.CTkButton(self, text="Remove Employee", border_width=2, border_color="#FF474D", hover_color="red", corner_radius=20, fg_color="transparent", cursor="hand2")
+        self.remove_button.place(x=20, y=140)
+
+        # Separator
+        self.separator1 = ttk.Separator(self, orient="horizontal")
+        self.separator1.place(x=20, y=190, width=140)
+
+        # Toggle Switch for Dirty Reading
+        self.switch_var = ctk.StringVar(value="off")
+        self.switch = ctk.CTkSwitch(self, text="Dirty Reading", variable=self.switch_var, onvalue="on", offvalue="off")
+        self.switch.place(x=20, y=210)
+
+        # Separator
+        self.separator2 = ttk.Separator(self, orient="horizontal")
+        self.separator2.place(x=20, y=250, width=140)
+
+        # Import Button
+        self.import_button = ctk.CTkButton(self, text="Import",  border_width=2, border_color="#3B8ED0", corner_radius=20, fg_color="transparent", cursor="hand2")
+        self.import_button.place(x=20, y=270)
+
+        # Export Button
+        self.export_button = ctk.CTkButton(self, text="Export",  border_width=2, border_color="#3B8ED0", corner_radius=20, fg_color="transparent", cursor="hand2")
+        self.export_button.place(x=20, y=310)
+        
+        # Exit Button
+        self.exit_button = ctk.CTkButton(self, text="Exit", fg_color="red", text_color="white", hover_color="#FF474D", cursor="hand2", command=self.exit_application)
+        self.exit_button.place(relx=0.5, rely=1.0, anchor="s", y=-20)
+        
+    def exit_application(self):
+        self.master.destroy()
