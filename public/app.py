@@ -5,7 +5,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.abspath(os.path.join(current_dir, "..")))
 
 import customtkinter as ctk
-from src.connection import connect_to_database
+from src.connection import Connection
 
 from dash import Dashboard
 
@@ -25,7 +25,7 @@ class Landing(ctk.CTk):
         self.button = ctk.CTkButton(self, text="", width=140, font=("Poppins", 12))
 
     def test_connection(self):
-        success, text = connect_to_database()
+        success, text = Connection.connect_to_database()
 
         status = ctk.CTkLabel(self, text=text, font=("Poppins", 12, "bold"), text_color="green", wraplength=400)
         if success:
