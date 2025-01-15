@@ -21,12 +21,12 @@ class Content(ctk.CTkFrame):
         # self.employees_frame.place(x = 10, y = 10)
         
         # Frame with values from Repairs Table
-        # self.repairs_frame = RepairsFrame(self)
-        # self.repairs_frame.place(x = 10, y = 10)
+        self.repairs_frame = RepairsFrame(self)
+        self.repairs_frame.place(x = 10, y = 10)
 
         # Frame with values from Cars Table
-        self.cars_frame = CarsFrame(self)
-        self.cars_frame.place(x = 10, y = 10)
+        # self.cars_frame = CarsFrame(self)
+        # self.cars_frame.place(x = 10, y = 10)
       
 
         # Options Employees Frame

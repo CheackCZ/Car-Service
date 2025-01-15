@@ -2,7 +2,7 @@ import customtkinter as ctk
 
 class Tables(ctk.CTkScrollableFrame):
     def __init__(self, master, **kwargs):
-        super().__init__(master, width=140, height=430, **kwargs)
+        super().__init__(master, width=140, height=420, **kwargs)
 
         self.buttons = {}
         self.active_button = None

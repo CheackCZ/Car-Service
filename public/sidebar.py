@@ -17,7 +17,7 @@ class Sidebar(ctk.CTkFrame):
 
         # Exit Button
         self.exit_button = ctk.CTkButton(self, text="Exit", fg_color="red", text_color="white", hover_color="#FF474D", cursor="hand2", command=self.exit_application)
-        self.exit_button.place(relx=0.5, rely=1.0, anchor="s", y=-20)
+        self.exit_button.place(relx=0.5, rely=1.0, anchor="s", y=-30)
         
     def exit_application(self):
         self.master.destroy()
