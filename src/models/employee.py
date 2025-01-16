@@ -5,7 +5,7 @@ class Employee():
     Class representing individual Employees in the database.
     """
     
-    def __init__(self, id: int, name: str, middle_name: str, last_name: str, phone: str, email: str, is_free: bool):
+    def __init__(self, id: int = 0, name: str = "", middle_name: str = "", last_name: str = "", phone: str = "", email: str = "", is_free: bool = True):
         """
         Initializes Employee instance. 
 
@@ -17,40 +17,39 @@ class Employee():
         :param is_free (bool): Availability status of the employee.
         """
         # Validate id
-        if type(id) != int or id <= 0:
+        if type(id) != int or id < 0:
             raise ValueError("'id' must be a positive integer.")
-        
-        # Validate name
-        if not name or type(name) != str or not name.isalpha():
-            raise ValueError("First name must be a non-empty string containing only alphabetic characters.")
 
-        # Validate middle_name
-        if middle_name:
-            # Allow alphabetic characters and optional period
-            allowed_middle_name = re.match(r"^[a-zA-Z.]+$", middle_name)
-            if not allowed_middle_name:
-                raise ValueError("Middle name must contain only alphabetic characters and optionally a period (.) or None.")
-        
-        
-        # Validate last_name
-        if not last_name or type(last_name) != str or not last_name.isalpha():
-            raise ValueError("Last name must be a non-empty string containing only alphabetic characters.")
-        
-        # Validate phone
-        if not phone or type(phone) != str or len(phone) < 9 or len(phone) > 13:
-            raise ValueError(f"Phone number must be a string of 9 to 13 characters. Received: {phone}")
+        # Validate name (allow default empty string)
+        if type(name) != str or len(name) > 50:
+            raise ValueError("Name must be a string with a maximum of 50 characters.")
 
-        phone_regex = re.compile(r"^(?:\+420|420)?[ ]?[0-9]{3}[ ]?[0-9]{3}[ ]?[0-9]{3}$")
-        if not phone_regex.match(phone):
-            raise ValueError("Phone number is not valid! Please re-enter a valid one.")
+        # Validate middle name (allow default empty string)
+        middle_name = middle_name or ""
+        if type(middle_name) != str or len(middle_name) > 50:
+            raise ValueError("Middle name must be a string with a maximum of 50 characters.")
+
+        # Validate last name (allow default empty string)
+        if type(last_name) != str or len(last_name) > 50:
+            raise ValueError("Last name must be a string with a maximum of 50 characters.")
+
+        # Validate phone (allow default empty string)
+        phone = phone or ""
+        if phone:
+            phone_regex = re.compile(r"^\+?\d{9,13}$")
+            if not phone_regex.match(phone):
+                raise ValueError("Phone number must be between 9 and 13 digits, optionally starting with '+'.")
         
-        # Validate email
-        if not email or type(name) != str or "@" not in email or "." not in email.split("@")[-1]:
-            raise ValueError("Email must be a valid email address.")
-        
-        email_regex = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
-        if not email_regex.match(email):
-            raise ValueError("Email is not valid! Please re-enter a valid one.")
+
+        # Validate email (allow default empty string)
+        email = email or ""
+        if email:
+            if type(email) != str or "@" not in email or "." not in email.split("@")[-1]:
+                raise ValueError("Email must be a valid email address.") 
+            
+            email_regex = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
+            if not email_regex.match(email):
+                raise ValueError("Email is not valid! Please re-enter a valid one.")
         
         # Validate is_free
         if type(is_free) != bool:
@@ -78,4 +77,5 @@ class Employee():
             "last_name": self.last_name,
             "phone": self.phone,
             "email": self.email,
+            "is_free" : self.is_free
         }

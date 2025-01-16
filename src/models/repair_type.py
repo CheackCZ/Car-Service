@@ -5,7 +5,7 @@ class RepairType():
     Class representing individual Repair types in the database.
     """
     
-    def __init__(self, id: int, name: str, description: str = ""):
+    def __init__(self, id: int = 0, name: str = "", description: str = ""):
         """
         Initializes RepairType instance.
         
@@ -13,12 +13,12 @@ class RepairType():
         :param description (str): A description of the repair type. Must be a string with a maximum length of 255 characters.
         """        
         # Validate id
-        if type(id) != int or id <= 0:
+        if type(id) != int or id < 0:
             raise ValueError("'id' must be a positive integer.")
         
         # Validate name
-        if not name or type(name) != str or len(name) > 50:
-            raise ValueError("Name must be a non-empty string with a maximum of 50 characters.")
+        if type(name) != str or len(name) > 50:
+            raise ValueError("Name must be a string with a maximum of 50 characters.")
 
         # Validate description
         if type(description) != str or len(description) > 255:
@@ -28,6 +28,9 @@ class RepairType():
         self.name = name
         self.description = description
         
+    
+    def __str__(self):
+        return f"({self.id}) {self.name}: {self.description}"
     
     def to_dict(self):
         """

@@ -3,8 +3,18 @@ from PIL import Image
 
 class RepairCard(ctk.CTkFrame):
     
+    # Define state-to-color mapping
+    STATE_COLORS = {
+        "Pending": "orange",
+        "In process": "yellow",
+        "Done": "green",
+        "Canceled": "red"
+    }
+    
     def __init__(self, master, id, employee_name, employee_id, car_model, car_registration_num, brand_name, repair_type, date_started, date_finished, price, state, **kwargs):
         super().__init__(master, width=640, height=100, **kwargs)
+        
+        print(state)
         
         # Employee credentials 
         self.id = id
@@ -42,10 +52,17 @@ class RepairCard(ctk.CTkFrame):
         self.car_data_label.place(x = 60, y = 75)
         
         
-        # State
-        self.state_label = ctk.CTkLabel(self, text=state, font=("Poppins", 16, "bold"), height=10, text_color="green")
-        self.state_label.place(relx=1, x =- 20, rely = 0, y = 20, anchor="e")
+        # State with dynamic color
+        state_color = self.STATE_COLORS.get(state, "gray")
+        self.state_label = ctk.CTkLabel(self, text=state, font=("Poppins", 16, "bold"), height=10, text_color=state_color)
+        self.state_label.place(relx=1, x = -20, rely = 0, y = 20, anchor="e")
         
         # Price
-        self.price_label = ctk.CTkLabel(self, text=str(price) + " CZK", font=("Poppins", 12), height=10, text_color="gray")
+        if state == "Canceled":
+            self.price_label = ctk.CTkLabel(self, text=str(price) + " CZK", font=("Poppins", 12), height=10, text_color="red")
+        else:
+            self.price_label = ctk.CTkLabel(self, text=str(price) + " CZK", font=("Poppins", 12), height=10, text_color="gray")
+
         self.price_label.place(relx=1, x =- 20, rely = 0, y = 40, anchor="e")
+        
+        

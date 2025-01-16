@@ -11,6 +11,14 @@ use Service;
 -- grant all privileges on Service.* to 'admin'@'localhost';
 -- flush privileges;
 
+-- drop table repair;
+-- drop table car;
+-- drop table repair_type;
+-- drop table client;
+-- drop table brand;
+-- drop table employee;
+
+
 -- Vytvoření tabulky pro Zaměstnance (Employee)
 create table employee (
 	id int primary key not null auto_increment,
@@ -80,7 +88,7 @@ create table repair (
 		check (date_started < date_finished),
     
     price int not null,
-    state enum('Pending', 'In process', 'Done') not null default 'Pending'
+    state enum('Pending', 'In process', 'Done', 'Canceled') not null default 'Pending'
 );
 
 
@@ -116,16 +124,17 @@ INSERT INTO repair_type (name, description)
     
 INSERT INTO repair (car_id, employee_id, repair_type_id, date_started, date_finished, price, state)
 	VALUES
-	(1, 1, 1, '2023-01-10', '2023-01-11', 2000, 'Hotovo'),
-	(2, 2, 2, '2023-02-20', '2023-02-21', 4000, 'Hotovo'),
-	(1, 3, 3, '2023-03-15', '2023-03-17', 3000, 'Probíhá');
-    
+	(1, 1, 1, '2023-01-10', '2023-01-11', 2000, 'Done'),
+	(2, 2, 2, '2023-02-20', '2023-02-21', 4000, 'In process'),
+	(1, 3, 3, '2023-03-15', '2023-03-17', 3000, 'Canceled');
+
 
 -- Pohledy (Views) pro jednodušší a přehlednější použití
 CREATE VIEW all_repairs AS
 	SELECT 
 		repair.id AS repair_id, repair.date_started AS date_started, repair.date_finished AS date_finished, repair.price AS price, repair.state AS state,
-		brand.name AS brand_name,
+		car.id as car_id,
+        brand.name AS brand_name,
         car.model AS car_model, car.registration_number AS car_registration_num, 
 		employee.id AS employee_id, employee.name AS employee_name, 
 		repair_type.name AS repair_type
@@ -134,6 +143,5 @@ CREATE VIEW all_repairs AS
 		JOIN brand ON car.brand_id = brand.id
 		JOIN employee ON repair.employee_id = employee.id
 		JOIN repair_type ON repair.repair_type_id = repair_type.id;
-
     
 select * from all_repairs;

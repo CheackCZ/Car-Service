@@ -39,7 +39,7 @@ class CarController:
                     client=Client(
                         id=row['client_id'],
                         name=row['client_name'],
-                        middle_name=row.get('client_middle_name', None),
+                        middle_name=row.get('client_middle_name', ''),
                         last_name=row['client_last_name'],
                         phone=row['client_phone'],
                         email=row['client_email']
@@ -92,7 +92,7 @@ class CarController:
                     client=Client(
                         id=row['client_id'],
                         name=row['client_name'],
-                        middle_name=row.get('client_middle_name', None),
+                        middle_name=row.get('client_middle_name', ''),
                         last_name=row['client_last_name'],
                         phone=row['client_phone'],
                         email=row['client_email']

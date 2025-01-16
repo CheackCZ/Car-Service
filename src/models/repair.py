@@ -12,6 +12,7 @@ class State(Enum):
     DEFAULT = "Pending"
     IN_PROGRESS = "In process"
     COMPLETED = "Done"
+    CANCELED = "Canceled"
     
 class Repair():
     """
@@ -75,6 +76,9 @@ class Repair():
         self.price = price
         self.state = state
         
+    
+    def __str__(self):
+        return f"({self.id}) {self.car} | {self.employee} | {self.repair_type} | {self.date_started} -> {self.date_finished} | {self.price} | {self.state}"
         
     def to_dict(self):
         """

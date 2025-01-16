@@ -3,7 +3,7 @@ from PIL import Image
 
 class EmployeeCard(ctk.CTkFrame):
     
-    def __init__(self, master, name, middle_name, last_name, phone, email, **kwargs):
+    def __init__(self, master, name, middle_name, last_name, phone, email, is_free, **kwargs):
         super().__init__(master, width=640, height=90, **kwargs)
         
         # Employee credentials 
@@ -13,6 +13,7 @@ class EmployeeCard(ctk.CTkFrame):
         
         self.phone = self.format_czech_phone_number(phone)
         self.email = email
+        self.is_free = is_free
         
         
         # Account icon
@@ -25,13 +26,19 @@ class EmployeeCard(ctk.CTkFrame):
         self.employee_name_label.place(x = 60, y = 10)
         
         # Label with Employee's phone number
-        self.employee_phone_label = ctk.CTkLabel(self, text="Tel:      " + self.phone, font=("Poppins", 12), height=10, text_color="gray")
+        self.employee_phone_label = ctk.CTkLabel(self, text="Tel:       " + self.phone, font=("Poppins", 12), height=10, text_color="gray")
         self.employee_phone_label.place(x = 60, y = 40)
         
         # Label with Employee's email
         self.employee_email_label = ctk.CTkLabel(self, text="Email:  " + self.email, font=("Poppins", 12), height=10, text_color="gray")
         self.employee_email_label.place(x = 60, y = 60)
         
+        # Label with status of the Employee
+        status_text = "Free" if self.is_free else "Working"
+        status_color = "green" if self.is_free else "red"
+        self.status = ctk.CTkLabel(self, text=status_text, font=("Poppins", 16, "bold"), height=10, text_color=status_color)
+        self.status.place(relx=1, x = -20, rely = 0, y = 20, anchor="e")
+    
     
     def format_czech_phone_number(self, phone):
         """

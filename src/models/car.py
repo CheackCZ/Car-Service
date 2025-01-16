@@ -10,7 +10,7 @@ class Car():
     Class representing individual Cars in the database.
     """
     
-    def __init__(self, id: int, client: Client, brand: Brand, registration_number: str, registration_date: datetime, model: str):
+    def __init__(self, id: int = 0, client: Client = Client(), brand: Brand = Brand(), registration_number: str = "", registration_date: datetime = None, model: str = ""):
         """
         Initializes a Car instance.
         
@@ -22,7 +22,7 @@ class Car():
         :param model (str): The model name of the car.
         """
         # Validate id
-        if type(id) != int or id <= 0:
+        if type(id) != int or id < 0:
             raise ValueError("'id' must be a positive integer.")
 
         # Validate client
@@ -44,8 +44,10 @@ class Car():
             raise ValueError("Phone number is not valid! Please re-enter a valid one.")
 
         # Validate registration_date
-        if type(registration_date) != datetime:
-            raise TypeError("'registration_date' must be a datetime object.")
+        if registration_date is None:
+            registration_date = datetime.now() 
+        elif not isinstance(registration_date, datetime):
+            raise TypeError("'registration_date' must be a datetime object or None.")
 
         # Validate model
         if type(model) != str or not model.strip():

@@ -23,10 +23,10 @@ class EmployeeController:
                 Employee(
                     id=row['id'],
                     name=row['name'],
-                    middle_name=row.get('middle_name') or None,  # Normalize NULL/empty values to None
+                    middle_name=row.get('client_middle_name', ''),
                     last_name=row['last_name'],
-                    phone=row['phone'],
-                    email=row['email'],
+                    phone=row.get('phone', ''),
+                    email=row.get('email', ''),
                     is_free=bool(row['is_free'])
                 ) 
                 for row in rows
@@ -37,7 +37,6 @@ class EmployeeController:
         finally:
             cursor.close()
 
-    @staticmethod
     def fetch_by_id(employee_id):
         """
         Fetches an employee by their ID.
@@ -55,10 +54,10 @@ class EmployeeController:
             return Employee(
                 id=row['id'],
                 name=row['name'],
-                middle_name=row.get('middle_name') or None,  # Normalize NULL/empty values to None
+                middle_name=row.get('client_middle_name', ''),
                 last_name=row['last_name'],
-                phone=row['phone'],
-                email=row['email'],
+                phone=row.get('phone', ''),
+                    email=row.get('email', ''),
                 is_free=bool(row['is_free'])
             ) if row else None
         except Exception as e:
