@@ -1,5 +1,5 @@
 from src.connection import Connection
-from models.brand import Brand
+from src.models.brand import Brand
 
 class BrandController:
     """

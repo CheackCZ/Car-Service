@@ -1,5 +1,5 @@
 from src.connection import Connection
-from models.repair_type import RepairType
+from src.models.repair_type import RepairType
 
 class RepairTypeController:
     """

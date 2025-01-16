@@ -1,18 +1,17 @@
 from enum import Enum
 from datetime import datetime
 
-from models.employee import Employee
-from models.car import Car
-from models.repair_type import RepairType
+from src.models.employee import Employee
+from src.models.car import Car
+from src.models.repair_type import RepairType
 
 class State(Enum):
     """
     Enum representing the possible states of a repair.
     """
-    PENDING = "Pending"
-    IN_PROGRESS = "In Progress"
-    COMPLETED = "Completed"
-    CANCELLED = "Cancelled"
+    DEFAULT = "Pending"
+    IN_PROGRESS = "In process"
+    COMPLETED = "Done"
     
 class Repair():
     """
@@ -63,7 +62,7 @@ class Repair():
             raise ValueError("Price must be a non-negative float or integer.")
 
         # Validate state
-        if  type(repair_type) != State:
+        if type(state) != State:
             raise TypeError("State must be an instance of State (Enum).")
 
         # Assign attributes

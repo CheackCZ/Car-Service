@@ -7,27 +7,17 @@ from public.Employees.employees_options import EmployeesOptions
 from public.Repairs.repairs_options import RepairsOptions
 from public.Cars.car_options import CarsOptions
 
-from public.Employees.employees_frame import EmployeesFrame
-from public.Repairs.repairs_frame import RepairsFrame
-from public.Cars.cars_frame import CarsFrame
+from public.frame import Frame
 
 class Content(ctk.CTkFrame):
     
     def __init__(self, master, **kwargs):
         super().__init__(master, width=860, height=520, **kwargs)
 
-        # Frame with values from Employees table
-        # self.employees_frame = EmployeesFrame(self)
-        # self.employees_frame.place(x = 10, y = 10)
-        
         # Frame with values from Repairs Table
-        self.repairs_frame = RepairsFrame(self)
-        self.repairs_frame.place(x = 10, y = 10)
+        self.frame = Frame(self)
+        self.frame.place(x = 10, y = 10)
 
-        # Frame with values from Cars Table
-        # self.cars_frame = CarsFrame(self)
-        # self.cars_frame.place(x = 10, y = 10)
-      
 
         # Options Employees Frame
         # self.employees_options_frame = EmployeesOptions(self, width=160, height=240)

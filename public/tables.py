@@ -1,48 +1,41 @@
 import customtkinter as ctk
 
+from src.controllers.repair_controller import RepairController
+from src.controllers.employee_controller import EmployeeController
+from src.controllers.brand_controller import BrandController
+from src.controllers.repair_type_controller import RepairTypeController
+from src.controllers.car_controller import CarController
+from src.controllers.client_controller import ClientController
+
+
 class Tables(ctk.CTkScrollableFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, width=140, height=420, **kwargs)
-
+        self.master = master 
         self.buttons = {}
         self.active_button = None
 
-        self.add_table_button("Repair", self.show_repairs)
-        self.add_table_button("Employee", self.show_employees)
-        self.add_table_button("Car", self.show_cars)
-        self.add_table_button("Client", self.show_clients)
-        self.add_table_button("Repair Type", self.show_repair_types)
-        self.add_table_button("Brand", self.show_brands)
-        
+        # Adding buttons with dynamic show_data method
+        self.add_table_button("repair", lambda: self.show_data(RepairController, "repair"))
+        self.add_table_button("employee", lambda: self.show_data(EmployeeController, "employee"))
+        self.add_table_button("car", lambda: self.show_data(CarController, "car"))
+        self.add_table_button("client", lambda: self.show_data(ClientController, "client"))
+        self.add_table_button("repair_ype", lambda: self.show_data(RepairTypeController, "repair_type"))
+        self.add_table_button("brand", lambda: self.show_data(BrandController, "brand"))
 
+        
+        
     def add_table_button(self, text, command):
-        button = ctk.CTkButton(self, text=text, fg_color="transparent", border_color="#3B8ED0", border_width=2, cursor="hand2", command=lambda: self.update_content(command, button))
+        button = ctk.CTkButton(self, text=text, fg_color="transparent", border_color="#3B8ED0", border_width=2, cursor="hand2", command=command)
         button.pack(pady=5)
         self.buttons[text] = button
+   
+    def update_content(self, data, table_name):
+        self.master.master.content.frame.update_content(data, table_name)
 
-    def update_content(self, command, button):
-        if self.active_button:
-            self.active_button.configure(fg_color="transparent", text_color="white")
-
-        button.configure(fg_color="#3B8ED0", text_color="white")
-        self.active_button = button
-
-        command()
-
-    def show_repairs(self):
-        print("repairs")
-
-    def show_employees(self):
-        print("employees")
-        
-    def show_cars(self):
-        print("cars")
-
-    def show_clients(self):
-        print("clients")
-
-    def show_repair_types(self):
-        print("repair_types")
-
-    def show_brands(self):
-        print("brands")
+    def show_data(self, controller, table_name):
+        try:
+            data = controller.fetch_all()
+        except AttributeError:
+            data = []
+        self.update_content(data, table_name)

@@ -5,7 +5,7 @@ class RepairType():
     Class representing individual Repair types in the database.
     """
     
-    def __init__(self, id: int, name: str, description: str):
+    def __init__(self, id: int, name: str, description: str = ""):
         """
         Initializes RepairType instance.
         

@@ -1,5 +1,5 @@
 from src.connection import Connection
-from models.employee import Employee
+from src.models.employee import Employee
 
 class EmployeeController:
     """
@@ -8,7 +8,7 @@ class EmployeeController:
     
     def fetch_all():
         """
-        Retrieves all employee from the database.
+        Retrieves all employees from the database.
         """
         conn = Connection.connection()
         cursor = conn.cursor(dictionary=True)
@@ -20,7 +20,15 @@ class EmployeeController:
 
             conn.commit()
             return [
-                Employee(row['id'], row['first_name'], row['middle_name'], row['last_name'], row['phone_number'], row['email'], row['is_free']) 
+                Employee(
+                    id=row['id'],
+                    name=row['name'],
+                    middle_name=row.get('middle_name') or None,  # Normalize NULL/empty values to None
+                    last_name=row['last_name'],
+                    phone=row['phone'],
+                    email=row['email'],
+                    is_free=bool(row['is_free'])
+                ) 
                 for row in rows
             ]
         except Exception as e:
@@ -29,6 +37,7 @@ class EmployeeController:
         finally:
             cursor.close()
 
+    @staticmethod
     def fetch_by_id(employee_id):
         """
         Fetches an employee by their ID.
@@ -43,7 +52,15 @@ class EmployeeController:
             
             conn.commit()
             
-            return Employee(row['id'], row['first_name'], row['middle_name'], row['last_name'], row['phone_number'], row['email'], row['is_free']) if row else None
+            return Employee(
+                id=row['id'],
+                name=row['name'],
+                middle_name=row.get('middle_name') or None,  # Normalize NULL/empty values to None
+                last_name=row['last_name'],
+                phone=row['phone'],
+                email=row['email'],
+                is_free=bool(row['is_free'])
+            ) if row else None
         except Exception as e:
             conn.rollback()
             raise e
@@ -61,15 +78,15 @@ class EmployeeController:
             conn.start_transaction()
             if employee.id is None:
                 cursor.execute(
-                    "INSERT INTO employee (first_name, middle_name, last_name, phone_number, email, is_free) VALUES (%s, %s, %s, %s, %s, %s)",
-                    (employee.first_name, employee.middle_name, employee.last_name, employee.phone_number, employee.email, employee.is_free)
+                    "INSERT INTO employee (name, middle_name, last_name, phone, email, is_free) VALUES (%s, %s, %s, %s, %s, %s)",
+                    (employee.name, employee.middle_name, employee.last_name, employee.phone, employee.email, employee.is_free)
                 )
                 conn.commit()
                 employee.id = cursor.lastrowid
             else:
                 cursor.execute(
-                    "UPDATE employee SET first_name = %s, middle_name = %s, last_name = %s, phone_number = %s, email = %s, is_free = %s WHERE id = %s",
-                    (employee.first_name, employee.middle_name, employee.last_name, employee.phone_number, employee.email, employee.is_free, employee.id)
+                    "UPDATE employee SET name = %s, middle_name = %s, last_name = %s, phone = %s, email = %s, is_free = %s WHERE id = %s",
+                    (employee.name, employee.middle_name, employee.last_name, employee.phone, employee.email, employee.is_free, employee.id)
                 )
                 conn.commit()
         except Exception as e:

@@ -2,14 +2,14 @@ import re
 
 class Client():
     
-    def __init__(self, id: int, first_name: str, middle_name: str, last_name: str, phone_number: str, email: str):
+    def __init__(self, id: int, name: str, middle_name: str, last_name: str, phone: str, email: str):
         """
         Initializes Client instance. 
 
-        :param first_name (str): First name of the employee. Must be a non-empty alphabetic string.
+        :param name (str): First name of the employee. Must be a non-empty alphabetic string.
         :param middle_name (str): Middle name of the employee. Optional, must be alphabetic if provided.
         :param last_name (str): Last name of the employee. Must be a non-empty alphabetic string.
-        :param phone_number (str): Phone number of the employee. Must match a valid phone number format.
+        :param phone (str): Phone phone of the employee. Must match a valid phone phone format.
         :param email (str): Email address of the employee. Must match a valid email format.
         :param is_free (bool): Availability status of the employee.
         """
@@ -17,8 +17,8 @@ class Client():
         if type(id) != int or id <= 0:
             raise ValueError("'id' must be a positive integer.")
         
-        # Validate first_name
-        if not first_name or type(first_name) != str or not first_name.isalpha() or len(first_name) > 50:
+        # Validate name
+        if not name or type(name) != str or not name.isalpha() or len(name) > 50:
             raise ValueError("First name must be a non-empty string containing only alphabetic characters.")
 
         # Validate middle_name (optional, can be empty)
@@ -27,18 +27,18 @@ class Client():
         
         # Validate last_name
         if not last_name or type(last_name) != str or not last_name.isalpha() or len(last_name) > 50:
-            raise ValueError("Last name must be a non-empty string containing only alphabetic characters.")
+            raise ValueError(f"Last name must be a non-empty string containing only alphabetic characters.{last_name}")
         
-        # Validate phone_number
-        if not phone_number or type(first_name) != str or not phone_number.isdigit() or len(phone_number) not in [10, 11]:
-            raise ValueError("Phone number must be a string of 10 or 11 digits.")
+        # Validate phone
+        if not phone or type(phone) != str or not phone.isdigit() or len(phone) not in range(9, 13):
+            raise ValueError(f"Phone phone must be a string of 10 or 11 digits.{phone}")
         
         phone_regex = re.compile(r"^\+?\d{1,4}?[ -]?\(?\d{1,3}?\)?[ -]?\d{1,4}[ -]?\d{1,4}[ -]?\d{1,9}$")
-        if not phone_regex.match(phone_number):
-            raise ValueError("Phone number is not valid! Please re-enter a valid one.")
+        if not phone_regex.match(phone):
+            raise ValueError("Phone phone is not valid! Please re-enter a valid one.]")
         
         # Validate email
-        if not email or type(first_name) != str or "@" not in email or "." not in email.split("@")[-1]:
+        if not email or type(name) != str or "@" not in email or "." not in email.split("@")[-1]:
             raise ValueError("Email must be a valid email address.")
         
         email_regex = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
@@ -46,8 +46,8 @@ class Client():
             raise ValueError("Email is not valid! Please re-enter a valid one.")
         
         self.id = id
-        self.first_name = first_name
+        self.name = name
         self.middle_name = middle_name
         self.last_name = last_name
-        self.phone_number = phone_number
+        self.phone = phone
         self.email = email

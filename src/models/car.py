@@ -1,8 +1,8 @@
 from datetime import datetime
 import re
 
-from client import Client
-from brand import Brand
+from src.models.client import Client
+from src.models.brand import Brand
 
 
 class Car():

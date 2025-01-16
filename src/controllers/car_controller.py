@@ -1,41 +1,53 @@
 from src.connection import Connection
 
-from models.car import Car
-from models.client import Client
-from models.brand import Brand
+from src.models.car import Car
+from src.models.client import Client
+from src.models.brand import Brand
 
 class CarController:
     """
     Handles database operations for car.
     """
-    
+
     def fetch_all():
         """
-        Retrieves all car from the database.
+        Retrieves all cars from the database.
         """
         conn = Connection.connection()
         cursor = conn.cursor(dictionary=True)
+        
         try:
             conn.start_transaction()
-            
+
             query = """
-                SELECT car.id, car.registration_number, car.registration_date, car.model, 
-                       clients.id AS client_id, clients.first_name, clients.last_name, 
-                       brands.id AS brand_id, brands.name AS brand_name
+                SELECT car.id AS car_id, car.registration_number, car.registration_date, car.model, 
+                    client.id AS client_id, client.name AS client_name, client.middle_name AS client_middle_name, client.last_name AS client_last_name, 
+                    client.phone AS client_phone, client.email AS client_email, 
+                    brand.id AS brand_id, brand.name AS brand_name
                 FROM car
-                JOIN clients ON car.client_id = clients.id
-                JOIN brands ON car.brand_id = brands.id
+                JOIN client ON car.client_id = client.id
+                JOIN brand ON car.brand_id = brand.id
             """
             cursor.execute(query)
             rows = cursor.fetchall()
-            
+
             conn.commit()
-            
+
             return [
                 Car(
-                    id=row['id'],
-                    client=Client(id=row['client_id'], first_name=row['first_name'], last_name=row['last_name']),
-                    brand=Brand(id=row['brand_id'], name=row['brand_name']),
+                    id=row['car_id'],
+                    client=Client(
+                        id=row['client_id'],
+                        name=row['client_name'],
+                        middle_name=row.get('client_middle_name', None),
+                        last_name=row['client_last_name'],
+                        phone=row['client_phone'],
+                        email=row['client_email']
+                    ),
+                    brand=Brand(
+                        id=row['brand_id'],
+                        name=row['brand_name']
+                    ),
                     registration_number=row['registration_number'],
                     registration_date=row['registration_date'],
                     model=row['model']
@@ -48,6 +60,7 @@ class CarController:
         finally:
             cursor.close()
 
+    @staticmethod
     def fetch_by_id(car_id):
         """
         Fetches a car by its ID.
@@ -57,14 +70,15 @@ class CarController:
 
         try:
             conn.start_transaction()
-            
+
             query = """
-                SELECT car.id, car.registration_number, car.registration_date, car.model, 
-                       clients.id AS client_id, clients.first_name, clients.last_name, 
-                       brands.id AS brand_id, brands.name AS brand_name
+                SELECT car.id AS car_id, car.registration_number, car.registration_date, car.model, 
+                    client.id AS client_id, client.name AS client_name, client.middle_name AS client_middle_name, client.last_name AS client_last_name, 
+                    client.phone AS client_phone, client.email AS client_email, 
+                    brand.id AS brand_id, brand.name AS brand_name
                 FROM car
-                JOIN clients ON car.client_id = clients.id
-                JOIN brands ON car.brand_id = brands.id
+                JOIN client ON car.client_id = client.id
+                JOIN brand ON car.brand_id = brand.id
                 WHERE car.id = %s
             """
             cursor.execute(query, (car_id,))
@@ -74,9 +88,19 @@ class CarController:
 
             if row:
                 return Car(
-                    id=row['id'],
-                    client=Client(id=row['client_id'], first_name=row['first_name'], last_name=row['last_name']),
-                    brand=Brand(id=row['brand_id'], name=row['brand_name']),
+                    id=row['car_id'],
+                    client=Client(
+                        id=row['client_id'],
+                        name=row['client_name'],
+                        middle_name=row.get('client_middle_name', None),
+                        last_name=row['client_last_name'],
+                        phone=row['client_phone'],
+                        email=row['client_email']
+                    ),
+                    brand=Brand(
+                        id=row['brand_id'],
+                        name=row['brand_name']
+                    ),
                     registration_number=row['registration_number'],
                     registration_date=row['registration_date'],
                     model=row['model']
@@ -88,6 +112,7 @@ class CarController:
         finally:
             cursor.close()
 
+    @staticmethod
     def save(car: Car):
         """
         Saves a car to the database.
@@ -122,6 +147,7 @@ class CarController:
         finally:
             cursor.close()
 
+    @staticmethod
     def delete(car_id):
         """
         Deletes a car by its ID.

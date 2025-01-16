@@ -1,5 +1,5 @@
 from src.connection import Connection
-from models.client import Client
+from src.models.client import Client
 
 class ClientController:
     """
@@ -21,7 +21,7 @@ class ClientController:
 
             conn.commit()
 
-            return [Client(row['id'], row['first_name'], row['middle_name'], row['last_name'], row['phone_number'], row['email']) for row in rows]
+            return [Client(row['id'], row['name'], row['middle_name'], row['last_name'], row['phone'], row['email']) for row in rows]
         except Exception as e:
             conn.rollback()
             raise e
@@ -42,8 +42,8 @@ class ClientController:
             row = cursor.fetchone()
         
             conn.commit()
-        
-            return Client(row['id'], row['first_name'], row['middle_name'], row['last_name'], row['phone_number'], row['email']) if row else None
+            
+            return Client(row['id'], row['name'], row['middle_name'], row['last_name'], row['phone'], row['email']) if row else None
         except Exception as e:
             conn.rollback()
             raise e
@@ -63,14 +63,14 @@ class ClientController:
         
             if client.id is None:
                 cursor.execute(
-                    "INSERT INTO client (first_name, middle_name, last_name, phone_number, email) VALUES (%s, %s, %s, %s, %s)",
-                    (client.first_name, client.middle_name, client.last_name, client.phone_number, client.email)
+                    "INSERT INTO client (name, middle_name, last_name, phone, email) VALUES (%s, %s, %s, %s, %s)",
+                    (client.name, client.middle_name, client.last_name, client.phone, client.email)
                 )
                 client.id = cursor.lastrowid
             else:
                 cursor.execute(
-                    "UPDATE client SET first_name = %s, middle_name = %s, last_name = %s, phone_number = %s, email = %s WHERE id = %s",
-                    (client.first_name, client.middle_name, client.last_name, client.phone_number, client.email, client.id)
+                    "UPDATE client SET name = %s, middle_name = %s, last_name = %s, phone = %s, email = %s WHERE id = %s",
+                    (client.name, client.middle_name, client.last_name, client.phone, client.email, client.id)
                 )
             conn.commit()
         except Exception as e:
