@@ -18,6 +18,7 @@ use Service;
 -- drop table brand;
 -- drop table employee;
 
+select * from employee;
 
 -- Vytvoření tabulky pro Zaměstnance (Employee)
 create table employee (

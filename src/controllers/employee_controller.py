@@ -23,7 +23,7 @@ class EmployeeController:
                 Employee(
                     id=row['id'],
                     name=row['name'],
-                    middle_name=row.get('client_middle_name', ''),
+                    middle_name=row.get('middle_name', ''),
                     last_name=row['last_name'],
                     phone=row.get('phone', ''),
                     email=row.get('email', ''),
@@ -54,7 +54,7 @@ class EmployeeController:
             return Employee(
                 id=row['id'],
                 name=row['name'],
-                middle_name=row.get('client_middle_name', ''),
+                middle_name=row.get('middle_name', ''),
                 last_name=row['last_name'],
                 phone=row.get('phone', ''),
                     email=row.get('email', ''),
@@ -102,6 +102,10 @@ class EmployeeController:
         try:
             conn.start_transaction()
             print("Updating existing employee in the database.")  # Debugging
+            print(f"Executing query: UPDATE employee SET name={employee.name}, middle_name={employee.middle_name}, "
+            f"last_name={employee.last_name}, phone={employee.phone}, email={employee.email}, "
+            f"is_free={employee.is_free} WHERE id={employee.id}")
+            
             cursor.execute(
                 """
                 UPDATE employee

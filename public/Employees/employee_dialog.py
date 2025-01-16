@@ -25,9 +25,9 @@ class EmployeeDialog(ctk.CTkToplevel):
         self.add_employee_label.place(relx=0.5, y=30, anchor="center") 
 
         # First Name
-        self.first_name_entry = ctk.CTkEntry(self, width=120, placeholder_text="First name")
-        self.first_name_entry.place(x = 20, y = 70)
-        self.fill_entry(self.first_name_entry, "first_name")
+        self.name_entry = ctk.CTkEntry(self, width=120, placeholder_text="First name")
+        self.name_entry.place(x = 20, y = 70)
+        self.fill_entry(self.name_entry, "name")
 
         # Middle Name
         self.middle_name_entry = ctk.CTkEntry(self, width=120, placeholder_text="Middle name")
@@ -60,7 +60,8 @@ class EmployeeDialog(ctk.CTkToplevel):
         """
         try:
             employee_data = {
-                "first_name": self.first_name_entry.get(),
+                "id" : self.employee_data.get("id"),
+                "name": self.name_entry.get(),
                 "middle_name": self.middle_name_entry.get(),
                 "last_name": self.last_name_entry.get(),
                 "phone": self.phone_entry.get(),

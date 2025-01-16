@@ -25,13 +25,13 @@ class EmployeesOptions(ctk.CTkFrame):
         self.add_button.place(x=10, y=50)
 
         # Edit Button
-        self.edit_button = ctk.CTkButton(self, command=self.open_edit_employee_dialog, text="Edit Employee", border_width=2, border_color="#3B8ED0", corner_radius=20, fg_color="transparent", cursor="hand2")
+        self.edit_button = ctk.CTkButton(self, command=self.open_employee_selector_for_edit, text="Edit Employee", border_width=2, border_color="#3B8ED0", corner_radius=20, fg_color="transparent", cursor="hand2")
         self.edit_button.place(x=10, y=90)
 
         # Remove Button
-        self.remove_button = ctk.CTkButton(self, command=self.open_remove_employee_dialog, text="Remove Employee", border_width=2, border_color="#FF474D", hover_color="red", corner_radius=20, fg_color="transparent", cursor="hand2")
+        self.remove_button = ctk.CTkButton(self, command=self.open_employee_selector_for_delete, text="Remove Employee", border_width=2, border_color="#FF474D", hover_color="red", corner_radius=20, fg_color="transparent", cursor="hand2")
         self.remove_button.place(x=10, y=130)
-
+        
         # Separator
         self.separator = ttk.Separator(self, orient="horizontal")
         self.separator.place(x=10, y=180, width=140)
@@ -67,18 +67,98 @@ class EmployeesOptions(ctk.CTkFrame):
         except Exception as e:
             CTkMessagebox(title="Error", message=f"Failed to add employee: {e}", icon="warning")
 
-
-    def open_edit_employee_dialog(self):
-        pass
-
-    def handle_edit_employee(self):
-        pass
     
-    
-    def open_remove_employee_dialog(self):
-        selector = EmployeeSelector(self, on_submit_callback=self.handle_remove_employee)
+    def open_employee_selector_for_edit(self):
+        """
+        Opens the employee selector to choose an employee for editing.
+        """
+        selector = EmployeeSelector(
+            parent=self,
+            on_submit_callback=self.open_edit_employee_dialog,
+            title="Edit Employee",
+            button_text="Edit Employee"
+        )
         selector.grab_set()
         selector.lift()
-    
-    def handle_remove_employee(self):
-        pass
+
+    def open_edit_employee_dialog(self, employee_id):
+        """
+        Opens the edit dialog for the selected employee.
+        """
+        # Fetch the Employee object using the controller
+        employee = EmployeeController.fetch_by_id(employee_id)
+        
+        # If the employee does not exist, show an error
+        if not employee:
+            CTkMessagebox(title="Error", message="Employee not found.", icon="warning")
+            return
+
+        # Convert the Employee object to a dictionary using to_dict()
+        employee_data = employee.to_dict()
+        
+        # Ensure `id` is included in the dictionary
+        employee_data["id"] = employee.id
+
+        # Open the EmployeeDialog for editing
+        dialog = EmployeeDialog(
+            self,
+            on_submit_callback=self.handle_edit_employee,
+            mode="edit",
+            employee_data=employee_data
+        )
+        dialog.grab_set()
+        dialog.lift()
+
+
+    def handle_edit_employee(self, updated_data):
+        """
+        Handles the submission of updated employee data.
+        """
+        print("Updated Data in handle_edit_employee:", updated_data)
+         
+        try:
+            updated_employee = Employee(
+                id=updated_data["id"],  # Explicitly set the ID
+                name=updated_data.get("first_name", ""),
+                middle_name=updated_data.get("middle_name", ""),
+                last_name=updated_data.get("last_name", ""),
+                phone=updated_data.get("phone", ""),
+                email=updated_data.get("email", ""),
+                is_free=updated_data.get("is_free", True),
+            )
+
+            EmployeeController.update(updated_employee)
+            CTkMessagebox(title="Success", message="Employee updated successfully.", icon="info")
+        except Exception as e:
+            CTkMessagebox(title="Error", message=f"Failed to update employee: {e}", icon="warning")
+
+
+    def open_employee_selector_for_delete(self):
+        """
+        Opens the employee selector to choose an employee for deletion.
+        """
+        selector = EmployeeSelector(
+            parent=self,
+            on_submit_callback=self.confirm_delete_employee,
+            title="Remove Employee",
+            button_text="Remove Employee"
+        )
+        selector.grab_set()
+        selector.lift()
+
+    def confirm_delete_employee(self, employee_id):
+        """
+        Confirms and deletes the selected employee.
+        """
+        confirm = CTkMessagebox(
+            title="Confirm Deletion",
+            message="Are you sure you want to delete this employee?",
+            icon="question",
+            options=["Yes", "No"],
+        )
+        if confirm.get() == "Yes":
+            try:
+                EmployeeController.delete(employee_id)
+                CTkMessagebox(title="Success", message="Employee deleted successfully.", icon="info")
+            except Exception as e:
+                CTkMessagebox(title="Error", message=f"Failed to delete employee: {e}", icon="warning")

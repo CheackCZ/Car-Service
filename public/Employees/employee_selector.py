@@ -1,10 +1,12 @@
 import customtkinter as ctk
 
+from CTkMessagebox import CTkMessagebox
+
 from src.controllers.employee_controller import EmployeeController
 
 class EmployeeSelector(ctk.CTkToplevel):
     
-    def __init__(self, parent, on_submit_callback, **kwargs):
+    def __init__(self, parent, on_submit_callback, title="Choose Employee", button_text="Submit",**kwargs):
         """
         A class for displaying a dropdown (combobox) of employees with their IDs.
         
@@ -16,10 +18,10 @@ class EmployeeSelector(ctk.CTkToplevel):
 
         self.employee_data = {}
         self.selected_employee_id = None
+        self.on_submit_callback = on_submit_callback
         
         # Credentials
-        title_text = "Choose Employee"
-        self.title(title_text)
+        self.title(title)
         self.geometry("260x180")
         self.resizable(False, False)
         
@@ -35,7 +37,7 @@ class EmployeeSelector(ctk.CTkToplevel):
         self.combobox.place(relx = 0.5, y = 70, anchor="center")
         
         # Button for either removal / edit
-        self.submit_button = ctk.CTkButton(self, text=title_text, command=self.submit_selection)
+        self.submit_button = ctk.CTkButton(self, text=button_text, command=self.submit_selection)
         self.submit_button.place(relx = 0.5, y = 130, anchor="center")
         
         self.load_employees()
@@ -45,19 +47,15 @@ class EmployeeSelector(ctk.CTkToplevel):
         Load employees from the database and populate the combobox.
         """
         try:
-            # Fetch all employees using EmployeeController
             employees = EmployeeController.fetch_all()
             
-            # Create a mapping of display names to employee IDs
             self.employee_data = {
                 f"({employee.id}) {employee.name} {employee.middle_name} {employee.last_name}": employee.id
                 for employee in employees
             }
             
-            # Populate the combobox with employee names
             self.combobox.configure(values=list(self.employee_data.keys()))
             
-            # Set default value to an empty string (None equivalent)
             self.combobox.set("")
             
         except Exception as e:
@@ -65,4 +63,13 @@ class EmployeeSelector(ctk.CTkToplevel):
 
     
     def submit_selection(self):
-        pass
+        """
+        Handle the submission of the selected employee.
+        """
+        selected_text = self.combobox.get()
+        self.selected_employee_id = self.employee_data.get(selected_text)
+        if self.selected_employee_id:
+            self.on_submit_callback(self.selected_employee_id)
+            self.destroy()
+        else:
+            CTkMessagebox(title="Error", message="No employee selected.", icon="warning")
