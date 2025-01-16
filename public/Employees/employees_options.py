@@ -4,10 +4,10 @@ from tkinter import ttk
 from CTkMessagebox import CTkMessagebox
 
 from public.Employees.employee_dialog import EmployeeDialog
+from public.Employees.employee_selector import EmployeeSelector
 
 from src.models.employee import Employee
 from src.controllers.employee_controller import EmployeeController
-
 
 class EmployeesOptions(ctk.CTkFrame):
     
@@ -29,7 +29,7 @@ class EmployeesOptions(ctk.CTkFrame):
         self.edit_button.place(x=10, y=90)
 
         # Remove Button
-        self.remove_button = ctk.CTkButton(self, text="Remove Employee", border_width=2, border_color="#FF474D", hover_color="red", corner_radius=20, fg_color="transparent", cursor="hand2")
+        self.remove_button = ctk.CTkButton(self, command=self.open_remove_employee_dialog, text="Remove Employee", border_width=2, border_color="#FF474D", hover_color="red", corner_radius=20, fg_color="transparent", cursor="hand2")
         self.remove_button.place(x=10, y=130)
 
         # Separator
@@ -72,4 +72,13 @@ class EmployeesOptions(ctk.CTkFrame):
         pass
 
     def handle_edit_employee(self):
+        pass
+    
+    
+    def open_remove_employee_dialog(self):
+        selector = EmployeeSelector(self, on_submit_callback=self.handle_remove_employee)
+        selector.grab_set()
+        selector.lift()
+    
+    def handle_remove_employee(self):
         pass
