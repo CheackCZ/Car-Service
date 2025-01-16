@@ -15,7 +15,7 @@ class Tables(ctk.CTkScrollableFrame):
         
         self.buttons = {}
         self.active_button = None
-
+        
         # Adding buttons with dynamic show_data method
         self.add_table_button("repair", lambda: self.show_data(RepairController, "repair"))
         self.add_table_button("employee", lambda: self.show_data(EmployeeController, "employee"))
@@ -40,6 +40,8 @@ class Tables(ctk.CTkScrollableFrame):
         except AttributeError:
             data = []
         self.update_content(data, table_name)
+        
+        self.master.master.content.update_options(table_name)
         
     def handle_button_click(self, table_name):
         if self.active_button:

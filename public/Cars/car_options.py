@@ -8,6 +8,8 @@ class CarsOptions(ctk.CTkFrame):
     def __init__(self, parent, **kwargs):
         super().__init__(parent, **kwargs)
 
+        self.configure(fg_color="transparent")
+
         # Label with "Options" 
         self.db_name_label = ctk.CTkLabel(self, text="Options:", font=("Poppins", 14), text_color="gray", wraplength=160, justify="left")
         self.db_name_label.place(x=10, y=10)
