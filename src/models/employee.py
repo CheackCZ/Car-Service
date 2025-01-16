@@ -36,11 +36,11 @@ class Employee():
         if not last_name or type(last_name) != str or not last_name.isalpha():
             raise ValueError("Last name must be a non-empty string containing only alphabetic characters.")
         
-         # Validate phone
-        if not phone or type(phone) != str or not phone.isdigit() or len(phone) not in range(9, 13):
-            raise ValueError(f"Phone phone must be a string of 10 or 11 digits.{phone}")
-        
-        phone_regex = re.compile(r"^\+?\d{1,4}?[ -]?\(?\d{1,3}?\)?[ -]?\d{1,4}[ -]?\d{1,4}[ -]?\d{1,9}$")
+        # Validate phone
+        if not phone or type(phone) != str or len(phone) < 9 or len(phone) > 13:
+            raise ValueError(f"Phone number must be a string of 9 to 13 characters. Received: {phone}")
+
+        phone_regex = re.compile(r"^(?:\+420|420)?[ ]?[0-9]{3}[ ]?[0-9]{3}[ ]?[0-9]{3}$")
         if not phone_regex.match(phone):
             raise ValueError("Phone number is not valid! Please re-enter a valid one.")
         
@@ -63,3 +63,19 @@ class Employee():
         self.phone = phone
         self.email = email
         self.is_free = is_free
+        
+    
+    def __str__(self):
+         return f"({self.id}) {self.name} {self.middle_name}, {self.last_name}, Ph. {self.phone}, Em: {self.email}, Free? {self.is_free}"
+    
+    def to_dict(self):
+        """
+        Converts the Employee object into a dictionary.
+        """
+        return {
+            "name": self.name,
+            "middle_name": self.middle_name if self.middle_name else "",
+            "last_name": self.last_name,
+            "phone": self.phone,
+            "email": self.email,
+        }

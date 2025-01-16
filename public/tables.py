@@ -12,6 +12,7 @@ class Tables(ctk.CTkScrollableFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, width=140, height=420, **kwargs)
         self.master = master 
+        
         self.buttons = {}
         self.active_button = None
 
@@ -20,9 +21,8 @@ class Tables(ctk.CTkScrollableFrame):
         self.add_table_button("employee", lambda: self.show_data(EmployeeController, "employee"))
         self.add_table_button("car", lambda: self.show_data(CarController, "car"))
         self.add_table_button("client", lambda: self.show_data(ClientController, "client"))
-        self.add_table_button("repair_ype", lambda: self.show_data(RepairTypeController, "repair_type"))
+        self.add_table_button("repair_type", lambda: self.show_data(RepairTypeController, "repair_type"))
         self.add_table_button("brand", lambda: self.show_data(BrandController, "brand"))
-
         
         
     def add_table_button(self, text, command):
@@ -34,8 +34,16 @@ class Tables(ctk.CTkScrollableFrame):
         self.master.master.content.frame.update_content(data, table_name)
 
     def show_data(self, controller, table_name):
+        self.handle_button_click(table_name)
         try:
             data = controller.fetch_all()
         except AttributeError:
             data = []
         self.update_content(data, table_name)
+        
+    def handle_button_click(self, table_name):
+        if self.active_button:
+            self.active_button.configure(fg_color="transparent", text_color="white")
+
+        self.active_button = self.buttons[table_name]
+        self.active_button.configure(fg_color="#3B8ED0", text_color="white")

@@ -28,11 +28,12 @@ class Frame(ctk.CTkScrollableFrame):
                return
 
          for record in data:
-               try:
-                  card = card_class(self, **record)
-                  card.pack(pady=5)
-               except TypeError as e:
-                  label = ctk.CTkLabel(
+            try:
+               card = card_class(self, **record.to_dict())
+               card.pack(pady=5)
+            except TypeError as e:
+               print(e)
+               label = ctk.CTkLabel(
                      self, text=f"Error creating card: {e}", anchor="w", text_color="red"
-                  )
-                  label.pack(pady=5)
+               )
+               label.pack(pady=5)

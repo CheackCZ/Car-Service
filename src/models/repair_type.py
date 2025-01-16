@@ -27,3 +27,16 @@ class RepairType():
         self.id = id
         self.name = name
         self.description = description
+        
+    
+    def to_dict(self):
+        """
+        Converts the RepairType object into a dictionary representation.
+        
+        :return: Dictionary representation of the RepairType object.
+        """
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description
+        }

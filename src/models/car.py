@@ -39,7 +39,7 @@ class Car():
         if len(registration_number) > 10:
             raise ValueError("'registration_number' cannot exceed 15 characters.")
 
-        registration_number_regex = re.compile(r"^[A-Z0-9]{1,3}[- ]?[A-Z0-9]{1,4}[- ]?[A-Z0-9]{1,4}$")
+        registration_number_regex = re.compile(r"^[A-Z]{1,3}[- ]?[0-9]{1,4}$")
         if not registration_number_regex.match(registration_number):
             raise ValueError("Phone number is not valid! Please re-enter a valid one.")
 
@@ -59,3 +59,21 @@ class Car():
         self.registration_number = registration_number.strip()
         self.registration_date = registration_date
         self.model = model.strip()
+        
+    def __str__(self):
+        return f"({self.id}) {self.brand} {self.model}, {self.registration_number} ({self.registration_date})"
+    
+    def to_dict(self):
+        """
+        Converts the Car object into a dictionary.
+        """
+        return {
+            "id": self.id,
+            "client_id" : self.client.id if self.client else None,
+            "client_name": self.client.name if self.client else None,
+            "client_last_name": self.client.last_name if self.client else None,
+            "brand_name": self.brand.name,
+            "registration_number": self.registration_number,
+            "registration_date": self.registration_date.strftime("%Y-%m-%d") if self.registration_date else None,
+            "model": self.model
+        }

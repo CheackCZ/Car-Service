@@ -7,6 +7,7 @@ class RepairCard(ctk.CTkFrame):
         super().__init__(master, width=640, height=100, **kwargs)
         
         # Employee credentials 
+        self.id = id
         self.car_registration_num = car_registration_num
         self.car_model = car_model
         self.brand_name = brand_name
@@ -25,7 +26,7 @@ class RepairCard(ctk.CTkFrame):
         self.repair_icon_label.place(x = 10, y = 10)
         
         # Label with Repair's ID
-        self.repair_data_label = ctk.CTkLabel(self, text=repair_type + " (" + str(id) + ")", font=("Poppins", 16, "bold"))
+        self.repair_data_label = ctk.CTkLabel(self, text=repair_type + " (" + str(self.id) + ")", font=("Poppins", 16, "bold"))
         self.repair_data_label.place(x = 60, y = 10)
     
         # Date Started

@@ -11,7 +11,6 @@ use Service;
 -- grant all privileges on Service.* to 'admin'@'localhost';
 -- flush privileges;
 
-
 -- Vytvoření tabulky pro Zaměstnance (Employee)
 create table employee (
 	id int primary key not null auto_increment,
@@ -20,7 +19,7 @@ create table employee (
     middle_name varchar(50),
     last_name varchar(50) not null,
     
-    phone varchar(12) not null unique,
+    phone varchar(13) not null unique,
     email varchar(100) not null unique,
     
     is_free bit
@@ -34,7 +33,7 @@ create table `client` (
 	middle_name varchar(50),
     last_name varchar(50) not null,
     
-    phone varchar(12) not null unique,
+    phone varchar(13) not null unique,
     email varchar(100) not null unique
 );
 
@@ -91,6 +90,8 @@ INSERT INTO employee (name, middle_name, last_name, phone, email, is_free) VALUE
 	('Jan', 'B.', 'Novák', '111222333', 'jannovak@seznam.cz', 0),
 	('Michal', NULL, 'Kopecký', '123456789', 'michal.kopecky@mail.com', 1);
 
+insert into employee (name, middle_name, last_name, phone, email, is_free) values ('Jiří', 'Jan', 'Novák', '+420111222333', 'jiri.novak@seznam.cz', 0);
+
 INSERT INTO client (name, middle_name, last_name, phone, email)
 	VALUES
 	('Anna', 'M.', 'Novotná', '223344556', 'anna.novotna@example.com'),
@@ -118,3 +119,21 @@ INSERT INTO repair (car_id, employee_id, repair_type_id, date_started, date_fini
 	(1, 1, 1, '2023-01-10', '2023-01-11', 2000, 'Hotovo'),
 	(2, 2, 2, '2023-02-20', '2023-02-21', 4000, 'Hotovo'),
 	(1, 3, 3, '2023-03-15', '2023-03-17', 3000, 'Probíhá');
+    
+
+-- Pohledy (Views) pro jednodušší a přehlednější použití
+CREATE VIEW all_repairs AS
+	SELECT 
+		repair.id AS repair_id, repair.date_started AS date_started, repair.date_finished AS date_finished, repair.price AS price, repair.state AS state,
+		brand.name AS brand_name,
+        car.model AS car_model, car.registration_number AS car_registration_num, 
+		employee.id AS employee_id, employee.name AS employee_name, 
+		repair_type.name AS repair_type
+	FROM repair
+		JOIN car ON repair.car_id = car.id
+		JOIN brand ON car.brand_id = brand.id
+		JOIN employee ON repair.employee_id = employee.id
+		JOIN repair_type ON repair.repair_type_id = repair_type.id;
+
+    
+select * from all_repairs;

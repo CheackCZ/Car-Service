@@ -74,3 +74,24 @@ class Repair():
         self.date_finished = date_finished
         self.price = price
         self.state = state
+        
+        
+    def to_dict(self):
+        """
+        Converts the Repair object into a dictionary representation,
+        
+        :return: Dictionary representation of the Repair object.
+        """
+        return {
+            "id": self.id,
+            "employee_name": f"{self.employee.name} {self.employee.last_name}",
+            "employee_id": self.employee.id,  
+            "car_model": self.car.model,
+            "car_registration_num": self.car.registration_number,
+            "brand_name": self.car.brand.name,
+            "repair_type": self.repair_type.name,
+            "date_started": self.date_started.strftime("%Y-%m-%d %H:%M:%S"),
+            "date_finished": self.date_finished.strftime("%Y-%m-%d %H:%M:%S"),
+            "price": self.price,
+            "state": self.state.value
+        }
