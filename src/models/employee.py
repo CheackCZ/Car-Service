@@ -65,7 +65,7 @@ class Employee():
         
     
     def __str__(self):
-         return f"({self.id}) {self.name} {self.middle_name}, {self.last_name}, Ph. {self.phone}, Em: {self.email}, Free? {self.is_free}"
+         return f"({self.id}) {self.name} {self.middle_name} {self.last_name}, Ph. {self.phone}, Em: {self.email}, Free? {self.is_free}"
     
     def to_dict(self):
         """

@@ -143,5 +143,3 @@ CREATE VIEW all_repairs AS
 		JOIN brand ON car.brand_id = brand.id
 		JOIN employee ON repair.employee_id = employee.id
 		JOIN repair_type ON repair.repair_type_id = repair_type.id;
-    
-select * from all_repairs;

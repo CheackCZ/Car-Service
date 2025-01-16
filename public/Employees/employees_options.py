@@ -1,7 +1,13 @@
 import customtkinter as ctk
 from tkinter import ttk
 
+from CTkMessagebox import CTkMessagebox
+
 from public.Employees.employee_dialog import EmployeeDialog
+
+from src.models.employee import Employee
+from src.controllers.employee_controller import EmployeeController
+
 
 class EmployeesOptions(ctk.CTkFrame):
     
@@ -38,24 +44,32 @@ class EmployeesOptions(ctk.CTkFrame):
 
     def open_add_employee_dialog(self):
         dialog = EmployeeDialog(self, on_submit_callback=self.handle_add_employee, mode="add")
-        dialog.lift()
         dialog.grab_set()
+        dialog.lift()
+        
+    def handle_add_employee(self, employee_data):
+        """
+        Handles the submission of the Add Employee dialog.
+        :param employee_data: Dictionary containing employee details.
+        """
+        try:
+            new_employee = Employee(
+                name=employee_data["first_name"],
+                middle_name=employee_data.get("middle_name", ""),
+                last_name=employee_data["last_name"],
+                phone=employee_data.get("phone", ""),
+                email=employee_data.get("email", ""),
+                is_free=True  
+            )
+            
+            EmployeeController.insert(new_employee)
+            CTkMessagebox(title="Success", message="Employee added successfully.", icon="info")
+        except Exception as e:
+            CTkMessagebox(title="Error", message=f"Failed to add employee: {e}", icon="warning")
+
 
     def open_edit_employee_dialog(self):
-        employee_data = {
-            "first_name": "John",
-            "middle_name": "Doe",
-            "last_name": "Smith",
-            "phone": "+123456789",
-            "email": "john.smith@example.com",
-        }
-        dialog = EmployeeDialog(self, on_submit_callback=self.handle_edit_employee, mode="edit", employee_data=employee_data)
-        dialog.lift()
-        dialog.grab_set()
-
-        
-    def handle_add_employee():
         pass
-    
+
     def handle_edit_employee(self):
         pass

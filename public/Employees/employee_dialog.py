@@ -1,5 +1,7 @@
 import customtkinter as ctk
 
+from CTkMessagebox import CTkMessagebox
+
 class EmployeeDialog(ctk.CTkToplevel):
     
     def __init__(self, parent, on_submit_callback, mode="add", employee_data=None, **kwargs):
@@ -45,7 +47,7 @@ class EmployeeDialog(ctk.CTkToplevel):
         # Email
         self.email_entry = ctk.CTkEntry(self, width=185, placeholder_text="Email address")
         self.email_entry.place(x = 215, y = 120)
-        self.fill_entry(self.phone_entry, "email")
+        self.fill_entry(self.email_entry, "email")
 
         # Submit Button
         self.submit_button = ctk.CTkButton(self, text=title_text, command=self.submit_form)
@@ -53,7 +55,26 @@ class EmployeeDialog(ctk.CTkToplevel):
 
 
     def submit_form(self):
-        pass
+        """
+        Collects data from the form and invokes the callback to handle submission.
+        """
+        try:
+            employee_data = {
+                "first_name": self.first_name_entry.get(),
+                "middle_name": self.middle_name_entry.get(),
+                "last_name": self.last_name_entry.get(),
+                "phone": self.phone_entry.get(),
+                "email": self.email_entry.get(),
+            }
+
+            self.on_submit_callback(employee_data)
+
+        except Exception as e:
+            CTkMessagebox(title="Error", message=str(e), icon="warning")
+            return
+
+        self.destroy()
+    
     
     def fill_entry(self, entry_widget, data_key):
         """

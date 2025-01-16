@@ -66,29 +66,53 @@ class EmployeeController:
         finally:
             cursor.close()
 
-    def save(employee: Employee):
+    def insert(employee: Employee):
         """
-        Saves an employee to the database.
+        Inserts a new employee into the database.
         """
         conn = Connection.connection()
         cursor = conn.cursor()
-        
+
         try:
             conn.start_transaction()
-            if employee.id is None:
-                cursor.execute(
-                    "INSERT INTO employee (name, middle_name, last_name, phone, email, is_free) VALUES (%s, %s, %s, %s, %s, %s)",
-                    (employee.name, employee.middle_name, employee.last_name, employee.phone, employee.email, employee.is_free)
-                )
-                conn.commit()
-                employee.id = cursor.lastrowid
-            else:
-                cursor.execute(
-                    "UPDATE employee SET name = %s, middle_name = %s, last_name = %s, phone = %s, email = %s, is_free = %s WHERE id = %s",
-                    (employee.name, employee.middle_name, employee.last_name, employee.phone, employee.email, employee.is_free, employee.id)
-                )
-                conn.commit()
+            print("Inserting new employee into the database.") 
+            cursor.execute(
+                """
+                INSERT INTO employee (name, middle_name, last_name, phone, email, is_free)
+                VALUES (%s, %s, %s, %s, %s, %s)
+                """,
+                (employee.name, employee.middle_name, employee.last_name, employee.phone, employee.email, employee.is_free)
+            )
+            conn.commit()
+            employee.id = cursor.lastrowid
         except Exception as e:
+            print(f"Error during insert operation: {e}") 
+            conn.rollback()
+            raise e
+        finally:
+            cursor.close()
+
+    def update(employee: Employee):
+        """
+        Updates an existing employee in the database.
+        """
+        conn = Connection.connection()
+        cursor = conn.cursor()
+
+        try:
+            conn.start_transaction()
+            print("Updating existing employee in the database.")  # Debugging
+            cursor.execute(
+                """
+                UPDATE employee
+                SET name = %s, middle_name = %s, last_name = %s, phone = %s, email = %s, is_free = %s
+                WHERE id = %s
+                """,
+                (employee.name, employee.middle_name, employee.last_name, employee.phone, employee.email, employee.is_free, employee.id)
+            )
+            conn.commit()
+        except Exception as e:
+            print(f"Error during update operation: {e}")  # Debugging
             conn.rollback()
             raise e
         finally:
