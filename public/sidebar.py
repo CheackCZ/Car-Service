@@ -4,6 +4,8 @@ from tkinter import filedialog
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 
+from CTkMessagebox import CTkMessagebox
+
 from src.report_generator import ReportGenerator
 
 from .tables import Tables
@@ -135,9 +137,10 @@ class Sidebar(ctk.CTkFrame):
                     y = 750
 
             pdf.save()
-            print(f"Report saved as PDF at {file_path}.")
+            CTkMessagebox(title="Success", message=f"Report saved as PDF at {file_path}.", icon="info")         
         except Exception as e:
             print(f"Error generating PDF: {e}")
+            CTkMessagebox(title="Error", message=f"Error generating PDF!", icon="warning")
 
     def exit_application(self):
         self.master.destroy()
