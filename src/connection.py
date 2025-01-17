@@ -10,12 +10,13 @@ class Connection():
         Connects to the database based on the provided credentials inside .env file, which are loaded using the load_dotenv() function.
         """
         load_dotenv()
-
+        
         db = mysql.connector.connect(
-            host=os.getenv('DB_HOST'),
-            user=os.getenv('DB_USER'),
-            password=os.getenv('DB_PASSWORD'),
-            database=os.getenv('DB_NAME')
+            host = Connection.validation(os.getenv('DB_HOST')),
+            user = Connection.validation(os.getenv('DB_USER')),
+            password = Connection.validation(os.getenv('DB_PASSWORD')),
+            database=Connection.validation(os.getenv('DB_NAME')),
+            port=Connection.port_validation(os.getenv('DB_PORT'))
         )
         return db
 
@@ -29,3 +30,15 @@ class Connection():
         except mysql.connector.Error as err:
             print(f"Error: {err}")
             return False, f"Connection failed due to MySQL connection error!"
+        
+        
+    def validation(value):
+        if not isinstance(value, str) or len(value.strip()) == 0:
+            raise ValueError("Invalid configuration -> Update its value inside the .env file.")
+        return value.strip()
+
+    @staticmethod
+    def port_validation(port):
+        if not port.isdigit() or not (1 <= int(port) <= 65535):
+            raise ValueError("Invalid configuration for port -> Update its value inside the .env file.")
+        return int(port)  
