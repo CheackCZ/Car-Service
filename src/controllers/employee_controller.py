@@ -126,20 +126,41 @@ class EmployeeController:
 
     def delete(employee_id):
         """
-        Deletes an employee by their ID.
+        Deletes an employee by their ID after ensuring it is not used as a foreign key.
         """
         conn = Connection.connection()
-        cursor = conn.cursor()
+        cursor = conn.cursor(dictionary=True)
+
         try:
             conn.start_transaction()
+
+            # Check if the employee ID is referenced in other tables
+            cursor.execute(
+                """
+                SELECT COUNT(*) AS ref_count
+                FROM repair
+                WHERE employee_id = %s
+                """,
+                (employee_id,)
+            )
+            result = cursor.fetchone()
+            if result and result["ref_count"] > 0:
+                raise ValueError(f"Cannot delete employee ID {employee_id}: It is referenced in {result['ref_count']} repair(s).")
+
             cursor.execute("DELETE FROM employee WHERE id = %s", (employee_id,))
             conn.commit()
+            
+            print(f"Employee ID {employee_id} deleted successfully.")
+        except ValueError as ve:
+            conn.rollback()
+            print(ve)
+            raise ve
         except Exception as e:
             conn.rollback()
+            print(f"Error during delete operation: {e}")
             raise e
         finally:
             cursor.close()
-
 
     def validate_import_data(data):
         """

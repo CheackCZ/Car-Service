@@ -83,27 +83,129 @@ class RepairController:
 
     def insert(repair: Repair):
         """
-        Inserts a new repair into the database.
+        Inserts a new repair into the database after checking car and employee availability.
         """
         conn = Connection.connection()
-        cursor = conn.cursor()
+        cursor = conn.cursor(dictionary=True)
+
         try:
             conn.start_transaction()
+
+            # Check if the car is already under repair
             cursor.execute(
                 """
-                INSERT INTO repair (car_id, employee_id, repair_type_id, date_started, date_finished, price, state) 
+                SELECT COUNT(*) AS ref_count
+                FROM repair
+                WHERE car_id = %s AND state IN ('Pending', 'In process')
+                """,
+                (repair.car.id,)
+            )
+            car_check = cursor.fetchone()
+            if car_check["ref_count"] > 0:
+                raise ValueError(f"Car ID {repair.car.id} is already under repair.")
+
+            # Check if the employee is free
+            cursor.execute(
+                """
+                SELECT is_free 
+                FROM employee
+                WHERE id = %s
+                """,
+                (repair.employee.id,)
+            )
+            employee = cursor.fetchone()
+            if not employee or not employee["is_free"]:
+                raise ValueError(f"Employee ID {repair.employee.id} is not free and cannot be assigned to this repair.")
+
+            # Insert the repair into the database
+            cursor.execute(
+                """
+                INSERT INTO repair (car_id, employee_id, repair_type_id, date_started, date_finished, price, state)
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
                 """,
-                (repair.car.id, repair.employee.id, repair.repair_type.id, repair.date_started, repair.date_finished, repair.price, repair.state.value)
+                (
+                    repair.car.id,
+                    repair.employee.id,
+                    repair.repair_type.id,
+                    repair.date_started,
+                    repair.date_finished,
+                    repair.price,
+                    repair.state.value,
+                )
             )
+
+            # Update the employee's status to not free
+            cursor.execute(
+                """
+                UPDATE employee
+                SET is_free = FALSE
+                WHERE id = %s
+                """,
+                (repair.employee.id,)
+            )
+
             conn.commit()
-            repair.id = cursor.lastrowid  # Assign the new ID to the repair object
+            print(f"Repair added successfully, and Employee ID {repair.employee.id} marked as not free.")
         except Exception as e:
             conn.rollback()
+            print(f"Error during repair insertion: {e}")
             raise e
         finally:
             cursor.close()
 
+
+    def update_state(repair_id, new_state):
+        """
+        Updates the state of a repair and frees the employee if the state is 'Completed' or 'Canceled'.
+        """
+        conn = Connection.connection()
+        cursor = conn.cursor(dictionary=True)
+
+        try:
+            conn.start_transaction()
+
+            # Update the repair's state
+            cursor.execute(
+                """
+                UPDATE repair
+                SET state = %s
+                WHERE id = %s
+                """,
+                (new_state, repair_id)
+            )
+
+            # If the new state is 'Completed' or 'Canceled', free the employee
+            if new_state.lower() in ["completed", "canceled"]:
+                cursor.execute(
+                    """
+                    SELECT employee_id
+                    FROM repair
+                    WHERE id = %s
+                    """,
+                    (repair_id,)
+                )
+                result = cursor.fetchone()
+                if result:
+                    employee_id = result["employee_id"]
+                    cursor.execute(
+                        """
+                        UPDATE employee
+                        SET is_free = TRUE
+                        WHERE id = %s
+                        """,
+                        (employee_id,)
+                    )
+                    print(f"Employee ID {employee_id} marked as free due to repair state change to '{new_state}'.")
+
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            print(f"Error during state update: {e}")
+            raise e
+        finally:
+            cursor.close()
+
+            
     def update(repair: Repair):
         """
         Updates an existing repair in the database.

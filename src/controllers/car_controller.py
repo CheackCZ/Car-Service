@@ -185,20 +185,43 @@ class CarController:
 
     def delete(car_id):
         """
-        Deletes a car by its ID.
+        Deletes a car by its ID after ensuring it is not used as a foreign key in the repair table.
         """
         conn = Connection.connection()
-        cursor = conn.cursor()
+        cursor = conn.cursor(dictionary=True)
+
         try:
             conn.start_transaction()
+
+            # Check if the car ID is referenced in the repair table
+            cursor.execute(
+                """
+                SELECT COUNT(*) AS ref_count
+                FROM repair
+                WHERE car_id = %s
+                """,
+                (car_id,)
+            )
+            result = cursor.fetchone()
+            if result["ref_count"] > 0:
+                raise ValueError(f"Cannot delete car ID {car_id}: It is referenced in {result['ref_count']} repair(s).")
+
+            # Proceed with deletion if no references are found
             cursor.execute("DELETE FROM car WHERE id = %s", (car_id,))
             conn.commit()
+            print(f"Car ID {car_id} deleted successfully.")
+        except ValueError as ve:
+            conn.rollback()
+            print(ve)
+            raise ve
         except Exception as e:
             conn.rollback()
+            print(f"Error during delete operation: {e}")
             raise e
         finally:
             cursor.close()
-            
+
+                
         
     def validate_import_data(data):
         """

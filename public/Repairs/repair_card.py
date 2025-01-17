@@ -5,9 +5,9 @@ class RepairCard(ctk.CTkFrame):
     
     # Define state-to-color mapping
     STATE_COLORS = {
-        "Pending": "orange",
+        "Pending": "gray",
         "In process": "yellow",
-        "Done": "green",
+        "Completed": "green",
         "Canceled": "red"
     }
     

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import customtkinter as ctk
 from tkinter import ttk
 
@@ -110,42 +112,73 @@ class RepairDialog(ctk.CTkToplevel):
         except Exception as e:
             print(f"Error loading comboboxes: {e}")
 
+
     def submit_form(self):
         """
         Collects data from the form and invokes the callback to handle submission.
         """
         try:
-            # Extract repair type
-            repair_type = self.repair_type_combobox.get()
+            # Extract and validate repair type
+            repair_type = self.repair_type_combobox.get().strip()
+            if not repair_type:
+                raise ValueError("Please select a valid repair type.")
 
-            # Extract employee ID
-            employee_text = self.employee_combobox.get()
+            # Extract and validate employee ID
+            employee_text = self.employee_combobox.get().strip()
             if employee_text:
                 employee_id = int(employee_text.split("(")[1].split(")")[0])
             else:
                 raise ValueError("Please select a valid employee.")
 
-            # Extract car ID
-            car_text = self.car_combobox.get()
+            # Extract and validate car ID
+            car_text = self.car_combobox.get().strip()
             if car_text:
                 car_id = int(car_text.split("(")[1].split(")")[0])
             else:
                 raise ValueError("Please select a valid car.")
 
-            # Collect other data
+            # Validate and parse date_started
             date_started = self.date_started_entry.get().strip()
+            if not date_started:
+                raise ValueError("Start date is required.")
+            try:
+                date_started = datetime.strptime(date_started, "%Y-%m-%d")
+            except ValueError:
+                raise ValueError("Start date must be in the format YYYY-MM-DD.")
+
+            # Validate and parse date_ended (optional)
             date_ended = self.date_ended_entry.get().strip()
-            price = float(self.price_entry.get().strip())
-            state = self.state_combobox.get()
+            if date_ended:
+                try:
+                    date_ended = datetime.strptime(date_ended, "%Y-%m-%d")
+                    if date_ended < date_started:
+                        raise ValueError("End date cannot be earlier than the start date.")
+                except ValueError:
+                    raise ValueError("End date must be in the format YYYY-MM-DD.")
+            else:
+                date_ended = None
+
+            # Validate price
+            try:
+                price = float(self.price_entry.get().strip())
+                if price < 0:
+                    raise ValueError("Price cannot be negative.")
+            except ValueError:
+                raise ValueError("Price must be a valid number.")
+
+            # Validate state
+            state = self.state_combobox.get().strip()
+            if state not in [s.value for s in State]:
+                raise ValueError("Please select a valid state.")
 
             # Build repair data
             repair_data = {
-                "id": self.repair_data.get("id", None),
+                "id": self.repair_data.get("id", None),  # Use existing ID or None for new repairs
                 "repair_type": repair_type,
                 "employee_id": employee_id,
                 "car_id": car_id,
-                "date_started": date_started,
-                "date_ended": date_ended,
+                "date_started": date_started.strftime("%Y-%m-%d"),
+                "date_ended": date_ended.strftime("%Y-%m-%d") if date_ended else None,
                 "price": price,
                 "state": state,
             }
@@ -159,6 +192,7 @@ class RepairDialog(ctk.CTkToplevel):
 
         # Close the dialog on successful submission
         self.destroy()
+
 
     def fill_entries(self):
         """

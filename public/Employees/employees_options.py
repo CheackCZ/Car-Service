@@ -1,6 +1,8 @@
 import customtkinter as ctk
 from tkinter import ttk
 
+import re
+
 from CTkMessagebox import CTkMessagebox
 
 from public.Employees.employee_dialog import EmployeeDialog
@@ -47,10 +49,10 @@ class EmployeesOptions(ctk.CTkFrame):
         dialog.grab_set()
         dialog.lift()
         
+        
     def handle_add_employee(self, employee_data):
         """
-        Handles the submission of the Add Employee dialog.
-        :param employee_data: Dictionary containing employee details.
+        Handles adding an Employee with partial data.
         """
         try:
             new_employee = Employee(
@@ -61,11 +63,14 @@ class EmployeesOptions(ctk.CTkFrame):
                 email=employee_data.get("email", ""),
                 is_free=True  
             )
-            
+
             EmployeeController.insert(new_employee)
             CTkMessagebox(title="Success", message="Employee added successfully.", icon="info")
+        except ValueError as ve:
+            CTkMessagebox(title="Validation Error", message=str(ve), icon="warning")
         except Exception as e:
             CTkMessagebox(title="Error", message=f"Failed to add employee: {e}", icon="warning")
+
 
     
     def open_employee_selector_for_edit(self):
@@ -85,21 +90,15 @@ class EmployeesOptions(ctk.CTkFrame):
         """
         Opens the edit dialog for the selected employee.
         """
-        # Fetch the Employee object using the controller
         employee = EmployeeController.fetch_by_id(employee_id)
         
-        # If the employee does not exist, show an error
         if not employee:
             CTkMessagebox(title="Error", message="Employee not found.", icon="warning")
             return
 
-        # Convert the Employee object to a dictionary using to_dict()
         employee_data = employee.to_dict()
-        
-        # Ensure `id` is included in the dictionary
         employee_data["id"] = employee.id
 
-        # Open the EmployeeDialog for editing
         dialog = EmployeeDialog(
             self,
             on_submit_callback=self.handle_edit_employee,
@@ -129,6 +128,8 @@ class EmployeesOptions(ctk.CTkFrame):
 
             EmployeeController.update(updated_employee)
             CTkMessagebox(title="Success", message="Employee updated successfully.", icon="info")
+        except ValueError as ve:
+            CTkMessagebox(title="Error", message=f"{ve}", icon="warning")    
         except Exception as e:
             CTkMessagebox(title="Error", message=f"Failed to update employee: {e}", icon="warning")
 
@@ -161,4 +162,4 @@ class EmployeesOptions(ctk.CTkFrame):
                 EmployeeController.delete(employee_id)
                 CTkMessagebox(title="Success", message="Employee deleted successfully.", icon="info")
             except Exception as e:
-                CTkMessagebox(title="Error", message=f"Failed to delete employee: {e}", icon="warning")
+                CTkMessagebox(title="Error", message=f"{e}", icon="warning")

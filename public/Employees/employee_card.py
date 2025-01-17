@@ -39,7 +39,7 @@ class EmployeeCard(ctk.CTkFrame):
         self.status = ctk.CTkLabel(self, text=status_text, font=("Poppins", 16, "bold"), height=10, text_color=status_color)
         self.status.place(relx=1, x = -20, rely = 0, y = 20, anchor="e")
     
-    
+        
     def format_czech_phone_number(self, phone):
         """
         Formats a Czech phone number to more readable form.

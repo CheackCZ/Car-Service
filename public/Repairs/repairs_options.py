@@ -62,28 +62,46 @@ class RepairsOptions(ctk.CTkFrame):
         Handles adding a new repair to the database.
         """
         print(repair_data)
-        
+
         try:
+            # Extract and parse data
             repair_type_text = repair_data["repair_type"]
             repair_type_id = int(repair_type_text.split("(")[1].split(")")[0])
-            
             car_id = repair_data["car_id"]
-            employee_id=repair_data["employee_id"]
-            
+            employee_id = repair_data["employee_id"]
+            date_started = datetime.strptime(repair_data["date_started"], "%Y-%m-%d")
+
+            # Validate and handle date_finished based on the state
+            state = State(repair_data["state"])
+            if state in [State("Pending"), State("In process")]:
+                date_finished = None  # Allow None for these states
+            else:
+                # Raise an error if date_finished is empty for invalid states
+                if not repair_data.get("date_ended"):
+                    raise ValueError("Date finished cannot be empty for state 'Completed' or 'Canceled'.")
+                date_finished = datetime.strptime(repair_data["date_ended"], "%Y-%m-%d")
+
+            # Create a new Repair object
             new_repair = Repair(
                 repair_type=RepairType(id=repair_type_id),
                 employee=Employee(id=employee_id),
                 car=Car(id=car_id),
-                date_started=datetime.strptime(repair_data["date_started"], "%Y-%m-%d"),
-                date_finished=datetime.strptime(repair_data["date_ended"], "%Y-%m-%d"),
+                date_started=date_started,
+                date_finished=date_finished,
                 price=repair_data["price"],
-                state=State(repair_data["state"])                
+                state=state
             )
+
+            # Insert the repair into the database
             RepairController.insert(new_repair)
             CTkMessagebox(title="Success", message="Repair added successfully.", icon="info")
+        except ValueError as ve:
+            print(f"Validation Error: {ve}")
+            CTkMessagebox(title="Validation Error", message=str(ve), icon="warning")
         except Exception as e:
             print(e)
             CTkMessagebox(title="Error", message=f"Failed to add repair: {e}", icon="warning")
+
             
 
     def open_repair_selector_for_edit(self):
@@ -122,6 +140,8 @@ class RepairsOptions(ctk.CTkFrame):
             car_id = repair_data["car_id"]
             employee_id=repair_data["employee_id"]
             
+            state_enum = State(repair_data["state"])
+            
             updated_repair = Repair(
                 id=repair_data["id"],
                 repair_type=RepairType(name=repair_type),
@@ -130,7 +150,7 @@ class RepairsOptions(ctk.CTkFrame):
                 date_started=datetime.strptime(repair_data["date_started"], "%Y-%m-%d"),
                 date_finished=datetime.strptime(repair_data["date_ended"], "%Y-%m-%d"),
                 price=repair_data["price"],
-                state=repair_data["state"]                
+                state=state_enum             
             )
             RepairController.update(updated_repair)
             CTkMessagebox(title="Success", message="Repair updated successfully.", icon="info")

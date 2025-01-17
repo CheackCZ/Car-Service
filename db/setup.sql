@@ -18,7 +18,6 @@ use Service;
 -- drop table brand;
 -- drop table employee;
 
-
 -- Vytvoření tabulky pro Zaměstnance (Employee)
 create table employee (
 	id int primary key not null auto_increment,
@@ -88,7 +87,7 @@ create table repair (
 		check (date_started < date_finished),
     
     price int not null,
-    state enum('Pending', 'In process', 'Done', 'Canceled') not null default 'Pending'
+    state enum('Pending', 'In process', 'Completed', 'Canceled') not null default 'Pending'
 );
 
 
@@ -165,15 +164,15 @@ INSERT INTO repair_type (id, name, description)
 -- Vložení dat do tabulky oprav
 INSERT INTO repair (id, car_id, employee_id, repair_type_id, date_started, date_finished, price, state)
 	VALUES
-	(1, 1, 1, 1, '2023-01-05', '2023-01-10', 1000.00, 'Done'),
-	(2, 2, 2, 2, '2023-01-20', '2023-01-25', 2000.00, 'Done'),
+	(1, 1, 1, 1, '2023-01-05', '2023-01-10', 1000.00, 'Completed'),
+	(2, 2, 2, 2, '2023-01-20', '2023-01-25', 2000.00, 'Canceled'),
 	(3, 3, 3, 3, '2023-02-05', NULL, 0.00, 'Canceled'),
-	(4, 4, 4, 4, '2023-02-20', '2023-02-25', 2500.00, 'Done'),
+	(4, 4, 4, 4, '2023-02-20', '2023-02-25', 2500.00, 'Completed'),
 	(5, 5, 5, 5, '2023-03-05', NULL, 3000.00, 'In process'),
-	(6, 6, 6, 6, '2023-03-20', '2023-03-25', 1200.00, 'Done'),
-	(7, 7, 7, 7, '2023-04-05', '2023-04-10', 1800.00, 'Done'),
+	(6, 6, 6, 6, '2023-03-20', '2023-03-25', 1200.00, 'Completed'),
+	(7, 7, 7, 7, '2023-04-05', '2023-04-10', 1800.00, 'Completed'),
 	(8, 8, 8, 8, '2023-04-20', Null, 2200.00, 'In process'),
-	(9, 9, 9, 9, '2023-05-05', '2023-05-10', 2500.00, 'Done'),
+	(9, 9, 9, 9, '2023-05-05', '2023-05-10', 2500.00, 'Completed'),
 	(10, 10, 10, 10, '2023-05-20', NULL, 4000.00, 'In process');
 
 

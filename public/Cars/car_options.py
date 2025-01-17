@@ -152,4 +152,4 @@ class CarsOptions(ctk.CTkFrame):
             CarController.delete(car_id)
             CTkMessagebox(title="Success", message="Car deleted successfully.", icon="info")
         except Exception as e:
-            CTkMessagebox(title="Error", message=f"Failed to delete car: {e}", icon="warning")
+            CTkMessagebox(title="Error", message=f"{e}", icon="warning")
