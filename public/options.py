@@ -28,6 +28,6 @@ class Options(ctk.CTkFrame):
             self.current_options = options_class(self, width=160, height=240)
             self.current_options.place(x=0, y=0)
         else:
-            label = ctk.CTkLabel(self, text=f"No card class defined for {table_name}.", wraplength=150, anchor="w")
+            label = ctk.CTkLabel(self, text=f"No options frame defined for {table_name}.", wraplength=150, anchor="w")
             label.place(x = 10, y = 10)
             return

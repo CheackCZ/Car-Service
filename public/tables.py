@@ -10,7 +10,7 @@ from src.controllers.client_controller import ClientController
 
 class Tables(ctk.CTkScrollableFrame):
     def __init__(self, master, **kwargs):
-        super().__init__(master, width=140, height=420, **kwargs)
+        super().__init__(master, width=140, height=390, **kwargs)
         self.master = master 
         
         self.buttons = {}

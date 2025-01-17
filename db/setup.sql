@@ -18,9 +18,6 @@ use Service;
 -- drop table brand;
 -- drop table employee;
 
-select * from repair;
-
-select * from car;
 
 -- Vytvoření tabulky pro Zaměstnance (Employee)
 create table employee (
@@ -87,7 +84,7 @@ create table repair (
     		foreign key (repair_type_id) references repair_type(id),
             
     date_started datetime not null,
-	date_finished datetime not null,
+	date_finished datetime,
 		check (date_started < date_finished),
     
     price int not null,
@@ -95,44 +92,91 @@ create table repair (
 );
 
 
--- Vložení defaultních dat
-INSERT INTO employee (name, middle_name, last_name, phone, email, is_free) VALUES 
-	('Petr', 'A.', 'Jelínek', '420774102991', 'petr.jelinek@gmail.com', 1),
-	('Jan', 'B.', 'Novák', '111222333', 'jannovak@seznam.cz', 0),
-	('Michal', NULL, 'Kopecký', '123456789', 'michal.kopecky@mail.com', 1);
-
-insert into employee (name, middle_name, last_name, phone, email, is_free) values ('Jiří', 'Jan', 'Novák', '+420111222333', 'jiri.novak@seznam.cz', 0);
-
-INSERT INTO client (name, middle_name, last_name, phone, email)
+-- Vložení dat do tabulky zaměstannců (employee)
+INSERT INTO employee (id, name, middle_name, last_name, phone, email, is_free)
 	VALUES
-	('Anna', 'M.', 'Novotná', '223344556', 'anna.novotna@example.com'),
-	('Karel', NULL, 'Král', '667788990', 'karel.kral@example.com');
+	(1, 'Karel', NULL, 'Novotný', '555000111', 'karel.novotny@example.com', TRUE),
+	(2, 'Anna', 'H.', 'Černá', '555000222', 'anna.cerna@example.com', FALSE),
+	(3, 'Tomáš', NULL, 'Malý', '555000333', 'tomas.maly@example.com', TRUE),
+	(4, 'Lucie', 'M.', 'Králová', '555000444', 'lucie.kralova@example.com', TRUE),
+	(5, 'Pavel', 'N.', 'Vávra', '555000555', 'pavel.vavra@example.com', FALSE),
+	(6, 'Tereza', 'O.', 'Procházková', '555000666', 'tereza.prochazkova@example.com', TRUE),
+	(7, 'Jakub', 'P.', 'Vlček', '555000777', 'jakub.vlcek@example.com', TRUE),
+	(8, 'Eliška', 'Q.', 'Krejčí', '555000888', 'eliska.krejci@example.com', FALSE),
+	(9, 'Adam', 'R.', 'Roubíček', '555000999', 'adam.roubicek@example.com', TRUE),
+	(10, 'Michaela', NULL, 'Pokorná', '555001000', 'michaela.pokorna@example.com', FALSE);
+
+-- Vložení dat do tabulky klientů (client)
+INSERT INTO client (id, name, middle_name, last_name, phone, email)
+	VALUES
+	(1, 'Jan', 'A.', 'Novák', '123456789', 'jan.novak@example.com'),
+	(2, 'Jana', 'B.', 'Dvořáková', '987654321', 'jana.dvorakova@example.com'),
+	(3, 'Alice', NULL, 'Kučerová', '123123123', 'alice.kucerova@example.com'),
+	(4, 'Petr', 'C.', 'Veselý', '321321321', 'petr.vesely@example.com'),
+	(5, 'Karolína', 'D.', 'Bartošová', '555555555', 'karolina.bartosova@example.com'),
+	(6, 'Martin', NULL, 'Horák', '666666666', 'martin.horak@example.com'),
+	(7, 'Zuzana', 'E.', 'Šimková', '777777777', 'zuzana.simkova@example.com'),
+	(8, 'Eva', NULL, 'Pokorná', '888888888', 'eva.pokorna@example.com'),
+	(9, 'Jiří', 'F.', 'Růžička', '999999999', 'jiri.ruzicka@example.com'),
+	(10, 'Helena', 'G.', 'Kolářová', '101010101', 'helena.kolarova@example.com');
     
-INSERT INTO brand (name)
+-- Vložení dat do tabulky značek aut (brand)
+INSERT INTO brand (id, name)
 	VALUES
-	('BMW'),
-	('Volkswagen'),
-	('ŠKODA');
+	(1, 'Toyota'),
+	(2, 'Honda'),
+	(3, 'Ford'),
+	(4, 'Chevrolet'),
+	(5, 'Nissan'),
+	(6, 'BMW'),
+	(7, 'Mercedes'),
+	(8, 'Volkswagen'),
+	(9, 'Hyundai'),
+	(10, 'Kia');
     
-INSERT INTO car (client_id, brand_id, registration_number, registration_date, model)
+-- Vložení dat do tabulky aut (car)
+INSERT INTO car (id, client_id, brand_id, registration_number, registration_date, model)
 	VALUES
-	(1, 1, 'ABC1234', '2021-05-10', 'Octavia'),
-	(2, 2, 'XYZ7890', '2022-06-15', 'Passat');
+	(1, 1, 1, 'ABC1234', '2023-01-01', 'Octavia'),
+	(2, 2, 2, 'DEF5678', '2023-01-15', 'i30'),
+	(3, 3, 3, 'GHI9012', '2023-02-01', 'Golf'),
+	(4, 4, 4, 'JKL3456', '2023-02-15', '308'),
+	(5, 5, 5, 'MNO7890', '2023-03-01', 'Clio'),
+	(6, 6, 6, 'PQR2345', '2023-03-15', '3 Series'),
+	(7, 7, 7, 'STU6789', '2023-04-01', 'C-Class'),
+	(8, 8, 8, 'VWX9012', '2023-04-15', 'Corolla'),
+	(9, 9, 9, 'YZA3456', '2023-05-01', 'Ceed'),
+	(10, 10, 10, 'BCD7890', '2023-05-15', 'Civic');
 
-INSERT INTO repair_type (name, description)
+-- Vložení dat do tabulky typů oprav
+INSERT INTO repair_type (id, name, description)
 	VALUES
-	('Výměna oleje', 'Výměna motorového oleje a filtru'),
-	('Výměna pneumatik', 'Výmena starých pneumatik za nové'),
-	('Kontrola brzd', 'Kontrola a oprava brzdového systému');
+	(1, 'Výměna oleje', 'Výměna motorového oleje a filtru'),
+	(2, 'Výměna brzd', 'Výměna brzdových destiček a kotoučů'),
+	(3, 'Rotace pneumatik', 'Rotace pneumatik pro rovnoměrné opotřebení'),
+	(4, 'Výměna baterie', 'Výměna autobaterie'),
+	(5, 'Seřízení geometrie', 'Seřízení geometrie kol'),
+	(6, 'Oprava motoru', 'Diagnostika a oprava motoru'),
+	(7, 'Oprava převodovky', 'Oprava nebo výměna převodovky'),
+	(8, 'Výměna filtru', 'Výměna vzduchového filtru motoru'),
+	(9, 'Oprava zavěšení', 'Oprava problémů se zavěšením vozidla'),
+	(10, 'Oprava výfuku', 'Oprava nebo výměna dílů výfukového systému');
     
-INSERT INTO repair (car_id, employee_id, repair_type_id, date_started, date_finished, price, state)
+-- Vložení dat do tabulky oprav
+INSERT INTO repair (id, car_id, employee_id, repair_type_id, date_started, date_finished, price, state)
 	VALUES
-	(1, 1, 1, '2023-01-10', '2023-01-11', 2000, 'Done'),
-	(2, 2, 2, '2023-02-20', '2023-02-21', 4000, 'In process'),
-	(1, 3, 3, '2023-03-15', '2023-03-17', 3000, 'Canceled');
+	(1, 1, 1, 1, '2023-01-05', '2023-01-10', 1000.00, 'Done'),
+	(2, 2, 2, 2, '2023-01-20', '2023-01-25', 2000.00, 'Done'),
+	(3, 3, 3, 3, '2023-02-05', NULL, 0.00, 'Canceled'),
+	(4, 4, 4, 4, '2023-02-20', '2023-02-25', 2500.00, 'Done'),
+	(5, 5, 5, 5, '2023-03-05', NULL, 3000.00, 'In process'),
+	(6, 6, 6, 6, '2023-03-20', '2023-03-25', 1200.00, 'Done'),
+	(7, 7, 7, 7, '2023-04-05', '2023-04-10', 1800.00, 'Done'),
+	(8, 8, 8, 8, '2023-04-20', Null, 2200.00, 'In process'),
+	(9, 9, 9, 9, '2023-05-05', '2023-05-10', 2500.00, 'Done'),
+	(10, 10, 10, 10, '2023-05-20', NULL, 4000.00, 'In process');
 
 
--- Pohledy (Views) pro jednodušší a přehlednější použití
 -- Pohled pro vypsání všech oprav
 CREATE VIEW all_repairs AS
 	SELECT 
@@ -149,7 +193,7 @@ CREATE VIEW all_repairs AS
 		JOIN employee ON repair.employee_id = employee.id
 		JOIN repair_type ON repair.repair_type_id = repair_type.id;
         
--- Pohle pro vypsání všech car
+-- Pohle pro vypsání všech aut
 CREATE VIEW all_cars AS
 	SELECT 
 		car.id AS car_id, car.registration_number, car.registration_date, car.model, 

@@ -51,12 +51,10 @@ class Repair():
         if type(date_started) != datetime:
             raise TypeError("Date_started must be a datetime object.")
 
-        # Validate date_finished
-        if type(date_finished) != datetime:
-            raise TypeError("Date_finished must be a datetime object.")
-        
-        if date_finished < date_started:
-            raise ValueError("Date_finished cannot be earlier than date_started.")
+        # Allow `date_finished` to be None or a `datetime` object
+        if date_finished is not None and not isinstance(date_finished, datetime):
+            raise TypeError("Date_finished must be a datetime object or None.")
+        self.date_finished = date_finished
 
         # Validate price
         if not isinstance(price, (int, float)) or price < 0:
@@ -95,7 +93,7 @@ class Repair():
             "brand_name": self.car.brand.name,
             "repair_type": self.repair_type.name,
             "date_started": self.date_started.strftime("%Y-%m-%d %H:%M:%S"),
-            "date_finished": self.date_finished.strftime("%Y-%m-%d %H:%M:%S"),
+            "date_finished": self.date_finished.strftime("%Y-%m-%d %H:%M:%S") if self.date_finished else "N/A",
             "price": self.price,
             "state": self.state.value
-        }
+        } 

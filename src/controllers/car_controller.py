@@ -1,8 +1,13 @@
 from src.connection import Connection
 
+import csv
+
 from src.models.car import Car
 from src.models.client import Client
 from src.models.brand import Brand
+
+from CTkMessagebox import CTkMessagebox
+
 
 class CarController:
     """
@@ -191,5 +196,94 @@ class CarController:
         except Exception as e:
             conn.rollback()
             raise e
+        finally:
+            cursor.close()
+            
+        
+    def validate_import_data(data):
+        """
+        Validates that the imported data contains all required keys.
+        """
+        required_keys = {"client_id", "brand_id", "registration_number", "registration_date", "model"}
+        for row in data:
+            # Check for missing keys
+            missing_keys = required_keys - row.keys()
+            if missing_keys:
+                raise ValueError(f"Missing keys in import data: {', '.join(missing_keys)}. Include them in your import data.")
+
+    def validate_client_and_brand_ids(data):
+        """
+        Validates if client_ids and brand_ids in the data exist in the database.
+        Raises a ValueError if any are missing.
+        """
+        conn = Connection.connection()
+        cursor = conn.cursor(dictionary=True)
+
+        try:
+            # Fetch all valid client IDs
+            cursor.execute("SELECT id FROM client")
+            valid_client_ids = {row["id"] for row in cursor.fetchall()}
+
+            # Fetch all valid brand IDs
+            cursor.execute("SELECT id FROM brand")
+            valid_brand_ids = {row["id"] for row in cursor.fetchall()}
+
+            # Check each row's client_id and brand_id
+            invalid_clients = set()
+            invalid_brands = set()
+
+            for row in data:
+                if int(row["client_id"]) not in valid_client_ids:
+                    invalid_clients.add(row["client_id"])
+                if int(row["brand_id"]) not in valid_brand_ids:
+                    invalid_brands.add(row["brand_id"])
+
+            # Raise exception with details if invalid entries are found
+            if invalid_clients or invalid_brands:
+                error_message = []
+                if invalid_clients:
+                    error_message.append(f"Invalid Client IDs: {', '.join(map(str, invalid_clients))}")
+                if invalid_brands:
+                    error_message.append(f"Invalid Brand IDs: {', '.join(map(str, invalid_brands))}")
+                raise ValueError("\n".join(error_message))
+        finally:
+            cursor.close()
+
+
+    def import_data(data):
+        """
+        Imports car data into the database after validating keys, client_ids, and brand_ids.
+        Shows a CTkMessagebox error if validation fails.
+        """
+        conn = Connection.connection()
+        cursor = conn.cursor()
+
+        try:
+            # Step 1: Validate required keys
+            CarController.validate_import_data(data)
+
+            # Step 2: Validate client_ids and brand_ids
+            CarController.validate_client_and_brand_ids(data)
+
+            # Step 3: Import data into the database
+            conn.start_transaction()
+            for row in data:
+                cursor.execute(
+                    """
+                    INSERT INTO car (client_id, brand_id, registration_number, registration_date, model)
+                    VALUES (%s, %s, %s, %s, %s)
+                    """,
+                    (row['client_id'], row['brand_id'], row['registration_number'], row['registration_date'], row['model'])
+                )
+            conn.commit()
+            CTkMessagebox(title="Success", message="Data imported successfully!", icon="info")
+        except ValueError as ve:
+            # Show validation errors
+            CTkMessagebox(title="Validation Error", message=str(ve), icon="warning")
+            conn.rollback()
+        except Exception as e:
+            # Handle unexpected errors
+            CTkMessagebox(title="Error", message=f"Unexpected error: {e}", icon="warning")
+            conn.rollback()
         finally:
             cursor.close()
