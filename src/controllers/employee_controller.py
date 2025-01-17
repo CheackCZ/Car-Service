@@ -1,6 +1,8 @@
 from src.connection import Connection
 from src.models.employee import Employee
 
+import csv
+
 class EmployeeController:
     """
     Handles database operations for employee.
@@ -132,6 +134,85 @@ class EmployeeController:
             conn.start_transaction()
             cursor.execute("DELETE FROM employee WHERE id = %s", (employee_id,))
             conn.commit()
+        except Exception as e:
+            conn.rollback()
+            raise e
+        finally:
+            cursor.close()
+
+
+    def validate_import_data(data):
+        """
+        Validates that the imported data contains all required keys.
+        """
+        required_keys = {"name", "middle_name", "last_name", "phone", "email", "is_free"}
+        for row in data:
+            # Check for missing keys
+            missing_keys = required_keys - row.keys()
+            if missing_keys:
+                raise ValueError(f"Missing keys in import data: {', '.join(missing_keys)}. Include them in your import data.")
+
+    def import_data(data):
+        """
+        Imports employee data into the database after validating keys.
+        """
+        conn = Connection.connection()
+        cursor = conn.cursor()
+
+        try:
+            # Step 1: Validate required keys
+            EmployeeController.validate_import_data(data)
+
+            # Step 2: Import data into the database
+            conn.start_transaction()
+            for row in data:
+                cursor.execute(
+                    """
+                    INSERT INTO employee (name, middle_name, last_name, phone, email, is_free)
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                    """,
+                    (row['name'], row.get('middle_name', ''), row['last_name'], row['phone'], row['email'], row['is_free'])
+                )
+            conn.commit()
+            print("Data imported successfully!")
+        except ValueError as ve:
+            conn.rollback()
+            raise ve
+        except Exception as e:
+            conn.rollback()
+            raise e
+        finally:
+            cursor.close()
+
+    def export_data(file_path):
+        """
+        Exports all employees to a CSV file.
+        :param file_path: The path to save the CSV file.
+        """
+        conn = Connection.connection()
+        cursor = conn.cursor(dictionary=True)
+
+        try:
+            conn.start_transaction()
+
+            # Fetch all employee data
+            cursor.execute("SELECT * FROM employee")
+            rows = cursor.fetchall()
+
+            conn.commit()
+
+            # Write to CSV
+            with open(file_path, 'w', newline='', encoding='utf-8') as file:
+                if not rows:
+                    raise ValueError("No data available for export.")
+
+                # Get headers from the query result keys
+                headers = rows[0].keys()
+                writer = csv.DictWriter(file, fieldnames=headers)
+                writer.writeheader()
+                writer.writerows(rows)
+
+            print(f"Data exported successfully to {file_path}.")
         except Exception as e:
             conn.rollback()
             raise e
