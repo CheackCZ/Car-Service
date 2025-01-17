@@ -43,6 +43,7 @@ class ImportExport(ctk.CTkFrame):
 
             self.show_preview_popup(data, active_table, controller.import_data)
         except Exception as e:
+            CTkMessagebox(title="Validation Error", message=str(e), icon="warning")
             print(f"Error importing data: {e}")
 
     def confirm_import(self, on_confirm, data, popup):
@@ -55,7 +56,7 @@ class ImportExport(ctk.CTkFrame):
             popup.destroy()
             
     def read_csv(self, file_path):
-        with open(file_path, 'r') as file:
+        with open(file_path, 'r', encoding='UTF-8') as file:
             reader = csv.DictReader(file)
             return [row for row in reader]
 
@@ -67,23 +68,19 @@ class ImportExport(ctk.CTkFrame):
         """
         active_table = self.get_active_table_callback()
 
-        # Open save dialog to choose the file location and name
         file_path = filedialog.asksaveasfilename(
             defaultextension=".csv",
             filetypes=[("CSV Files", "*.csv")],
             title="Export Data",
         )
         if not file_path:
-            return  # User canceled the save dialog
+            return  
 
         try:
-            # Get the relevant controller for the active table
             controller = self.get_controller(active_table)
 
-            # Fetch all data from the active table
             data = controller.fetch_all()
 
-            # Write data to the CSV file
             self.write_csv(file_path, data)
 
             CTkMessagebox(title="Success", message=f"Data exported successfully to {file_path}!", icon="info")

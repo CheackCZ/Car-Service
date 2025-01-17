@@ -1,5 +1,7 @@
 from src.connection import Connection
 
+from datetime import datetime
+
 import csv
 
 from src.models.repair import Repair, State
@@ -295,13 +297,59 @@ class RepairController:
 
     def validate_import_data(data):
         """
-        Validates that the imported data contains all required keys.
+        Validates the imported repair data for required keys, data types, and value ranges.
+
+        :param data: List of dictionaries containing repair data.
+        :raises ValueError: If any validation check fails.
         """
         required_keys = {"car_id", "employee_id", "repair_type_id", "date_started", "date_finished", "price", "state"}
-        for row in data:
+        valid_states = {"Pending", "In process", "Completed", "Canceled"}
+
+        for idx, row in enumerate(data, start=1):
             missing_keys = required_keys - row.keys()
             if missing_keys:
-                raise ValueError(f"Missing keys in import data: {', '.join(missing_keys)}. Include them in your import data.")
+                raise ValueError(f"Row {idx}: Missing keys: {', '.join(missing_keys)}.")
+
+            car_id = int(row.get("car_id"))
+            if not isinstance(car_id, int) or car_id <= 0:
+                raise ValueError(f"Row {idx}: 'car_id' must be a positive integer.")
+
+            employee_id = int(row.get("employee_id"))
+            if not isinstance(employee_id, int) or employee_id <= 0:
+                raise ValueError(f"Row {idx}: 'employee_id' must be a positive integer.")
+
+            repair_type_id = int(row.get("repair_type_id"))
+            if not isinstance(repair_type_id, int) or repair_type_id <= 0:
+                raise ValueError(f"Row {idx}: 'repair_type_id' must be a positive integer.")
+
+            date_started = row.get("date_started", "").strip()
+            try:
+                datetime.strptime(date_started, "%Y-%m-%d")
+            except ValueError:
+                raise ValueError(f"Row {idx}: 'date_started' must be in YYYY-MM-DD format.")
+
+            date_finished = row.get("date_finished", "").strip()
+            if date_finished:
+                try:
+                    datetime.strptime(date_finished, "%Y-%m-%d")
+                except ValueError:
+                    raise ValueError(f"Row {idx}: 'date_finished' must be in YYYY-MM-DD format.")
+                if date_started > date_finished:
+                    raise ValueError(f"Row {idx}: 'date_finished' cannot be earlier than 'date_started'.")
+
+            price = float(row.get("price"))
+            if not isinstance(price, (int, float)) or price < 0:
+                raise ValueError(f"Row {idx}: 'price' must be a non-negative number.")
+
+            state = row.get("state", "").strip().capitalize()
+            try:
+                State(state)
+            except ValueError:
+                valid_states = ', '.join([s.value for s in State])
+                raise ValueError(f"Row {idx}: 'state' must be one of {valid_states}.")
+
+        print("Validation passed!")
+        
 
     def import_data(data):
         """
@@ -336,6 +384,8 @@ class RepairController:
             raise e
         finally:
             cursor.close()
+            
+            
     def export_data(file_path):
         """
         Exports all repairs to a CSV file.

@@ -1,6 +1,8 @@
 from src.connection import Connection
 from src.models.employee import Employee
 
+import re
+
 import csv
 
 class EmployeeController:
@@ -162,17 +164,60 @@ class EmployeeController:
         finally:
             cursor.close()
 
+
     def validate_import_data(data):
         """
-        Validates that the imported data contains all required keys.
-        """
-        required_keys = {"name", "middle_name", "last_name", "phone", "email", "is_free"}
-        for row in data:
-            # Check for missing keys
-            missing_keys = required_keys - row.keys()
-            if missing_keys:
-                raise ValueError(f"Missing keys in import data: {', '.join(missing_keys)}. Include them in your import data.")
+        Validates the imported employee data for name, middle_name, last_name, phone, email, and is_free.
 
+        :param data: List of dictionaries containing employee data.
+        :raises ValueError: If any validation check fails.
+        """
+        for idx, row in enumerate(data, start=1):
+            name = row.get("name", "").strip()
+            if not name:
+                raise ValueError(f"Row {idx}: 'name' is required.")
+            elif len(name) > 50:
+                raise ValueError(f"Row {idx}: 'name' exceeds the maximum length of 50 characters.")
+
+            middle_name = row.get("middle_name", "").strip()
+            if middle_name and (len(middle_name) > 50 or not re.match(r"^[a-zA-Zá-žÁ-Ž\s.]*$", middle_name)):
+                raise ValueError(f"Row {idx}: 'middle_name' is invalid.")
+
+            last_name = row.get("last_name", "").strip()
+            if not last_name:
+                raise ValueError(f"Row {idx}: 'last_name' is required.")
+            elif len(last_name) > 50:
+                raise ValueError(f"Row {idx}: 'last_name' exceeds the maximum length of 50 characters.")
+
+            phone = row.get("phone", "").strip()
+            if not phone:
+                raise ValueError(f"Row {idx}: 'phone' is required.")
+            elif not re.match(r"^(\+420|420)?[1-9][0-9]{8}$", phone):
+                raise ValueError(f"Row {idx}: 'phone' must be a valid Czech number. It must start with +420 or 420, or be a 9-digit number starting with a non-zero digit.")
+
+            email = row.get("email", "").strip()
+            if not email:
+                raise ValueError(f"Row {idx}: 'email' is required.")
+            elif not re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", email):
+                raise ValueError(f"Row {idx}: 'email' is not valid.")
+
+            is_free = row.get("is_free")
+            if isinstance(is_free, str):
+                # Convert string representations of booleans
+                if is_free.lower() == "true":
+                    is_free = True
+                elif is_free.lower() == "false":
+                    is_free = False
+                else:
+                    raise ValueError(f"Row {idx}: 'is_free' must be a boolean value (True/False).")
+
+            if not isinstance(is_free, bool):
+                raise ValueError(f"Row {idx}: 'is_free' must be a boolean value.")
+
+            # Ensure 'is_free' is stored as a boolean in the row
+            row["is_free"] = is_free
+
+    @staticmethod
     def import_data(data):
         """
         Imports employee data into the database after validating keys.
@@ -181,10 +226,7 @@ class EmployeeController:
         cursor = conn.cursor()
 
         try:
-            # Step 1: Validate required keys
             EmployeeController.validate_import_data(data)
-
-            # Step 2: Import data into the database
             conn.start_transaction()
             for row in data:
                 cursor.execute(
@@ -195,7 +237,6 @@ class EmployeeController:
                     (row['name'], row.get('middle_name', ''), row['last_name'], row['phone'], row['email'], row['is_free'])
                 )
             conn.commit()
-            print("Data imported successfully!")
         except ValueError as ve:
             conn.rollback()
             raise ve
@@ -204,6 +245,7 @@ class EmployeeController:
             raise e
         finally:
             cursor.close()
+            
 
     def export_data(file_path):
         """

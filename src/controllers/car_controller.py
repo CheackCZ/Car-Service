@@ -1,10 +1,13 @@
 from src.connection import Connection
 
+from datetime import datetime
+import re
+
 import csv
 
-from src.models.car import Car
-from src.models.client import Client
-from src.models.brand import Brand
+from ..models.car import Car
+from ..models.client import Client
+from ..models.brand import Brand
 
 from CTkMessagebox import CTkMessagebox
 
@@ -222,36 +225,55 @@ class CarController:
             cursor.close()
 
                 
-        
     def validate_import_data(data):
         """
-        Validates that the imported data contains all required keys.
+        Validates the imported car data for registration_number, registration_date, and model.
+
+        :param data: List of dictionaries containing car data.
         """
-        required_keys = {"client_id", "brand_id", "registration_number", "registration_date", "model"}
-        for row in data:
-            # Check for missing keys
-            missing_keys = required_keys - row.keys()
-            if missing_keys:
-                raise ValueError(f"Missing keys in import data: {', '.join(missing_keys)}. Include them in your import data.")
+        for idx, row in enumerate(data, start=1):
+            registration_number = row.get("registration_number", "").strip()
+
+            if not registration_number:
+                raise ValueError(f"Row {idx}: 'registration_number' is required.")
+            elif len(registration_number) > 15:
+                raise ValueError(f"Row {idx}: 'registration_number' exceeds the maximum length of 15 characters.")
+            elif not re.match(r"[A-Z0-9]{1,3}[- ]?[0-9]{1,4}", registration_number):
+                raise ValueError(f"Row {idx}: 'registration_number' is invalid. Must match the format.")
+
+            registration_date = row.get("registration_date", "").strip()
+
+            if not registration_date:
+                raise ValueError(f"Row {idx}: 'registration_date' is required.")
+            else:
+                try:
+                    datetime.strptime(registration_date, "%Y-%m-%d")
+                except ValueError:
+                    raise ValueError(f"Row {idx}: 'registration_date' must be in YYYY-MM-DD format.")
+
+            model = row.get("model", "").strip()
+
+            if not model:
+                raise ValueError(f"Row {idx}: 'model' is required.")
+            elif len(model) > 50:
+                raise ValueError(f"Row {idx}: 'model' exceeds the maximum length of 50 characters.")
+            elif not re.match(r"^[a-zA-Z0-9á-žÁ-Ž\s]+$", model):
+                raise ValueError(f"Row {idx}: 'model' contains invalid characters. Only letters, numbers, and spaces are allowed.")
 
     def validate_client_and_brand_ids(data):
         """
         Validates if client_ids and brand_ids in the data exist in the database.
-        Raises a ValueError if any are missing.
         """
         conn = Connection.connection()
         cursor = conn.cursor(dictionary=True)
 
         try:
-            # Fetch all valid client IDs
             cursor.execute("SELECT id FROM client")
             valid_client_ids = {row["id"] for row in cursor.fetchall()}
 
-            # Fetch all valid brand IDs
             cursor.execute("SELECT id FROM brand")
             valid_brand_ids = {row["id"] for row in cursor.fetchall()}
 
-            # Check each row's client_id and brand_id
             invalid_clients = set()
             invalid_brands = set()
 
@@ -261,9 +283,9 @@ class CarController:
                 if int(row["brand_id"]) not in valid_brand_ids:
                     invalid_brands.add(row["brand_id"])
 
-            # Raise exception with details if invalid entries are found
             if invalid_clients or invalid_brands:
                 error_message = []
+                
                 if invalid_clients:
                     error_message.append(f"Invalid Client IDs: {', '.join(map(str, invalid_clients))}")
                 if invalid_brands:
@@ -282,14 +304,12 @@ class CarController:
         cursor = conn.cursor()
 
         try:
-            # Step 1: Validate required keys
             CarController.validate_import_data(data)
 
-            # Step 2: Validate client_ids and brand_ids
             CarController.validate_client_and_brand_ids(data)
 
-            # Step 3: Import data into the database
             conn.start_transaction()
+
             for row in data:
                 cursor.execute(
                     """
@@ -298,15 +318,15 @@ class CarController:
                     """,
                     (row['client_id'], row['brand_id'], row['registration_number'], row['registration_date'], row['model'])
                 )
+
             conn.commit()
-            CTkMessagebox(title="Success", message="Data imported successfully!", icon="info")
+
+            print("Data imported successfully!")
         except ValueError as ve:
-            # Show validation errors
-            CTkMessagebox(title="Validation Error", message=str(ve), icon="warning")
+            print(f"Validation Error: {ve}")
             conn.rollback()
         except Exception as e:
-            # Handle unexpected errors
-            CTkMessagebox(title="Error", message=f"Unexpected error: {e}", icon="warning")
+            print(f"Exception: {e}")
             conn.rollback()
         finally:
             cursor.close()
