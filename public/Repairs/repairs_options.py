@@ -65,8 +65,7 @@ class RepairsOptions(ctk.CTkFrame):
 
         try:
             # Extract and parse data
-            repair_type_text = repair_data["repair_type"]
-            repair_type_id = int(repair_type_text.split("(")[1].split(")")[0])
+            repair_type_id = repair_data["repair_type_id"]
             car_id = repair_data["car_id"]
             employee_id = repair_data["employee_id"]
             date_started = datetime.strptime(repair_data["date_started"], "%Y-%m-%d")
@@ -136,7 +135,7 @@ class RepairsOptions(ctk.CTkFrame):
         Handles editing an existing repair in the database.
         """
         try:
-            repair_type=repair_data["repair_type"]
+            repair_type_id=repair_data["repair_type_id"]
             car_id = repair_data["car_id"]
             employee_id=repair_data["employee_id"]
             
@@ -144,7 +143,7 @@ class RepairsOptions(ctk.CTkFrame):
             
             updated_repair = Repair(
                 id=repair_data["id"],
-                repair_type=RepairType(name=repair_type),
+                repair_type=RepairType(id=repair_type_id),
                 employee=Employee(id=employee_id),
                 car=Car(id=car_id),
                 date_started=datetime.strptime(repair_data["date_started"], "%Y-%m-%d"),

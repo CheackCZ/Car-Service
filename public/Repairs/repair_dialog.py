@@ -118,10 +118,14 @@ class RepairDialog(ctk.CTkToplevel):
         Collects data from the form and invokes the callback to handle submission.
         """
         try:
-            # Extract and validate repair type
-            repair_type = self.repair_type_combobox.get().strip()
-            if not repair_type:
-                raise ValueError("Please select a valid repair type.")
+            repair_type_text = self.repair_type_combobox.get().strip()
+            if repair_type_text:
+                try:
+                    repair_type_id = int(repair_type_text.split("(")[1].split(")")[0]) 
+                except (IndexError, ValueError):
+                    raise ValueError("Please select a valid repair type.")
+            else:
+                raise ValueError("Please select a repair type.")
 
             # Extract and validate employee ID
             employee_text = self.employee_combobox.get().strip()
@@ -174,7 +178,7 @@ class RepairDialog(ctk.CTkToplevel):
             # Build repair data
             repair_data = {
                 "id": self.repair_data.get("id", None),  # Use existing ID or None for new repairs
-                "repair_type": repair_type,
+                "repair_type_id": repair_type_id,
                 "employee_id": employee_id,
                 "car_id": car_id,
                 "date_started": date_started.strftime("%Y-%m-%d"),

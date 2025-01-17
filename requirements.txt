@@ -1,2 +1,6 @@
-customtkinter
-python-dotenv
+customtkinter>=5.1.3
+pillow>=9.5.0
+reportlab>=3.6.12
+ctkmessagebox>=1.0.0
+mysql-connector-python>=8.0.33
+tkintertable>=1.3.3

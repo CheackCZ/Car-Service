@@ -175,9 +175,10 @@ class RepairController:
                 """,
                 (new_state, repair_id)
             )
+            conn.commit()
 
-            # If the new state is 'Completed' or 'Canceled', free the employee
-            if new_state.lower() in ["completed", "canceled"]:
+            # Free the employee if the state is 'Completed' or 'Canceled'
+            if new_state.lower() in ["Completed", "Canceled"]:
                 cursor.execute(
                     """
                     SELECT employee_id
@@ -199,7 +200,7 @@ class RepairController:
                     )
                     print(f"Employee ID {employee_id} marked as free due to repair state change to '{new_state}'.")
 
-            conn.commit()
+            conn.commit()  
         except Exception as e:
             conn.rollback()
             print(f"Error during state update: {e}")
@@ -224,6 +225,10 @@ class RepairController:
                 """,
                 (repair.car.id, repair.employee.id, repair.repair_type.id, repair.date_started, repair.date_finished, repair.price, repair.state.value, repair.id)
             )
+            
+            # Update state-specific logic
+            RepairController.update_state(repair.id, repair.state.value)
+            
             conn.commit()
         except Exception as e:
             conn.rollback()

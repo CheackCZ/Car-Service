@@ -18,6 +18,7 @@ use Service;
 -- drop table brand;
 -- drop table employee;
 
+
 -- Vytvoření tabulky pro Zaměstnance (Employee)
 create table employee (
 	id int primary key not null auto_increment,
@@ -218,3 +219,4 @@ CREATE VIEW summary_report AS
 	JOIN car ON repair.car_id = car.id
 	GROUP BY employee.name
 	ORDER BY COUNT(employee.id) DESC;
+    
