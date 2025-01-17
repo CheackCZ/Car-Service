@@ -203,3 +203,19 @@ CREATE VIEW all_cars AS
 	FROM car
 		JOIN client ON car.client_id = client.id
 		JOIN brand ON car.brand_id = brand.id;
+        
+-- Pohled pro report (shrnutí)
+CREATE VIEW summary_report AS
+	SELECT 
+		COUNT(repair.id) AS total_repairs,
+		AVG(repair.price) AS average_repair_price,
+		MAX(repair.price) AS max_repair_price,
+		MIN(repair.price) AS min_repair_price,
+		employee.name AS employee_name,
+		COUNT(employee.id) AS repairs_per_employee,
+		COUNT(DISTINCT car.id) AS cars_delivered
+	FROM repair
+	JOIN employee ON repair.employee_id = employee.id
+	JOIN car ON repair.car_id = car.id
+	GROUP BY employee.name
+	ORDER BY COUNT(employee.id) DESC;

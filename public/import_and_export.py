@@ -25,6 +25,8 @@ class ImportExport(ctk.CTkFrame):
         self.placeholder_label = ctk.CTkLabel(self, text="", wraplength=150)
         self.placeholder_label.place(relx=0.5, rely=0.1)
 
+        self.import_button.place_forget()
+        self.export_button.place_forget()
 
 
     def import_data(self):
@@ -149,6 +151,9 @@ class ImportExport(ctk.CTkFrame):
         
         confirm_button = ctk.CTkButton(popup, text="Confirm Import", font=("Arial", 12, "bold"), command=lambda: self.confirm_import(on_confirm, data, popup))
         confirm_button.place(relx=0.7, rely=0.9, anchor="center")
+        
+        popup.grab_set()
+        popup.lift()
 
             
     def update_visibility(self, table_name):
