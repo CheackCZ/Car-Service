@@ -1,8 +1,8 @@
 import customtkinter as ctk
 
-from public.Cars.car_card import CarCard
-from public.Employees.employee_card import EmployeeCard
-from public.Repairs.repair_card import RepairCard
+from .Cars.car_card import CarCard
+from .Employees.employee_card import EmployeeCard
+from .Repairs.repair_card import RepairCard
 
 
 class Frame(ctk.CTkScrollableFrame):

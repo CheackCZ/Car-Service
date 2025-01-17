@@ -1,11 +1,10 @@
 import customtkinter as ctk
 
-from search import SearchBar
-from public.import_and_export import ImportExport
+from .search import SearchBar
+from .import_and_export import ImportExport
 
-from public.options import Options
-from public.frame import Frame
-
+from .options import Options
+from .frame import Frame
 class Content(ctk.CTkFrame):
     
     def __init__(self, master, **kwargs):

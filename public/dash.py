@@ -1,7 +1,7 @@
 import customtkinter as ctk
 
-from sidebar import Sidebar
-from content import Content
+from .sidebar import Sidebar
+from .content import Content
 
 class Dashboard(ctk.CTk):
     

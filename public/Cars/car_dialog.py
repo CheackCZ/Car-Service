@@ -1,8 +1,14 @@
+from datetime import datetime
+
+from CTkMessagebox import CTkMessagebox
+
 import customtkinter as ctk
 from tkinter import ttk
 
+from src.controllers.client_controller import ClientController
+from src.controllers.brand_controller import BrandController
+
 class CarDialog(ctk.CTkToplevel):
-    
     def __init__(self, parent, on_submit_callback, mode="add", car_data=None, **kwargs):
         super().__init__(**kwargs)
 
@@ -25,49 +31,130 @@ class CarDialog(ctk.CTkToplevel):
         # Combobox for Client
         self.client_label = ctk.CTkLabel(self, text="Client:", font=("Poppins", 12, "bold"))
         self.client_label.place(x=20, y=70)
-        self.client_combobox = ttk.Combobox(self, values=["Ondřej Faltin (1)", "Ondřej Faltin (1)", "Ondřej Faltin (1)", "Ondřej Faltin (1)"])
+        self.client_combobox = ttk.Combobox(self, values=[])
         self.client_combobox.place(x=150, y=70, width=190)
-        self.fill_entry(self.client_combobox, "client")
 
         # Combobox for Brand
         self.brand_label = ctk.CTkLabel(self, text="Brand:", font=("Poppins", 12, "bold"))
         self.brand_label.place(x=20, y=100)
-        self.brand_combobox = ttk.Combobox(
-            self, values=["ŠKODA", "Mercedes", "BMW"]
-        )
+        self.brand_combobox = ttk.Combobox(self, values=[])
         self.brand_combobox.place(x=150, y=100, width=190)
-        self.fill_entry(self.brand_combobox, "brand")
 
         # Entry for Registration number
         self.registration_number_label = ctk.CTkLabel(self, text="Registration number:", font=("Poppins", 12, "bold"))
         self.registration_number_label.place(x=20, y=150)
         self.registration_number_entry = ctk.CTkEntry(self, width=190)
         self.registration_number_entry.place(x=150, y=150)
-        self.fill_entry(self.registration_number_entry, "registration_number")
-        
+
         # Entry for Registration date
         self.reigstration_date_label = ctk.CTkLabel(self, text="Registration date:", font=("Poppins", 12, "bold"))
         self.reigstration_date_label.place(x=20, y=190)
-        self.reigstration_date_entry = ctk.CTkEntry(self, width=190)
+        self.reigstration_date_entry = ctk.CTkEntry(self, width=190, placeholder_text="YYYY-MM-DD")
         self.reigstration_date_entry.place(x=150, y=190)
-        self.fill_entry(self.reigstration_date_entry, "registration_date")
-        
+
         # Entry for Model
         self.model_label = ctk.CTkLabel(self, text="Model:", font=("Poppins", 12, "bold"))
         self.model_label.place(x=20, y=230)
         self.model_entry = ctk.CTkEntry(self, width=190)
         self.model_entry.place(x=150, y=230)
-        self.fill_entry(self.model_entry, "model")
-
 
         # Submit Button
         self.submit_button = ctk.CTkButton(self, text=title_text, command=self.submit_form)
         self.submit_button.place(relx=0.5, y=300, anchor="center")
 
-    def submit_form(self):
-        pass
+        self.load_comboboxes()
+        self.fill_entry()
 
-    def fill_entry(self, widget, data_key):
-        """Fills a widget with data if in edit mode."""
-        if self.mode == "edit" and data_key in self.car_data:
-            widget.insert(0, self.car_data.get(data_key, ""))
+
+    def load_comboboxes(self):
+        """
+        Fetch clients and brands from the database and populate the comboboxes.
+        """
+        try:
+            clients = ClientController.fetch_all()
+            client_values = [
+                f"({client.id}) {client.name} {client.middle_name} {client.last_name}" for client in clients
+            ]
+            
+            self.client_combobox.configure(values=client_values)
+
+            brands = BrandController.fetch_all()
+            brand_values = [
+                f"({brand.id}) {brand.name}" for brand in brands
+            ]
+            
+            self.brand_combobox.configure(values=brand_values)
+        except Exception as e:
+            print(f"Error loading comboboxes: {e}")
+            
+
+    def submit_form(self):
+        """
+        Collects data from the form and invokes the callback to handle submission.
+        """
+        try:
+            # Extract client ID
+            client_text = self.client_combobox.get()
+            if client_text:
+                client_id = int(client_text.split("(")[1].split(")")[0])
+            else:
+                raise ValueError("Please select a valid client.")
+
+            # Extract brand ID
+            brand_text = self.brand_combobox.get()
+            if brand_text:
+                brand_id = int(brand_text.split("(")[1].split(")")[0])
+            else:
+                raise ValueError("Please select a valid brand.")
+
+            # Collect remaining data
+            registration_number = self.registration_number_entry.get().strip()
+            registration_date = datetime.strptime(self.reigstration_date_entry.get().strip(), "%Y-%m-%d")
+            model = self.model_entry.get().strip()
+
+            if not registration_number or not model:
+                raise ValueError("Please fill in all required fields.")
+
+            # Build car data
+            car_data = {
+                "id": self.car_data.get("id", None),
+                "client_id": client_id,
+                "brand_id": brand_id,
+                "registration_number": registration_number,
+                "registration_date": registration_date,
+                "model": model,
+            }
+
+            # Pass the data to the callback
+            self.on_submit_callback(car_data)
+
+        except Exception as e:
+            CTkMessagebox(title="Error", message=str(e), icon="warning")
+            return
+
+        # Close the dialog on successful submission
+        self.destroy()
+
+    def fill_entry(self):
+        """
+        Fills an entry widget with data from car_data if in edit mode.
+        """
+        if self.mode == "edit":
+            # Set the client combobox value
+            client_id = f"({self.car_data.get('client_id')})"  
+            for value in self.client_combobox.cget("values"):
+                if value.startswith(client_id): 
+                    self.client_combobox.set(value)
+                    break
+
+            # Set the brand combobox value
+            brand_name = self.car_data.get('brand_name')
+            if brand_name:
+                for value in self.brand_combobox.cget("values"):
+                    if brand_name in value:  # Match the brand_name
+                        self.brand_combobox.set(value)
+                        break
+                    
+            self.registration_number_entry.insert(0, self.car_data.get("registration_number", ""))
+            self.reigstration_date_entry.insert(0, self.car_data.get("registration_date", ""))
+            self.model_entry.insert(0, self.car_data.get("model", ""))

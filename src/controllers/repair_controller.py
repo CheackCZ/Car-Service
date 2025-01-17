@@ -61,8 +61,7 @@ class RepairController:
             conn.commit()
 
             if row:
-                return [
-                    Repair(
+                return Repair(
                         id=row['repair_id'],
                         car=Car(id=row['car_id'], brand=Brand(name=row['brand_name']), registration_number=row['car_registration_num'], model=row['car_model']),
                         employee=Employee(id=row['employee_id'], name=row['employee_name']),
@@ -71,8 +70,7 @@ class RepairController:
                         date_finished=row['date_finished'],
                         price=row['price'],
                         state=State(row['state'].capitalize()) if row['state'] else State.DEFAULT
-                    )
-                ]
+                    ) if row else None
             return None
         except Exception as e:
             conn.rollback()
@@ -81,34 +79,46 @@ class RepairController:
             cursor.close()
 
 
-    def save(repair: Repair):
+    def insert(repair: Repair):
         """
-        Saves a repair to the database.
+        Inserts a new repair into the database.
         """
         conn = Connection.connection()
         cursor = conn.cursor()
         try:
             conn.start_transaction()
-            if repair.id is None:
-                cursor.execute(
-                    """
-                    INSERT INTO repair (car_id, employee_id, repair_type_id, date_started, date_finished, price, state) 
-                    VALUES (%s, %s, %s, %s, %s, %s, %s)
-                    """,
-                    (repair.car.id, repair.employee.id, repair.repair_type.id, repair.date_started, repair.date_finished, repair.price, repair.state.value)
-                )
-                conn.commit()
-                repair.id = cursor.lastrowid
-            else:
-                cursor.execute(
-                    """
-                    UPDATE repair 
-                    SET car_id = %s, employee_id = %s, repair_type_id = %s, date_started = %s, date_finished = %s, price = %s, state = %s 
-                    WHERE id = %s
-                    """,
-                    (repair.car.id, repair.employee.id, repair.repair_type.id, repair.date_started, repair.date_finished, repair.price, repair.state.value, repair.id)
-                )
-                conn.commit()
+            cursor.execute(
+                """
+                INSERT INTO repair (car_id, employee_id, repair_type_id, date_started, date_finished, price, state) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                """,
+                (repair.car.id, repair.employee.id, repair.repair_type.id, repair.date_started, repair.date_finished, repair.price, repair.state.value)
+            )
+            conn.commit()
+            repair.id = cursor.lastrowid  # Assign the new ID to the repair object
+        except Exception as e:
+            conn.rollback()
+            raise e
+        finally:
+            cursor.close()
+
+    def update(repair: Repair):
+        """
+        Updates an existing repair in the database.
+        """
+        conn = Connection.connection()
+        cursor = conn.cursor()
+        try:
+            conn.start_transaction()
+            cursor.execute(
+                """
+                UPDATE repair 
+                SET car_id = %s, employee_id = %s, repair_type_id = %s, date_started = %s, date_finished = %s, price = %s, state = %s 
+                WHERE id = %s
+                """,
+                (repair.car.id, repair.employee.id, repair.repair_type.id, repair.date_started, repair.date_finished, repair.price, repair.state.value, repair.id)
+            )
+            conn.commit()
         except Exception as e:
             conn.rollback()
             raise e

@@ -54,7 +54,7 @@ class EmployeesOptions(ctk.CTkFrame):
         """
         try:
             new_employee = Employee(
-                name=employee_data["first_name"],
+                name=employee_data["name"],
                 middle_name=employee_data.get("middle_name", ""),
                 last_name=employee_data["last_name"],
                 phone=employee_data.get("phone", ""),
@@ -119,7 +119,7 @@ class EmployeesOptions(ctk.CTkFrame):
         try:
             updated_employee = Employee(
                 id=updated_data["id"],  # Explicitly set the ID
-                name=updated_data.get("first_name", ""),
+                name=updated_data.get("name", ""),
                 middle_name=updated_data.get("middle_name", ""),
                 last_name=updated_data.get("last_name", ""),
                 phone=updated_data.get("phone", ""),

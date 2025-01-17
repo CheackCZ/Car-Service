@@ -19,7 +19,7 @@ class Repair():
     Class representing individual Repairs in the database.
     """
     
-    def __init__(self, id: int, car: Car, employee: Employee, repair_type: RepairType, date_started: datetime, date_finished: datetime, price: float, state: State):
+    def __init__(self, id: int = 0, car: Car = Car(), employee: Employee = Employee(), repair_type: RepairType = RepairType(), date_started: datetime = None, date_finished: datetime = None, price: float = 0, state: State = State.DEFAULT):
         """
         Initializes Repair instance.
 
@@ -32,7 +32,7 @@ class Repair():
         :param state (State): The current state of the repair, represented as an instance of the `State` enum.
         """
         # Validate id
-        if type(id) != int or id <= 0:
+        if type(id) != int or id < 0:
             raise ValueError("'id' must be a positive integer.")
         
         # Validate car

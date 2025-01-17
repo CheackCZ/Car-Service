@@ -34,14 +34,15 @@ class Car():
             raise TypeError("'brand' must be an instance of Brand.")
 
         # Validate registration_number
-        if type(registration_number) != str or not registration_number.strip():
-            raise ValueError("'registration_number' must be a non-empty string.")
+        if type(registration_number) != str:
+            raise ValueError("'registration_number' must be a string.")
         if len(registration_number) > 10:
             raise ValueError("'registration_number' cannot exceed 15 characters.")
 
-        registration_number_regex = re.compile(r"^[A-Z]{1,3}[- ]?[0-9]{1,4}$")
-        if not registration_number_regex.match(registration_number):
-            raise ValueError("Phone number is not valid! Please re-enter a valid one.")
+         # Skip regex validation for an empty registration_number
+        if registration_number and not re.match(r"[A-Z0-9]{1,3}[- ]?[0-9]{1,4}", registration_number):
+            raise ValueError("Registration number is not valid! Please re-enter a valid one.")
+
 
         # Validate registration_date
         if registration_date is None:
@@ -50,7 +51,7 @@ class Car():
             raise TypeError("'registration_date' must be a datetime object or None.")
 
         # Validate model
-        if type(model) != str or not model.strip():
+        if type(model) != str:
             raise ValueError("'model' must be a non-empty string.")
         if len(model) > 50:
             raise ValueError("'model' cannot exceed 50 characters.")

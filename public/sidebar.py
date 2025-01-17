@@ -1,6 +1,6 @@
 import customtkinter as ctk
 
-from tables import Tables
+from .tables import Tables
 
 class Sidebar(ctk.CTkFrame):
     

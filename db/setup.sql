@@ -18,7 +18,9 @@ use Service;
 -- drop table brand;
 -- drop table employee;
 
-select * from employee;
+select * from repair;
+
+select * from car;
 
 -- Vytvoření tabulky pro Zaměstnance (Employee)
 create table employee (
@@ -131,9 +133,11 @@ INSERT INTO repair (car_id, employee_id, repair_type_id, date_started, date_fini
 
 
 -- Pohledy (Views) pro jednodušší a přehlednější použití
+-- Pohled pro vypsání všech oprav
 CREATE VIEW all_repairs AS
 	SELECT 
-		repair.id AS repair_id, repair.date_started AS date_started, repair.date_finished AS date_finished, repair.price AS price, repair.state AS state,
+		repair.id AS repair_id, repair.date_started AS date_started, repair.date_finished AS date_finished, 
+        repair.price AS price, repair.state AS state,
 		car.id as car_id,
         brand.name AS brand_name,
         car.model AS car_model, car.registration_number AS car_registration_num, 
@@ -144,3 +148,14 @@ CREATE VIEW all_repairs AS
 		JOIN brand ON car.brand_id = brand.id
 		JOIN employee ON repair.employee_id = employee.id
 		JOIN repair_type ON repair.repair_type_id = repair_type.id;
+        
+-- Pohle pro vypsání všech car
+CREATE VIEW all_cars AS
+	SELECT 
+		car.id AS car_id, car.registration_number, car.registration_date, car.model, 
+		client.id AS client_id, client.name AS client_name, client.middle_name AS client_middle_name, client.last_name AS client_last_name, 
+		client.phone AS client_phone, client.email AS client_email, 
+		brand.id AS brand_id, brand.name AS brand_name
+	FROM car
+		JOIN client ON car.client_id = client.id
+		JOIN brand ON car.brand_id = brand.id;

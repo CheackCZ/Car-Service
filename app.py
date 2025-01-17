@@ -7,7 +7,7 @@ sys.path.append(os.path.abspath(os.path.join(current_dir, "..")))
 import customtkinter as ctk
 from src.connection import Connection
 
-from dash import Dashboard
+from public.dash import Dashboard
 
 class Landing(ctk.CTk):
     

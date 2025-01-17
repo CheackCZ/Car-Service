@@ -1,8 +1,8 @@
 import customtkinter as ctk
 
-from public.Cars.car_options import CarsOptions
-from public.Employees.employees_options import EmployeesOptions
-from public.Repairs.repairs_options import RepairsOptions
+from .Cars.car_options import CarsOptions
+from .Employees.employees_options import EmployeesOptions
+from .Repairs.repairs_options import RepairsOptions
 
 class Options(ctk.CTkFrame):
     
