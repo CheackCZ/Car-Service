@@ -60,7 +60,7 @@ create table car (
 		foreign key (brand_id) references brand(id),
     
     registration_number varchar(20) not null unique,
-    registration_date datetime not null,
+    registration_date date not null,
     
     model varchar(50) not null
 );
@@ -83,8 +83,8 @@ create table repair (
     repair_type_id int not null,
     		foreign key (repair_type_id) references repair_type(id),
             
-    date_started datetime not null,
-	date_finished datetime,
+    date_started date not null,
+	date_finished date,
 		check (date_started < date_finished),
     
     price int not null,

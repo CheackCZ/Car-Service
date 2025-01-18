@@ -1,5 +1,5 @@
 from enum import Enum
-from datetime import datetime
+from datetime import date
 
 from src.models.employee import Employee
 from src.models.car import Car
@@ -21,7 +21,7 @@ class Repair:
     Class representing individual Repairs in the database.
     """
 
-    def __init__(self, id: int = 0, car: Car = None, employee: Employee = None, repair_type: RepairType = None, date_started: datetime = None, date_finished: datetime = None, price: float = 0.0, state: State = State.DEFAULT,):
+    def __init__(self, id: int = 0, car: Car = None, employee: Employee = None, repair_type: RepairType = None, date_started: date = None, date_finished: date = None, price: float = 0.0, state: State = State.DEFAULT,):
         """
         Initializes Repair instance.
         """
@@ -42,12 +42,12 @@ class Repair:
             raise TypeError("'repair_type' must be an instance of RepairType.")
 
         # Validate date_started
-        if not isinstance(date_started, datetime):
-            raise TypeError("'date_started' must be a datetime object.")
+        if not isinstance(date_started, date):
+            raise TypeError("'date_started' must be a date object.")
 
         # Validate date_finished
-        if date_finished is not None and not isinstance(date_finished, datetime):
-            raise TypeError("'date_finished' must be a datetime object or None.")
+        if date_finished is not None and not isinstance(date_finished, date):
+            raise TypeError("'date_finished' must be a date object or None.")
         if date_finished and date_finished < date_started:
             raise ValueError("'date_finished' cannot be earlier than 'date_started'.")
 
@@ -90,8 +90,8 @@ class Repair:
             "car_registration_num": self.car.registration_number,
             "brand_name": self.car.brand.name,
             "repair_type": self.repair_type.name,
-            "date_started": self.date_started.strftime("%Y-%m-%d %H:%M:%S"),
-            "date_finished": self.date_finished.strftime("%Y-%m-%d %H:%M:%S") if self.date_finished else "N/A",
+            "date_started": self.date_started.strftime("%Y-%m-%d"),
+            "date_finished": self.date_finished.strftime("%Y-%m-%d") if self.date_finished else "N/A",
             "price": self.price,
             "state": self.state.value,
         }

@@ -1,9 +1,7 @@
-from datetime import datetime
+from datetime import datetime, date
 
 import customtkinter as ctk
 from CTkMessagebox import CTkMessagebox
-
-from tkinter import ttk
 
 from src.controllers.client_controller import ClientController
 from src.controllers.brand_controller import BrandController
@@ -32,7 +30,7 @@ class CarDialog(ctk.CTkToplevel):
         # Set title and window properties
         title_text = "Add Car" if self.mode == "add" else "Edit Car"
         self.title(title_text)
-        self.geometry("360x340")
+        self.geometry("360x350")
         self.resizable(False, False)
 
         self.parent = parent
@@ -45,36 +43,38 @@ class CarDialog(ctk.CTkToplevel):
         # Combobox for Client
         self.client_label = ctk.CTkLabel(self, text="Client:", font=("Poppins", 12, "bold"))
         self.client_label.place(x=20, y=70)
-        self.client_combobox = ttk.Combobox(self, values=[])
-        self.client_combobox.place(x=150, y=70, width=190)
+        self.client_combobox = ctk.CTkComboBox(self, values=[], width=190)
+        self.client_combobox.place(x=150, y=70)
+        self.client_combobox.set("")
 
         # Combobox for Brand
         self.brand_label = ctk.CTkLabel(self, text="Brand:", font=("Poppins", 12, "bold"))
-        self.brand_label.place(x=20, y=100)
-        self.brand_combobox = ttk.Combobox(self, values=[])
-        self.brand_combobox.place(x=150, y=100, width=190)
+        self.brand_label.place(x=20, y=110)
+        self.brand_combobox = ctk.CTkComboBox(self, values=[], width=190)
+        self.brand_combobox.place(x=150, y=110)
+        self.brand_combobox.set("")
 
         # Entry for Registration number
         self.registration_number_label = ctk.CTkLabel(self, text="Registration number:", font=("Poppins", 12, "bold"))
-        self.registration_number_label.place(x=20, y=150)
+        self.registration_number_label.place(x=20, y=160)
         self.registration_number_entry = ctk.CTkEntry(self, width=190)
-        self.registration_number_entry.place(x=150, y=150)
+        self.registration_number_entry.place(x=150, y=160)
 
         # Entry for Registration date
         self.reigstration_date_label = ctk.CTkLabel(self, text="Registration date:", font=("Poppins", 12, "bold"))
-        self.reigstration_date_label.place(x=20, y=190)
+        self.reigstration_date_label.place(x=20, y=200)
         self.reigstration_date_entry = ctk.CTkEntry(self, width=190, placeholder_text="YYYY-MM-DD")
-        self.reigstration_date_entry.place(x=150, y=190)
+        self.reigstration_date_entry.place(x=150, y=200)
 
         # Entry for Model
         self.model_label = ctk.CTkLabel(self, text="Model:", font=("Poppins", 12, "bold"))
-        self.model_label.place(x=20, y=230)
+        self.model_label.place(x=20, y=240)
         self.model_entry = ctk.CTkEntry(self, width=190)
-        self.model_entry.place(x=150, y=230)
+        self.model_entry.place(x=150, y=240)
 
         # Submit Button
         self.submit_button = ctk.CTkButton(self, text=title_text, command=self.submit_form)
-        self.submit_button.place(relx=0.5, y=300, anchor="center")
+        self.submit_button.place(relx=0.5, y=310, anchor="center")
 
         self.load_comboboxes()
         self.fill_entry()
@@ -119,7 +119,7 @@ class CarDialog(ctk.CTkToplevel):
 
             # Collect remaining data
             registration_number = self.registration_number_entry.get().strip()
-            registration_date = datetime.strptime(self.reigstration_date_entry.get().strip(), "%Y-%m-%d")
+            registration_date = datetime.strptime(self.reigstration_date_entry.get().strip(), "%Y-%m-%d").date()
             model = self.model_entry.get().strip()
 
             if not registration_number or not model:

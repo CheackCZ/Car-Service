@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 
 import customtkinter as ctk
 from CTkMessagebox import CTkMessagebox
@@ -79,7 +79,7 @@ class RepairsOptions(ctk.CTkFrame):
             repair_type_id = repair_data["repair_type_id"]
             car_id = repair_data["car_id"]
             employee_id = repair_data["employee_id"]
-            date_started = datetime.strptime(repair_data["date_started"], "%Y-%m-%d")
+            date_started = datetime.strptime(repair_data["date_started"], "%Y-%m-%d").date()
 
             # Validate and handle date_finished based on the state
             state = State(repair_data["state"])
@@ -89,7 +89,7 @@ class RepairsOptions(ctk.CTkFrame):
                 # Raise an error if date_finished is empty for invalid states
                 if not repair_data.get("date_ended"):
                     raise ValueError("Date finished cannot be empty for state 'Completed' or 'Canceled'.")
-                date_finished = datetime.strptime(repair_data["date_ended"], "%Y-%m-%d")
+                date_finished = datetime.strptime(repair_data["date_ended"], "%Y-%m-%d").date()
 
             # Create a new Repair object
             new_repair = Repair(
@@ -160,8 +160,8 @@ class RepairsOptions(ctk.CTkFrame):
                 repair_type=RepairType(id=repair_type_id),
                 employee=Employee(id=employee_id),
                 car=Car(id=car_id),
-                date_started=datetime.strptime(repair_data["date_started"], "%Y-%m-%d"),
-                date_finished=datetime.strptime(repair_data["date_ended"], "%Y-%m-%d"),
+                date_started=date.strftime(repair_data["date_started"], "%Y-%m-%d"),
+                date_finished=date.strftime(repair_data["date_ended"], "%Y-%m-%d"),
                 price=repair_data["price"],
                 state=state_enum             
             )

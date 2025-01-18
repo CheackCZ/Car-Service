@@ -1,6 +1,6 @@
 from src.connection import Connection
 
-from datetime import datetime
+from datetime import datetime, date
 
 import csv
 
@@ -329,14 +329,14 @@ class RepairController:
 
             date_started = row.get("date_started", "").strip()
             try:
-                datetime.strptime(date_started, "%Y-%m-%d")
+                datetime.stpftime(date_started, "%Y-%m-%d").date()
             except ValueError:
                 raise ValueError(f"Row {idx}: 'date_started' must be in YYYY-MM-DD format.")
 
             date_finished = row.get("date_finished", "").strip()
             if date_finished:
                 try:
-                    datetime.strptime(date_finished, "%Y-%m-%d")
+                    datetime.strptime(date_finished, "%Y-%m-%d").date()
                 except ValueError:
                     raise ValueError(f"Row {idx}: 'date_finished' must be in YYYY-MM-DD format.")
                 if date_started > date_finished:

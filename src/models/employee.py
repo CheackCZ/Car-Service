@@ -23,17 +23,17 @@ class Employee():
 
         # Name validation (if provided)
         if name is not None:
-            if not self._is_valid_czech_name(name):
+            if not self._is_valid_czech_name(name.strip()):
                 raise ValueError("Name must contain only alphabetic characters (including Czech letters) and be at most 50 characters long.")
 
         # Middle name validation (if provided)
         if middle_name is not None:
-            if not self._is_valid_czech_name(middle_name, optional=True):
+            if not self._is_valid_czech_name(middle_name.strip(), optional=True):
                 raise ValueError("Middle name must contain only alphabetic characters (including Czech letters) and be at most 50 characters long.")
 
         # Last name validation (if provided)
         if last_name is not None:
-            if not self._is_valid_czech_name(last_name):
+            if not self._is_valid_czech_name(last_name.strip()):
                 raise ValueError("Last name must contain only alphabetic characters (including Czech letters) and be at most 50 characters long.")
 
         # Phone validation (if provided)

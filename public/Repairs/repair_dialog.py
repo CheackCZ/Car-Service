@@ -1,9 +1,7 @@
-from datetime import datetime
+from datetime import datetime, date
 
 import customtkinter as ctk
 from CTkMessagebox import CTkMessagebox
-
-from tkinter import ttk
 
 from src.models.repair import State
 
@@ -35,7 +33,7 @@ class RepairDialog(ctk.CTkToplevel):
         # Set title and window properties
         title_text = "Add Repair" if self.mode == "add" else "Edit Repair"
         self.title(title_text)
-        self.geometry("360x420")
+        self.geometry("360x440")
         self.resizable(False, False)
 
         self.parent = parent
@@ -48,48 +46,52 @@ class RepairDialog(ctk.CTkToplevel):
         # Combobox for Repair Type
         self.repair_type_label = ctk.CTkLabel(self, text="Repair Type:", font=("Poppins", 12, "bold"))
         self.repair_type_label.place(x=20, y=70)
-        self.repair_type_combobox = ttk.Combobox(self, values=[])
-        self.repair_type_combobox.place(x=150, y=70, width=190)
+        self.repair_type_combobox = ctk.CTkComboBox(self, values=[], width=190)
+        self.repair_type_combobox.place(x=150, y=70)
+        self.repair_type_combobox.set("")
 
         # Combobox for Employee
         self.employee_label = ctk.CTkLabel(self, text="Employee:", font=("Poppins", 12, "bold"))
-        self.employee_label.place(x=20, y=100)
-        self.employee_combobox = ttk.Combobox(self, values=[])
-        self.employee_combobox.place(x=150, y=100, width=190)
+        self.employee_label.place(x=20, y=110)
+        self.employee_combobox = ctk.CTkComboBox(self, values=[], width=190)
+        self.employee_combobox.place(x=150, y=110)
+        self.employee_combobox.set("")
 
         # Combobox for Car
         self.car_label = ctk.CTkLabel(self, text="Car:", font=("Poppins", 12, "bold"))
-        self.car_label.place(x=20, y=130)
-        self.car_combobox = ttk.Combobox(self, values=[])
-        self.car_combobox.place(x=150, y=130, width=190)
+        self.car_label.place(x=20, y=150)
+        self.car_combobox = ctk.CTkComboBox(self, values=[], width=190)
+        self.car_combobox.place(x=150, y=150)
+        self.car_combobox.set("")
 
         # Date Picker for Start Date
         self.date_started_label = ctk.CTkLabel(self, text="Start Date:", font=("Poppins", 12, "bold"))
-        self.date_started_label.place(x=20, y=180)
+        self.date_started_label.place(x=20, y=210)
         self.date_started_entry = ctk.CTkEntry(self, placeholder_text="YYYY-MM-DD", width=190)
-        self.date_started_entry.place(x=150, y=180)
+        self.date_started_entry.place(x=150, y=210)
 
         # Date Picker for End Date
         self.date_ended_label = ctk.CTkLabel(self, text="End Date:", font=("Poppins", 12, "bold"))
-        self.date_ended_label.place(x=20, y=220)
+        self.date_ended_label.place(x=20, y=250)
         self.date_ended_entry = ctk.CTkEntry(self, placeholder_text="YYYY-MM-DD", width=190)
-        self.date_ended_entry.place(x=150, y=220)
+        self.date_ended_entry.place(x=150, y=250)
 
         # Price Input
         self.price_label = ctk.CTkLabel(self, text="Price (CZK):", font=("Poppins", 12, "bold"))
-        self.price_label.place(x=20, y=270)
+        self.price_label.place(x=20, y=300)
         self.price_entry = ctk.CTkEntry(self, placeholder_text="0.00", width=190)
-        self.price_entry.place(x=150, y=270)
+        self.price_entry.place(x=150, y=300)
 
         # Combobox for State
         self.state_label = ctk.CTkLabel(self, text="State:", font=("Poppins", 12, "bold"))
-        self.state_label.place(x=20, y=320)
-        self.state_combobox = ttk.Combobox(self, values=[])
-        self.state_combobox.place(x=150, y=320, width=190)
+        self.state_label.place(x=20, y=350)
+        self.state_combobox = ctk.CTkComboBox(self, values=[], width=190)
+        self.state_combobox.place(x=150, y=350)
+        self.state_combobox.set("")
 
         # Submit Button
         self.submit_button = ctk.CTkButton(self, text=title_text, command=self.submit_form)
-        self.submit_button.place(relx=0.5, y=380, anchor="center")
+        self.submit_button.place(relx=0.5, y=410, anchor="center")
 
         self.load_comboboxes()
         self.fill_entries()
@@ -102,26 +104,18 @@ class RepairDialog(ctk.CTkToplevel):
         try:
             # Load repair types
             repair_types = RepairTypeController.fetch_all()
-            self.repair_type_combobox.configure(
-                values=[f"({rt.id}) {rt.name}" for rt in repair_types]
-            )
+            self.repair_type_combobox.configure(values=[f"({rt.id}) {rt.name}" for rt in repair_types])
 
-            # Load employees
+    	    # Load employees
             employees = EmployeeController.fetch_all()
-            self.employee_combobox.configure(
-                values=[f"({emp.id}) {emp.name} {emp.last_name}" for emp in employees]
-            )
-
+            self.employee_combobox.configure(values=[f"({emp.id}) {emp.name} {emp.last_name}" for emp in employees])
+            
             # Load cars
             cars = CarController.fetch_all()
-            self.car_combobox.configure(
-                values=[f"({car.id}) {car.brand.name} {car.model} - {car.registration_number}" for car in cars]
-            )
+            self.car_combobox.configure(values=[f"({car.id}) {car.brand.name} {car.model} - {car.registration_number}" for car in cars])
 
             # Load states from the State enum
-            self.state_combobox.configure(
-                values=[state.value for state in State]  
-            )
+            self.state_combobox.configure(values=[state.value for state in State]  )
 
         except Exception as e:
             print(f"Error loading comboboxes: {e}")
@@ -160,7 +154,7 @@ class RepairDialog(ctk.CTkToplevel):
             if not date_started:
                 raise ValueError("Start date is required.")
             try:
-                date_started = datetime.strptime(date_started, "%Y-%m-%d")
+                date_started = datetime.strptime(date_started, "%Y-%m-%d").date()
             except ValueError:
                 raise ValueError("Start date must be in the format YYYY-MM-DD.")
 
@@ -168,7 +162,7 @@ class RepairDialog(ctk.CTkToplevel):
             date_ended = self.date_ended_entry.get().strip()
             if date_ended:
                 try:
-                    date_ended = datetime.strptime(date_ended, "%Y-%m-%d")
+                    date_ended = datetime.strptime(date_ended, "%Y-%m-%d").date()
                     if date_ended < date_started:
                         raise ValueError("End date cannot be earlier than the start date.")
                 except ValueError:
