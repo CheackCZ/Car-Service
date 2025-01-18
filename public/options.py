@@ -1,12 +1,22 @@
 import customtkinter as ctk
 
-from .Cars.car_options import CarsOptions
-from .Employees.employees_options import EmployeesOptions
-from .Repairs.repairs_options import RepairsOptions
+from public.Cars.car_options import CarsOptions
+from public.Employees.employees_options import EmployeesOptions
+from public.Repairs.repairs_options import RepairsOptions
+
 
 class Options(ctk.CTkFrame):
-    
+    """
+    Class with frame displaying table-specific options in the Car Service application.
+    """
+        
     def __init__(self, parent, **kwargs):
+        """
+        Initialize the Options frame.
+
+        :param parent (ctk.CTk): The parent widget for the options frame.
+        :param kwargs: Additional keyword arguments for the CTkFrame.
+        """
         super().__init__(parent, **kwargs)
             
         self.current_options = None 
@@ -16,8 +26,13 @@ class Options(ctk.CTkFrame):
             "repair": RepairsOptions,
         }
 
+
     def show_options(self, table_name):
-        """Switches to the options frame for the given table."""
+        """
+        Switch to the options frame for the specified table.        
+        
+        :param table_name (str): The name of the active table whose options are to be displayed.
+        """
         if self.current_options is not None:
             self.current_options.destroy()
             self.current_options = None

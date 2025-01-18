@@ -1,9 +1,7 @@
-from datetime import datetime
-
 import customtkinter as ctk
-from tkinter import ttk
-
 from CTkMessagebox import CTkMessagebox
+
+from tkinter import ttk
 
 from src.models.car import Car
 from src.models.client import Client
@@ -15,8 +13,17 @@ from public.Cars.car_dialog import CarDialog
 from public.Cars.car_selector import CarSelector
 
 class CarsOptions(ctk.CTkFrame):
+    """
+    A frame providing options for managing cars, such as adding, editing, and removing cars.
+    """
     
     def __init__(self, parent, **kwargs):
+        """
+        Initialize the CarsOptions frame.
+        
+        :param parent: The parent widget.
+        :param **kwargs: Additional keyword arguments for the frame configuration.
+        """
         super().__init__(parent, **kwargs)
 
         self.configure(fg_color="transparent")
@@ -58,6 +65,8 @@ class CarsOptions(ctk.CTkFrame):
     def handle_add_car(self, car_data):
         """
         Handles adding a new car to the database.
+
+        :param car_data (dict): Data for the new car.
         """
         try:
             client_id = int(car_data["client_id"])
@@ -91,6 +100,8 @@ class CarsOptions(ctk.CTkFrame):
     def open_edit_car_dialog(self, car_id):
         """
         Opens the dialog to edit a selected car.
+        
+        :param car_id (int): ID of the car to edit.
         """
         try:
             car = CarController.fetch_by_id(car_id)
@@ -108,6 +119,8 @@ class CarsOptions(ctk.CTkFrame):
     def handle_edit_car(self, car_data):
         """
         Handles editing an existing car in the database.
+        
+        :param car_data (dict): Updated data for the car.
         """
         try:
             # Extract client ID and brand name from car_data
@@ -147,6 +160,8 @@ class CarsOptions(ctk.CTkFrame):
     def handle_remove_car(self, car_id):
         """
         Handles removing a car from the database.
+        
+        :param car_id (int): ID of the car to remove.
         """
         try:
             CarController.delete(car_id)

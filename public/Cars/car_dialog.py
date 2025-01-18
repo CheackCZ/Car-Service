@@ -1,15 +1,29 @@
 from datetime import datetime
 
+import customtkinter as ctk
 from CTkMessagebox import CTkMessagebox
 
-import customtkinter as ctk
 from tkinter import ttk
 
 from src.controllers.client_controller import ClientController
 from src.controllers.brand_controller import BrandController
 
 class CarDialog(ctk.CTkToplevel):
+    """
+    A dialog window for adding or editing car details. 
+    The form includes fields for the client, brand, registration number, registration date, and model, with options to submit the data.
+    """
+    
     def __init__(self, parent, on_submit_callback, mode="add", car_data=None, **kwargs):
+        """
+        Initialize the CarDialog. 
+    
+        :param parent (ctk.CTk): The parent widget.
+        :param on_submit_callback (callable): A function to handle form submission.
+        :param mode (str): The mode of the dialog ("add" or "edit"). Default is "add".
+        :param car_data (dict, optional): The data for the car being edited. Default is None.
+        :param kwargs: Additional keyword arguments for the CTkToplevel.
+        """    
         super().__init__(**kwargs)
 
         self.mode = mode
@@ -68,20 +82,16 @@ class CarDialog(ctk.CTkToplevel):
 
     def load_comboboxes(self):
         """
-        Fetch clients and brands from the database and populate the comboboxes.
+        Fetch clients and brands from the database and populate the comboboxes with them.
         """
         try:
             clients = ClientController.fetch_all()
-            client_values = [
-                f"({client.id}) {client.name} {client.middle_name} {client.last_name}" for client in clients
-            ]
+            client_values = [f"({client.id}) {client.name} {client.middle_name} {client.last_name}" for client in clients]
             
             self.client_combobox.configure(values=client_values)
 
             brands = BrandController.fetch_all()
-            brand_values = [
-                f"({brand.id}) {brand.name}" for brand in brands
-            ]
+            brand_values = [f"({brand.id}) {brand.name}" for brand in brands]
             
             self.brand_combobox.configure(values=brand_values)
         except Exception as e:
@@ -125,14 +135,12 @@ class CarDialog(ctk.CTkToplevel):
                 "model": model,
             }
 
-            # Pass the data to the callback
             self.on_submit_callback(car_data)
 
         except Exception as e:
             CTkMessagebox(title="Error", message=str(e), icon="warning")
             return
 
-        # Close the dialog on successful submission
         self.destroy()
 
     def fill_entry(self):
@@ -151,7 +159,7 @@ class CarDialog(ctk.CTkToplevel):
             brand_name = self.car_data.get('brand_name')
             if brand_name:
                 for value in self.brand_combobox.cget("values"):
-                    if brand_name in value:  # Match the brand_name
+                    if brand_name in value:  
                         self.brand_combobox.set(value)
                         break
                     

@@ -1,9 +1,9 @@
 from datetime import datetime
 
 import customtkinter as ctk
-from tkinter import ttk
-
 from CTkMessagebox import CTkMessagebox
+
+from tkinter import ttk
 
 from src.models.repair_type import RepairType
 from src.models.employee import Employee
@@ -17,8 +17,17 @@ from public.Repairs.repair_selector import RepairSelector
 
 
 class RepairsOptions(ctk.CTkFrame):
+    """
+    A frame providing options for managing repairs, such as adding, editing, and removing repairs.
+    """
     
     def __init__(self, parent, **kwargs):
+        """
+        Initialize the RepairsOptions frame.
+        
+        :param parent: The parent widget.
+        :param **kwargs: Additional keyword arguments for the frame configuration.
+        """
         super().__init__(parent, **kwargs)
         
         self.configure(fg_color="transparent")
@@ -60,6 +69,8 @@ class RepairsOptions(ctk.CTkFrame):
     def handle_add_repair(self, repair_data):
         """
         Handles adding a new repair to the database.
+        
+        :param repair_data (dict): Data for the new repair.
         """
         print(repair_data)
 
@@ -101,7 +112,6 @@ class RepairsOptions(ctk.CTkFrame):
             print(e)
             CTkMessagebox(title="Error", message=f"Failed to add repair: {e}", icon="warning")
 
-            
 
     def open_repair_selector_for_edit(self):
         """
@@ -115,6 +125,8 @@ class RepairsOptions(ctk.CTkFrame):
     def open_edit_repair_dialog(self, repair_id):
         """
         Opens the dialog to edit a selected repair.
+        
+        :param repair_id (int): ID of the repair to edit.
         """
         try:
             repair = RepairController.fetch_by_id(repair_id)
@@ -133,6 +145,8 @@ class RepairsOptions(ctk.CTkFrame):
     def handle_edit_repair(self, repair_data):
         """
         Handles editing an existing repair in the database.
+        
+        :param repair_data (dict): Updated data for the repair.
         """
         try:
             repair_type_id=repair_data["repair_type_id"]
@@ -169,6 +183,8 @@ class RepairsOptions(ctk.CTkFrame):
     def handle_remove_repair(self, repair_id):
         """
         Handles removing a repair from the database.
+        
+        :param repair_id (int): ID of the repair to remove.
         """
         try:
             RepairController.delete(repair_id)

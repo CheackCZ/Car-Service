@@ -1,14 +1,16 @@
 import customtkinter as ctk
-
 from CTkMessagebox import CTkMessagebox
 
 from src.controllers.employee_controller import EmployeeController
 
 class EmployeeSelector(ctk.CTkToplevel):
+    """
+    A class for displaying a dropdown (combobox) of employees with their IDs.
+    """
     
     def __init__(self, parent, on_submit_callback, title="Choose Employee", button_text="Submit",**kwargs):
         """
-        A class for displaying a dropdown (combobox) of employees with their IDs.
+        Initialize the EmployeeSelector window.
         
         :param parent: Parent widget.
         :param on_selection_change: Callback function to handle changes in selection.

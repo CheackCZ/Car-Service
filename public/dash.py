@@ -4,12 +4,18 @@ from .sidebar import Sidebar
 from .content import Content
 
 class Dashboard(ctk.CTk):
+    """
+    Class representing the main dashboard window of the Car Service application.
+    """
     
     # Set appearance and theme
     ctk.set_appearance_mode("System")
     ctk.set_default_color_theme("blue")
 
     def __init__(self):
+        """
+        Initialize the dashboard window.
+        """
         super().__init__()  
         
         # Creates a main window with title and geometry
@@ -17,7 +23,7 @@ class Dashboard(ctk.CTk):
         self.geometry("1080x560")
         self.resizable(False, False)
         
-        # Sidebar on the left with the menu 
+        # Sidebar on the left with the tables menu 
         self.sidebar = Sidebar(master=self)
         self.sidebar.place(x = 0, y = 0)
 

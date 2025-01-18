@@ -64,6 +64,11 @@ class Car():
         self.model = model.strip()
         
     def __str__(self):
+        """
+        Returns a string representation of the Car instance.
+
+        :return str: A formatted string with the car's details.
+        """
         return f"({self.id}) {self.brand} {self.model}, {self.registration_number} ({self.registration_date})"
     
     def to_dict(self):

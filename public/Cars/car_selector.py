@@ -1,13 +1,16 @@
 import customtkinter as ctk
-
 from CTkMessagebox import CTkMessagebox
 
 from src.controllers.car_controller import CarController
 
 class CarSelector(ctk.CTkToplevel):
+    """
+    A class for displaying a dropdown (combobox) of cars with their IDs.
+    """
+    
     def __init__(self, parent, on_submit_callback, title="Choose Car", button_text="Submit", **kwargs):
         """
-        A class for displaying a dropdown (combobox) of cars with their IDs.
+        Initialize the CarSelector window.
 
         :param parent: Parent widget.
         :param on_submit_callback: Callback function to handle selection submission.

@@ -1,9 +1,9 @@
 from datetime import datetime
 
 import customtkinter as ctk
-from tkinter import ttk
-
 from CTkMessagebox import CTkMessagebox
+
+from tkinter import ttk
 
 from src.models.repair import State
 
@@ -12,7 +12,21 @@ from src.controllers.employee_controller import EmployeeController
 from src.controllers.car_controller import CarController
 
 class RepairDialog(ctk.CTkToplevel):
+    """
+    A dialog window for adding or editing repair details. 
+    The form includes fields for repair type, employee, car, start date, end date, price, and repair state, with options to submit the data.
+    """
+    
     def __init__(self, parent, on_submit_callback, mode="add", repair_data=None, **kwargs):
+        """
+        Initialize the RepairDialog.
+        
+        :param parent (ctk.CTk): The parent widget.
+        :param on_submit_callback (callable): A function to handle form submission.
+        :param mode (str): The mode of the dialog ("add" or "edit"). Default is "add".
+        :param repair_data (dict, optional): The data for the repair being edited. Default is None.
+        :param kwargs: Additional keyword arguments for the CTkToplevel.
+        """
         super().__init__(**kwargs)
 
         self.mode = mode

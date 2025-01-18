@@ -2,8 +2,23 @@ import customtkinter as ctk
 from PIL import Image
 
 class EmployeeCard(ctk.CTkFrame):
+    """
+    Class representing a UI component for displaying details about an employee.
+    """
     
     def __init__(self, master, name, middle_name, last_name, phone, email, is_free, **kwargs):
+        """
+        Initialize the EmployeeCard.
+
+        :param master (ctk.CTk): The parent widget for the card.
+        :param name (str): The first name of the employee.
+        :param middle_name (str): The middle name of the employee.
+        :param last_name (str): The last name of the employee.
+        :param phone (str): The phone number of the employee.
+        :param email (str): The email address of the employee.
+        :param is_free (bool): The availability status of the employee (True if free, False if working).
+        :param kwargs: Additional keyword arguments for the CTkFrame.
+        """
         super().__init__(master, width=640, height=90, **kwargs)
         
         # Employee credentials 
@@ -44,25 +59,24 @@ class EmployeeCard(ctk.CTkFrame):
         """
         Formats a Czech phone number to more readable form.
         
-        :param phone: The phone number string.
-        :return: Formatted phone number string.
-        """
-        phone = phone.replace(" ", "")  # Remove any existing spaces
+        :param phone (str): The phone number.
         
-        # Check for and handle the +420 or 420 prefix
+        :return: Formatted phone number.
+        """
+        phone = phone.replace(" ", "")  
+        
         if phone.startswith("+420"):
             prefix = "+420"
-            number = phone[4:]  # Remove the prefix
+            number = phone[4:] 
+            
         elif phone.startswith("420"):
             prefix = "420"
-            number = phone[3:]  # Remove the prefix
+            number = phone[3:]
+        
         else:
             prefix = ""
-            number = phone  # No prefix
+            number = phone
 
-        # Format the remaining number in groups of three
         formatted_number = " ".join([number[i:i+3] for i in range(0, len(number), 3)])
 
-        # Combine prefix and formatted number
         return f"{prefix} {formatted_number}".strip()
-

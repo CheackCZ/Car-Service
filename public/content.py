@@ -1,13 +1,23 @@
 import customtkinter as ctk
 
-from .search import SearchBar
-from .import_and_export import ImportExport
+from public.search import SearchBar
+from public.import_and_export import ImportExport
+from public.options import Options
+from public.frame import Frame
 
-from .options import Options
-from .frame import Frame
+
 class Content(ctk.CTkFrame):
+    """
+    Class representing the main content area of the Car Service application.
+    """
     
     def __init__(self, master, **kwargs):
+        """
+        Initialize the Content frame.
+        
+        :param master (ctk.CTk): The parent widget for the content frame.
+        :param kwargs: Additional keyword arguments for the CTkFrame.
+        """
         super().__init__(master, width=860, height=520, **kwargs)
 
         self.active_table = None
@@ -30,10 +40,20 @@ class Content(ctk.CTkFrame):
     
     
     def update_options(self, table_name):
+        """
+        Update the options and import/export visibility based on the active table.
+        
+        :param table_name (str): The name of the active table.
+        """
         self.active_table = table_name
         self.options.show_options(table_name)
         self.import_export_frame.update_visibility(table_name)
 
         
     def get_active_table(self):
+        """
+        Get the name of the currently active table.
+        
+        :return str: The name of the active table.
+        """
         return self.active_table

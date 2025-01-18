@@ -1,9 +1,27 @@
 import customtkinter as ctk
+
 from PIL import Image
 
 class CarCard(ctk.CTkFrame):
+    """
+    Class representing a UI component for displaying details about a car.
+    """
     
     def __init__(self, master, id, brand_name, model, registration_number, registration_date, client_name, client_last_name, client_id, **kwargs):
+        """
+        Initialize the CarCard.
+        
+        :param master (ctk.CTk): The parent widget for the card.
+        :param id (int): The unique identifier of the car.
+        :param brand_name (str): The brand of the car.
+        :param model (str): The model of the car.
+        :param registration_number (str): The car's registration number.
+        :param registration_date (str): The date of the car's registration.
+        :param client_name (str): The first name of the client associated with the car.
+        :param client_last_name (str): The last name of the client associated with the car.
+        :param client_id (int): The unique identifier of the client.
+        :param kwargs: Additional keyword arguments for the CTkFrame.        
+        """
         super().__init__(master, width=640, height=110, **kwargs)
         
         # Employee credentials 
@@ -42,7 +60,8 @@ class CarCard(ctk.CTkFrame):
         """
         Formats a Czech registration number to specified form.
         
-        :param registration_number: The raw registration number string.
+        :param registration_number (str): The raw registration number.
+        
         :return: Formatted registration number.
         """
         if " " in registration_number and len(registration_number.split(" ")[-1]) == 4:

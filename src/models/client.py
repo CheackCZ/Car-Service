@@ -1,6 +1,9 @@
 import re
 
 class Client():
+    """
+    Class representing individual clients in the system.
+    """
     
     def __init__(self, id: int = 0, name: str = "", middle_name: str = "", last_name: str = "", phone: str = "", email: str = ""):
         """
@@ -58,4 +61,9 @@ class Client():
         self.email = email
         
     def __str__(self):
+        """
+        Returns a string representation of the Client instance.
+
+        :return str: A formatted string with the client's details.
+        """
         return f"({self.id}) {self.name} {self.middle_name} {self.last_name}, Ph: {self.phone}), Em: {self.email}"

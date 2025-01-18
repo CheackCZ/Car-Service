@@ -8,6 +8,14 @@ class Employee():
     def __init__(self, id: int = 0, name: str = None, middle_name: str = None, last_name: str = None, phone: str = None, email: str = None, is_free: bool = True):
         """
         Initializes Employee instance.
+        
+        :param id (int): The employee's unique ID (default: 0).
+        :param name (str): The employee's first name.
+        :param middle_name (str): The employee's middle name (optional).
+        :param last_name (str): The employee's last name.
+        :param phone (str): The employee's phone number.
+        :param email (str): The employee's email address.
+        :param is_free (bool): Indicates if the employee is available (default: True).
         """
         # Core validation
         if id is not None and (type(id) != int or id < 0):
@@ -51,12 +59,20 @@ class Employee():
         
     
     def __str__(self):
-         return f"({self.id}) {self.name} {self.middle_name} {self.last_name}, Ph. {self.phone}, Em: {self.email}, Free? {self.is_free}"
+        """
+        Returns a string representation of the Employee instance.
+        """
+        return f"({self.id}) {self.name} {self.middle_name} {self.last_name}, Ph. {self.phone}, Em: {self.email}, Free? {self.is_free}"
     
     
     def _is_valid_czech_name(self, value: str, optional: bool = False):
         """
         Validates if a name is valid (supports Czech characters).
+    
+        :param value (str): The name to validate.
+        :param optional (bool): If True, allows the name to be empty.
+        
+        :return bool: True if the name is valid, otherwise False.
         """
         if optional and not value:
             return True  
@@ -67,6 +83,8 @@ class Employee():
     def to_dict(self):
         """
         Converts the Employee object into a dictionary.
+        
+        :return dict: A dictionary with the employee's attributes.
         """
         return {
             "name": self.name,

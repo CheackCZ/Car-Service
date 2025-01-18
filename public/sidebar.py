@@ -1,18 +1,28 @@
 import customtkinter as ctk
+from CTkMessagebox import CTkMessagebox
+
 from tkinter import filedialog
 
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 
-from CTkMessagebox import CTkMessagebox
-
 from src.report_generator import ReportGenerator
 
-from .tables import Tables
+from public.tables import Tables
+
 
 class Sidebar(ctk.CTkFrame):
+    """
+    Class representing the sidebar of the Car Service application with table selection, report generation and exit button.
+    """
     
     def __init__(self, master, **kwargs):
+        """
+        Initialize the sidebar.
+
+        :param master (ctk.CTk): The parent widget for the sidebar.
+        :param kwargs: Additional keyword arguments for the CTkFrame.
+        """
         super().__init__(master, width=180, height=560, **kwargs)
         
         # Label with database name
@@ -38,21 +48,30 @@ class Sidebar(ctk.CTkFrame):
         """
         try:
             report_data = ReportGenerator.generate_summary_report()
+            print("Report generated successfully!")
+
+            msg = CTkMessagebox(title="Success", message="Report generated successfully!", icon="info")
+            msg.grab_set()  
+
+            msg.wait_window()
+
             self.display_report_popup(report_data)
         except Exception as e:
             print(f"Error generating report: {e}")
-
+            CTkMessagebox(title="Error", message="Error while generating the report!", icon="warning")
+    
     def display_report_popup(self, data):
         """
-        Displays the report in a popup window and generates a PDF file.
-        :param data: List of dictionaries with report data.
+        Displays the report in a popup window and provides an option to generate a PDF file.
+        
+        :param data (list of dict): List of dictionaries with report data.
         """
         popup = ctk.CTkToplevel(self)
         popup.title("Summary Report")
         popup.geometry("600x400")
         popup.resizable(False, False)
 
-        # Title label
+        # Label with 'Summary Report'
         title_label = ctk.CTkLabel(popup, text="Summary Report", font=("Poppins", 18, "bold"))
         title_label.pack(pady=10)
 
@@ -90,29 +109,26 @@ class Sidebar(ctk.CTkFrame):
     def generate_pdf(self, data):
         """
         Generates a PDF file with the report data.
-        :param data: List of dictionaries with report data.
+        
+        :param data (list of dict): List of dictionaries with report data.
         """
-        # Open file dialog to choose save location
         file_path = filedialog.asksaveasfilename(
             defaultextension=".pdf",
             filetypes=[("PDF Files", "*.pdf")],
             title="Save Report as PDF",
         )
         if not file_path:
-            return  # User canceled the save dialog
+            return
 
         try:
-            # Create PDF canvas
             pdf = canvas.Canvas(file_path, pagesize=letter)
             pdf.setFont("Helvetica", 12)
             y = 750
 
-            # Title
-            pdf.setFont("Helvetica-Bold", 16)
+            pdf.setFont("Helvetica", 16)
             pdf.drawString(50, y, "Summary Report")
             y -= 30
 
-            # Add report data
             pdf.setFont("Helvetica", 12)
             for row in data:
                 pdf.drawString(50, y, f"Employee: {row['employee_name']}")
@@ -130,17 +146,21 @@ class Sidebar(ctk.CTkFrame):
                 pdf.drawString(70, y, f"Cars Delivered: {row['cars_delivered']}")
                 y -= 40
 
-                # Start a new page if content overflows
                 if y < 50:
                     pdf.showPage()
                     pdf.setFont("Helvetica", 12)
                     y = 750
 
             pdf.save()
+
+            print(f"Report saved as PDF at {file_path}.")
             CTkMessagebox(title="Success", message=f"Report saved as PDF at {file_path}.", icon="info")         
         except Exception as e:
             print(f"Error generating PDF: {e}")
             CTkMessagebox(title="Error", message=f"Error generating PDF!", icon="warning")
 
     def exit_application(self):
+        """
+        Exits the application.
+        """
         self.master.destroy()

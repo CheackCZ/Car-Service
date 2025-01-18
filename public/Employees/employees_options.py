@@ -1,9 +1,7 @@
 import customtkinter as ctk
-from tkinter import ttk
-
-import re
-
 from CTkMessagebox import CTkMessagebox
+
+from tkinter import ttk
 
 from public.Employees.employee_dialog import EmployeeDialog
 from public.Employees.employee_selector import EmployeeSelector
@@ -12,8 +10,17 @@ from src.models.employee import Employee
 from src.controllers.employee_controller import EmployeeController
 
 class EmployeesOptions(ctk.CTkFrame):
+    """ 
+    A frame providing options for managing employees, such as adding, editing, and removing employees.
+    """
     
     def __init__(self, parent, **kwargs):
+        """
+        Initialize the EmployeesOptions frame.
+        
+        :param parent: The parent widget.
+        :param **kwargs: Additional keyword arguments for the frame configuration.
+        """
         super().__init__(parent, **kwargs)
         
         self.configure(fg_color="transparent")
@@ -45,6 +52,9 @@ class EmployeesOptions(ctk.CTkFrame):
         
 
     def open_add_employee_dialog(self):
+        """
+        Opens the dialog to add a new employee.
+        """
         dialog = EmployeeDialog(self, on_submit_callback=self.handle_add_employee, mode="add")
         dialog.grab_set()
         dialog.lift()
@@ -53,6 +63,8 @@ class EmployeesOptions(ctk.CTkFrame):
     def handle_add_employee(self, employee_data):
         """
         Handles adding an Employee with partial data.
+        
+        :param employee_data (dict): Data for the new employee.
         """
         try:
             new_employee = Employee(
@@ -89,6 +101,8 @@ class EmployeesOptions(ctk.CTkFrame):
     def open_edit_employee_dialog(self, employee_id):
         """
         Opens the edit dialog for the selected employee.
+        
+        :param employee_id (int): ID of the employee to edit.
         """
         employee = EmployeeController.fetch_by_id(employee_id)
         
@@ -112,6 +126,8 @@ class EmployeesOptions(ctk.CTkFrame):
     def handle_edit_employee(self, updated_data):
         """
         Handles the submission of updated employee data.
+        
+        :param updated_data (dict): Updated data for the employee.
         """
         print("Updated Data in handle_edit_employee:", updated_data)
          
@@ -150,6 +166,8 @@ class EmployeesOptions(ctk.CTkFrame):
     def confirm_delete_employee(self, employee_id):
         """
         Confirms and deletes the selected employee.
+        
+        :param employee_id (int): ID of the employee to delete.
         """
         confirm = CTkMessagebox(
             title="Confirm Deletion",

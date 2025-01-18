@@ -1,17 +1,29 @@
 import customtkinter as ctk
-
 from CTkMessagebox import CTkMessagebox
 
 class EmployeeDialog(ctk.CTkToplevel):
+    """
+    A dialog window for adding or editing employee details. 
+    The form includes fields for first name, middle name, last name, phone number, and email address, with options to submit the data.
+    """
     
     def __init__(self, parent, on_submit_callback, mode="add", employee_data=None, **kwargs):
+        """
+        Initialize the EmployeeDialog.
+
+        :param parent (ctk.CTk): The parent widget.
+        :param on_submit_callback (callable): A function to handle form submission.
+        :param mode (str): The mode of the dialog ("add" or "edit"). Default is "add".
+        :param employee_data (dict, optional): The data for the employee being edited. Default is None.
+        :param kwargs: Additional keyword arguments for the CTkToplevel.
+        """
         super().__init__(**kwargs)
 
         self.mode = mode
         self.employee_data = employee_data if employee_data else {}
 
         # Credentials
-        title_text = "Add Employee" if self.mode == "add" else "Edit Employee"  # Store title in a variable
+        title_text = "Add Employee" if self.mode == "add" else "Edit Employee"  
         self.title(title_text)
         self.geometry("420x240")
         self.resizable(False, False)
@@ -80,6 +92,9 @@ class EmployeeDialog(ctk.CTkToplevel):
     def fill_entry(self, entry_widget, data_key):
         """
         Fills an entry widget with data from employee_data if in edit mode.
+        
+        :param entry_widget (ctk.CTkEntry): The entry widget to populate.
+        :param data_key (str): The key to retrieve the corresponding value from employee_data.
         """
         if self.mode == "edit":
             entry_widget.insert(0, self.employee_data.get(data_key, ""))

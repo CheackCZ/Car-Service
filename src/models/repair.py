@@ -1,7 +1,5 @@
 from enum import Enum
-
 from datetime import datetime
-import re
 
 from src.models.employee import Employee
 from src.models.car import Car
@@ -72,6 +70,11 @@ class Repair:
         self.state = state
 
     def __str__(self):
+        """
+        Returns a string representation of the Repair instance.
+        
+        :return str: A formatted string with the repair's details.
+        """
         return f"({self.id}) {self.car} | {self.employee} | {self.repair_type} | {self.date_started} -> {self.date_finished or 'N/A'} | {self.price} | {self.state.value}"
         
 
