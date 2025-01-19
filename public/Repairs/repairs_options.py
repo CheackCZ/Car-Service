@@ -9,8 +9,10 @@ from src.models.repair_type import RepairType
 from src.models.employee import Employee
 from src.models.car import Car
 from src.models.repair import Repair, State
+from src.models.dirty_reading import DirtyReading
 
 from src.controllers.repair_controller import RepairController
+from src.controllers.dirty_reading_controller import DirtyReadingController
 
 from public.Repairs.repair_dialog import RepairDialog
 from public.Repairs.repair_selector import RepairSelector
@@ -53,8 +55,8 @@ class RepairsOptions(ctk.CTkFrame):
         self.separator.place(x=10, y=180, width=140)
 
         # Toggle Switch for Dirty Reading
-        self.switch_var = ctk.StringVar(value="off")
-        self.switch = ctk.CTkSwitch(self, text="Dirty Reading", variable=self.switch_var, onvalue="on", offvalue="off", command=self.toggle_dirty_reading)
+        self.switch_var = ctk.StringVar(value=False)
+        self.switch = ctk.CTkSwitch(self, text="Dirty Reading", variable=self.switch_var, onvalue=True, offvalue=False, command=self.toggle_dirty_reading)
         self.switch.place(x=20, y=200)
         
 
@@ -206,13 +208,13 @@ class RepairsOptions(ctk.CTkFrame):
         except Exception as e:
             CTkMessagebox(title="Success", message=f"{e}", icon="info")
             
-            
+    
     def toggle_dirty_reading(self):
-        state = self.switch_var.get()
-
-        if state == "on":
-            # Allow dirty reading
-            self.cursor.execute("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;")
-        else:
-            # Prevent dirty reading
-            self.cursor.execute("SET TRANSACTION ISOLATION LEVEL READ COMMITED;")
+        
+        state = self.switch_var.get() == str(1)
+        
+        DirtyReadingController.set_transaction_level(state)
+        print(f"Dirty Reading is {'enabled' if state else 'disabled'}.")
+        
+        if state:
+            DirtyReadingController.insert(DirtyReading("repair"))

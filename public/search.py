@@ -25,5 +25,11 @@ class SearchBar(ctk.CTkFrame):
         self.search_entry.place(x=10, y=0)
 
         # Search button
-        self.search_button = ctk.CTkButton(self, text="Search", font=("Poppins", 14), cursor="hand2")
+        self.search_button = ctk.CTkButton(self, command=self._search, text="Search", font=("Poppins", 14), cursor="hand2")
         self.search_button.place(x=700, y=0)
+        
+
+    def _search(self):
+        if self.on_search:
+            query = self.search_entry.get().strip()
+            self.on_search(query)

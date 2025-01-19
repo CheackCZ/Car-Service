@@ -2,14 +2,11 @@ from src.connection import Connection
 
 from datetime import datetime
 import re
-
 import csv
 
 from ..models.car import Car
 from ..models.client import Client
 from ..models.brand import Brand
-
-from CTkMessagebox import CTkMessagebox
 
 
 class CarController:

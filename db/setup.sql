@@ -91,6 +91,14 @@ create table repair (
     state enum('Pending', 'In process', 'Completed', 'Canceled') not null default 'Pending'
 );
 
+-- Vytvoření dodatkové tabulky pro dirty reading
+create table dirty_reading (
+	table_name varchar(50) primary key not null,
+    session_id char(36) unique key,
+    is_dirty_reading_on bit
+);
+
+
 
 -- Vložení dat do tabulky zaměstannců (employee)
 INSERT INTO employee (id, name, middle_name, last_name, phone, email, is_free)
@@ -185,14 +193,14 @@ CREATE VIEW all_repairs AS
 		car.id as car_id,
         brand.name AS brand_name,
         car.model AS car_model, car.registration_number AS car_registration_num, 
-		employee.id AS employee_id, employee.name AS employee_name, 
+		employee.id AS employee_id, employee.name AS employee_name, employee.middle_name AS employee_middle_name, employee.last_name AS employee_last_name, 
 		repair_type.name AS repair_type
 	FROM repair
 		JOIN car ON repair.car_id = car.id
 		JOIN brand ON car.brand_id = brand.id
 		JOIN employee ON repair.employee_id = employee.id
 		JOIN repair_type ON repair.repair_type_id = repair_type.id;
-        
+                
 -- Pohle pro vypsání všech aut
 CREATE VIEW all_cars AS
 	SELECT 
@@ -219,25 +227,5 @@ CREATE VIEW summary_report AS
 	JOIN car ON repair.car_id = car.id
 	GROUP BY employee.name
 	ORDER BY COUNT(employee.id) DESC;
-    
-    
-    
-    
-    select * from repair;
-    
-    UPDATE repair
-                SET state = 'Completed'
-                WHERE id = 8;
-    
-    
-SELECT 
-    OBJECT_NAME AS table_name, 
-    LOCK_TYPE, 
-    LOCK_STATUS, 
-    OWNER_THREAD_ID
-FROM 
-    performance_schema.data_locks;
-    
-    SHOW OPEN TABLES WHERE In_use > 0;
-    
-    SHOW CREATE TABLE repair;
+
+

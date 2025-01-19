@@ -1,7 +1,9 @@
 import customtkinter as ctk
 
-from .sidebar import Sidebar
-from .content import Content
+import uuid
+
+from public.sidebar import Sidebar
+from public.content import Content
 
 class Dashboard(ctk.CTk):
     """
@@ -18,6 +20,8 @@ class Dashboard(ctk.CTk):
         """
         super().__init__()  
         
+        self.SESSION_ID = uuid.uuid4()
+        
         # Creates a main window with title and geometry
         self.title("Car Service")
         self.geometry("1080x560")
@@ -30,6 +34,7 @@ class Dashboard(ctk.CTk):
         # Main content on the right side
         self.content = Content(master=self)
         self.content.place(x = 200, y = 20)
+        
 
 
 # Run the application

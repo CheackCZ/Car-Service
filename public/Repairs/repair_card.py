@@ -15,7 +15,7 @@ class RepairCard(ctk.CTkFrame):
         "Canceled": "red"
     }
     
-    def __init__(self, master, id, employee_name, employee_id, car_model, car_registration_num, brand_name, repair_type, date_started, date_finished, price, state, **kwargs):
+    def __init__(self, master, id, employee_name, employee_middle_name, employee_last_name, employee_id, car_model, car_registration_num, brand_name, repair_type, date_started, date_finished, price, state, **kwargs):
         """
         Initialize the RepairCard.
         
@@ -33,18 +33,25 @@ class RepairCard(ctk.CTkFrame):
         :param state (str): The current state of the repair (e.g., "Pending", "Completed").
         :param kwargs: Additional keyword arguments for the CTkFrame.
         """
-        super().__init__(master, width=640, height=100, **kwargs)
+        super().__init__(master, width=640, height=115, **kwargs)
         
         print(state)
         
         # Employee credentials 
         self.id = id
+        
         self.car_registration_num = car_registration_num
         self.car_model = car_model
+        
         self.brand_name = brand_name
+        
         self.employee_name = employee_name
+        self.employee_middle_name = employee_middle_name
+        self.employee_last_name = employee_last_name
         self.employee_id = employee_id 
+        
         self.repair_type = repair_type
+        
         self.date_started = date_started
         self.date_finished = date_finished
         self.price = price
@@ -71,6 +78,13 @@ class RepairCard(ctk.CTkFrame):
         # Label with Car's model and registration number
         self.car_data_label = ctk.CTkLabel(self, text="Car:    " + brand_name + " " + car_model + " (" + car_registration_num + ")", font=("Poppins", 12), height=10, text_color="gray")
         self.car_data_label.place(x = 60, y = 75)
+        
+        # Label with Employee's name and id
+        if self.employee_middle_name == None:
+            self.employee_data_label = ctk.CTkLabel(self, text=f"Empl: {self.employee_name} {self.employee_last_name} (" + str(self.employee_id) + ")", font=("Poppins", 12), height=10, text_color="gray")
+        else:
+            self.employee_data_label = ctk.CTkLabel(self, text=f"Empl: {self.employee_name} {self.employee_middle_name} {self.employee_last_name} (" + str(self.employee_id) + ")", font=("Poppins", 12), height=10, text_color="gray")
+        self.employee_data_label.place(x = 60, y = 90)
         
         # State with dynamic color
         state_color = self.STATE_COLORS.get(state, "gray")

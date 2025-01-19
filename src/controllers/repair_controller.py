@@ -35,7 +35,7 @@ class RepairController:
                 Repair(
                     id=row['repair_id'],
                     car=Car(id=row['car_id'], brand=Brand(name=row['brand_name']), registration_number=row['car_registration_num'], model=row['car_model']),
-                    employee=Employee(id=row['employee_id'], name=row['employee_name']),
+                    employee=Employee(id=row['employee_id'], name=row['employee_name'], middle_name=row['employee_middle_name'], last_name=row['employee_last_name']),
                     repair_type=RepairType(name=row['repair_type']),
                     date_started=row['date_started'],
                     date_finished=row['date_finished'],

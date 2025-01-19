@@ -4,7 +4,7 @@ from src.connection import Connection
 from public.dash import Dashboard
 
 
-class Landing(ctk.CTk):
+class App(ctk.CTk):
     """
     Class that represents the landing page of the Car Service Database Management application. It initializes the GUI and handles database connection testing.
     """    
@@ -63,6 +63,6 @@ class Landing(ctk.CTk):
 
 
 if __name__ == "__main__":
-    app = Landing()
+    app = App()
     app.after(500, app.test_connection)
     app.mainloop()

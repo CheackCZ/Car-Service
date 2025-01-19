@@ -84,7 +84,9 @@ class Repair:
         """
         return {
             "id": self.id,
-            "employee_name": f"{self.employee.name} {self.employee.last_name}",
+            "employee_name": self.employee.name,
+            "employee_middle_name": self.employee.middle_name,
+            "employee_last_name": self.employee.last_name,
             "employee_id": self.employee.id,
             "car_model": self.car.model,
             "car_registration_num": self.car.registration_number,
