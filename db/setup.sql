@@ -85,9 +85,9 @@ create table repair (
             
     date_started date not null,
 	date_finished date,
-		check (date_started < date_finished),
+		check (date_started <= date_finished),
     
-    price int not null,
+    price float not null,
     state enum('Pending', 'In process', 'Completed', 'Canceled') not null default 'Pending'
 );
 
@@ -220,3 +220,24 @@ CREATE VIEW summary_report AS
 	GROUP BY employee.name
 	ORDER BY COUNT(employee.id) DESC;
     
+    
+    
+    
+    select * from repair;
+    
+    UPDATE repair
+                SET state = 'Completed'
+                WHERE id = 8;
+    
+    
+SELECT 
+    OBJECT_NAME AS table_name, 
+    LOCK_TYPE, 
+    LOCK_STATUS, 
+    OWNER_THREAD_ID
+FROM 
+    performance_schema.data_locks;
+    
+    SHOW OPEN TABLES WHERE In_use > 0;
+    
+    SHOW CREATE TABLE repair;

@@ -1,9 +1,9 @@
+import re
+import csv
+
 from src.connection import Connection
 from src.models.employee import Employee
 
-import re
-
-import csv
 
 class EmployeeController:
     """
@@ -16,6 +16,7 @@ class EmployeeController:
         """
         conn = Connection.connection()
         cursor = conn.cursor(dictionary=True)
+        
         try:
             conn.start_transaction()
 
@@ -23,6 +24,7 @@ class EmployeeController:
             rows = cursor.fetchall()
 
             conn.commit()
+            
             return [
                 Employee(
                     id=row['id'],
@@ -35,9 +37,11 @@ class EmployeeController:
                 ) 
                 for row in rows
             ]
+        
         except Exception as e:
             conn.rollback()
             raise e
+        
         finally:
             cursor.close()
 
@@ -47,6 +51,7 @@ class EmployeeController:
         """
         conn = Connection.connection()
         cursor = conn.cursor(dictionary=True)
+        
         try:
             conn.start_transaction()
             
@@ -64,9 +69,11 @@ class EmployeeController:
                     email=row.get('email', ''),
                 is_free=bool(row['is_free'])
             ) if row else None
+        
         except Exception as e:
             conn.rollback()
             raise e
+        
         finally:
             cursor.close()
 
@@ -79,6 +86,7 @@ class EmployeeController:
 
         try:
             conn.start_transaction()
+            
             print("Inserting new employee into the database.") 
             cursor.execute(
                 """
@@ -87,12 +95,16 @@ class EmployeeController:
                 """,
                 (employee.name, employee.middle_name, employee.last_name, employee.phone, employee.email, employee.is_free)
             )
+            
             conn.commit()
+            
             employee.id = cursor.lastrowid
+        
         except Exception as e:
             print(f"Error during insert operation: {e}") 
             conn.rollback()
             raise e
+        
         finally:
             cursor.close()
 
@@ -105,10 +117,6 @@ class EmployeeController:
 
         try:
             conn.start_transaction()
-            print("Updating existing employee in the database.")  # Debugging
-            print(f"Executing query: UPDATE employee SET name={employee.name}, middle_name={employee.middle_name}, "
-            f"last_name={employee.last_name}, phone={employee.phone}, email={employee.email}, "
-            f"is_free={employee.is_free} WHERE id={employee.id}")
             
             cursor.execute(
                 """
@@ -118,11 +126,14 @@ class EmployeeController:
                 """,
                 (employee.name, employee.middle_name, employee.last_name, employee.phone, employee.email, employee.is_free, employee.id)
             )
+            
             conn.commit()
+            
         except Exception as e:
-            print(f"Error during update operation: {e}")  # Debugging
+            print(f"Error during update operation: {e}")
             conn.rollback()
             raise e
+        
         finally:
             cursor.close()
 
@@ -145,6 +156,7 @@ class EmployeeController:
                 """,
                 (employee_id,)
             )
+            
             result = cursor.fetchone()
             if result and result["ref_count"] > 0:
                 raise ValueError(f"Cannot delete employee ID {employee_id}: It is referenced in {result['ref_count']} repair(s).")
@@ -153,14 +165,17 @@ class EmployeeController:
             conn.commit()
             
             print(f"Employee ID {employee_id} deleted successfully.")
+            
         except ValueError as ve:
             conn.rollback()
             print(ve)
             raise ve
+        
         except Exception as e:
             conn.rollback()
             print(f"Error during delete operation: {e}")
             raise e
+        
         finally:
             cursor.close()
 
@@ -217,7 +232,6 @@ class EmployeeController:
             # Ensure 'is_free' is stored as a boolean in the row
             row["is_free"] = is_free
 
-    @staticmethod
     def import_data(data):
         """
         Imports employee data into the database after validating keys.
@@ -227,7 +241,9 @@ class EmployeeController:
 
         try:
             EmployeeController.validate_import_data(data)
+            
             conn.start_transaction()
+            
             for row in data:
                 cursor.execute(
                     """
@@ -236,13 +252,17 @@ class EmployeeController:
                     """,
                     (row['name'], row.get('middle_name', ''), row['last_name'], row['phone'], row['email'], row['is_free'])
                 )
+            
             conn.commit()
+        
         except ValueError as ve:
             conn.rollback()
             raise ve
+        
         except Exception as e:
             conn.rollback()
             raise e
+        
         finally:
             cursor.close()
             
@@ -258,18 +278,15 @@ class EmployeeController:
         try:
             conn.start_transaction()
 
-            # Fetch all employee data
             cursor.execute("SELECT * FROM employee")
             rows = cursor.fetchall()
 
             conn.commit()
 
-            # Write to CSV
             with open(file_path, 'w', newline='', encoding='utf-8') as file:
                 if not rows:
                     raise ValueError("No data available for export.")
 
-                # Get headers from the query result keys
                 headers = rows[0].keys()
                 writer = csv.DictWriter(file, fieldnames=headers)
                 writer.writeheader()

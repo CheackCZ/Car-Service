@@ -21,6 +21,7 @@ class RepairController:
         """
         conn = Connection.connection()
         cursor = conn.cursor(dictionary=True)
+        
         try:
             conn.start_transaction()
 
@@ -43,11 +44,14 @@ class RepairController:
                 )
                 for row in rows
             ]
+            
         except Exception as e:
             conn.rollback()
             raise e
+        
         finally:
             cursor.close()
+
 
     def fetch_by_id(repair_id):
         """
@@ -55,6 +59,7 @@ class RepairController:
         """
         conn = Connection.connection()
         cursor = conn.cursor(dictionary=True)
+        
         try:
             conn.start_transaction()
 
@@ -76,9 +81,11 @@ class RepairController:
                         state=State(row['state'].capitalize()) if row['state'] else State.DEFAULT
                     ) if row else None
             return None
+        
         except Exception as e:
             conn.rollback()
             raise e
+        
         finally:
             cursor.close()
 
@@ -93,7 +100,6 @@ class RepairController:
         try:
             conn.start_transaction()
 
-            # Check if the car is already under repair
             cursor.execute(
                 """
                 SELECT COUNT(*) AS ref_count
@@ -102,11 +108,11 @@ class RepairController:
                 """,
                 (repair.car.id,)
             )
+            
             car_check = cursor.fetchone()
             if car_check["ref_count"] > 0:
                 raise ValueError(f"Car ID {repair.car.id} is already under repair.")
 
-            # Check if the employee is free
             cursor.execute(
                 """
                 SELECT is_free 
@@ -115,6 +121,7 @@ class RepairController:
                 """,
                 (repair.employee.id,)
             )
+            
             employee = cursor.fetchone()
             if not employee or not employee["is_free"]:
                 raise ValueError(f"Employee ID {repair.employee.id} is not free and cannot be assigned to this repair.")
@@ -148,24 +155,21 @@ class RepairController:
 
             conn.commit()
             print(f"Repair added successfully, and Employee ID {repair.employee.id} marked as not free.")
+            
         except Exception as e:
             conn.rollback()
             print(f"Error during repair insertion: {e}")
             raise e
+        
         finally:
             cursor.close()
 
 
-    def update_state(repair_id, new_state):
+    def update_state(repair_id, new_state, cursor):
         """
         Updates the state of a repair and frees the employee if the state is 'Completed' or 'Canceled'.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor(dictionary=True)
-
         try:
-            conn.start_transaction()
-
             # Update the repair's state
             cursor.execute(
                 """
@@ -175,10 +179,9 @@ class RepairController:
                 """,
                 (new_state, repair_id)
             )
-            conn.commit()
 
             # Free the employee if the state is 'Completed' or 'Canceled'
-            if new_state.lower() in ["Completed", "Canceled"]:
+            if new_state.capitalize() in ["Completed", "Canceled"]:
                 cursor.execute(
                     """
                     SELECT employee_id
@@ -189,7 +192,7 @@ class RepairController:
                 )
                 result = cursor.fetchone()
                 if result:
-                    employee_id = result["employee_id"]
+                    employee_id = result[0]
                     cursor.execute(
                         """
                         UPDATE employee
@@ -200,11 +203,10 @@ class RepairController:
                     )
                     print(f"Employee ID {employee_id} marked as free due to repair state change to '{new_state}'.")
 
-            conn.commit()  
         except Exception as e:
-            conn.rollback()
             print(f"Error during state update: {e}")
             raise e
+        
         finally:
             cursor.close()
 
@@ -215,6 +217,7 @@ class RepairController:
         """
         conn = Connection.connection()
         cursor = conn.cursor()
+        
         try:
             conn.start_transaction()
             cursor.execute(
@@ -223,11 +226,11 @@ class RepairController:
                 SET car_id = %s, employee_id = %s, repair_type_id = %s, date_started = %s, date_finished = %s, price = %s, state = %s 
                 WHERE id = %s
                 """,
-                (repair.car.id, repair.employee.id, repair.repair_type.id, repair.date_started, repair.date_finished, repair.price, repair.state.value, repair.id)
+                (repair.car.id, repair.employee.id, repair.repair_type.id, str(repair.date_started), str(repair.date_finished), repair.price, repair.state.value, repair.id)
             )
             
             # Update state-specific logic
-            RepairController.update_state(repair.id, repair.state.value)
+            RepairController.update_state(repair.id, repair.state.value, cursor)
             
             conn.commit()
         except Exception as e:

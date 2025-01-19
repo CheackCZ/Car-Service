@@ -160,8 +160,8 @@ class RepairsOptions(ctk.CTkFrame):
                 repair_type=RepairType(id=repair_type_id),
                 employee=Employee(id=employee_id),
                 car=Car(id=car_id),
-                date_started=date.strftime(repair_data["date_started"], "%Y-%m-%d"),
-                date_finished=date.strftime(repair_data["date_ended"], "%Y-%m-%d"),
+                date_started=datetime.strptime(repair_data["date_started"], "%Y-%m-%d").date(),
+                date_finished=datetime.strptime(repair_data["date_ended"], "%Y-%m-%d").date(),
                 price=repair_data["price"],
                 state=state_enum             
             )

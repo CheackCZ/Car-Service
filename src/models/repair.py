@@ -1,5 +1,5 @@
 from enum import Enum
-from datetime import date
+from datetime import datetime, date
 
 from src.models.employee import Employee
 from src.models.car import Car
