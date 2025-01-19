@@ -29,6 +29,25 @@ class Content(ctk.CTkFrame):
 
         self.active_table = None
         self.all_data = []
+        
+        # Create instances of controllers
+        self.repair_controller = RepairController()
+        self.employee_controller = EmployeeController()
+        self.car_controller = CarController()
+        self.client_controller = ClientController()
+        self.repair_type_controller = RepairTypeController()
+        self.brand_controller = BrandController()
+
+        # Map table names to controller instances
+        self.controller_map = {
+            "repair": self.repair_controller,
+            "employee": self.employee_controller,
+            "car": self.car_controller,
+            "client": self.client_controller,
+            "repair_type": self.repair_type_controller,
+            "brand": self.brand_controller,
+        }
+
 
         # Frame with values from chosen Table
         self.frame = Frame(self)
@@ -72,15 +91,13 @@ class Content(ctk.CTkFrame):
         return self.active_table
     
     def fetch_data_for_table(self, table_name):
-        controller_map = {
-            "repair": RepairController,
-            "employee": EmployeeController,
-            "car": CarController,
-            "client": ClientController,
-            "repair_type": RepairTypeController,
-            "brand": BrandController,
-        }
-        controller = controller_map.get(table_name)
+        """
+        Fetch data from the corresponding controller instance based on the table name.
+        
+        :param table_name (str): The name of the table.
+        :return list: Data fetched from the controller.
+        """
+        controller = self.controller_map.get(table_name)
         
         if controller:
             return controller.fetch_all()

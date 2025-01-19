@@ -13,25 +13,25 @@ from src.models.repair_type import RepairType
 class RepairController:
     """
     Handles database operations for repair.
-    """
-    conn1 = Connection.connection()
-
-
-    def fetch_all():
+    """  
+    def __init__(self):
+        self.conn = Connection.connection()
+    
+    def fetch_all(self):
         """
         Retrieves all repairs from the database.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = self.conn.cursor(dictionary=True)
         
         try:
-            conn.start_transaction()
+            self.conn.start_transaction()
 
             query = "SELECT * FROM all_repairs"
             cursor.execute(query)
             rows = cursor.fetchall()
 
-            conn.commit()
+            self.conn.commit()
+            
 
             return [
                 Repair(
@@ -48,28 +48,27 @@ class RepairController:
             ]
             
         except Exception as e:
-            conn.rollback()
+            self.conn.rollback()
             raise e
         
         finally:
             cursor.close()
 
 
-    def fetch_by_id(repair_id):
+    def fetch_by_id(self, repair_id):
         """
         Fetches a repair by its ID using the `all_repairs` view.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = self.conn.cursor(dictionary=True)
         
         try:
-            conn.start_transaction()
+            self.conn.start_transaction()
 
             query = "SELECT * FROM all_repairs WHERE repair_id = %s"
             cursor.execute(query, (repair_id,))
             row = cursor.fetchone()
 
-            conn.commit()
+            self.conn.commit()
 
             if row:
                 return Repair(
@@ -85,22 +84,21 @@ class RepairController:
             return None
         
         except Exception as e:
-            conn.rollback()
+            self.conn.rollback()
             raise e
         
         finally:
             cursor.close()
 
 
-    def insert(repair: Repair):
+    def insert(self, repair: Repair):
         """
         Inserts a new repair into the database after checking car and employee availability.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = self.conn.cursor(dictionary=True)
 
         try:
-            conn.start_transaction()
+            self.conn.start_transaction()
 
             # Validate that car is not used somewhere else currently
             cursor.execute(
@@ -159,14 +157,14 @@ class RepairController:
                     (repair.employee.id,)
                 )
 
-            conn.commit()
+            self.conn.commit()
             print(f"Repair added successfully, and Employee ID {repair.employee.id} marked as not free.")
             
         except ValueError as ve:
             print(f"{ve}")
             
         except Exception as e:
-            conn.rollback()
+            self.conn.rollback()
             print(f"Error during repair insertion: {e}")
             raise e
         
@@ -174,7 +172,7 @@ class RepairController:
             cursor.close()
 
 
-    def update_state(repair_id, new_state, cursor):
+    def update_state(self, repair_id, new_state, cursor):
         """
         Updates the state of a repair and frees the employee if the state is 'Completed' or 'Canceled'.
         """
@@ -220,15 +218,14 @@ class RepairController:
             cursor.close()
 
             
-    def update(repair: Repair):
+    def update(self, repair: Repair):
         """
         Updates an existing repair in the database.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor()
+        cursor = self.conn.cursor()
         
         try:
-            conn.start_transaction()
+            self.conn.start_transaction()
             
             if type(repair.date_finished) == date:
                 date_finished = str(repair.date_finished)
@@ -244,48 +241,47 @@ class RepairController:
             )
             
             # Update state-specific logic
-            RepairController.update_state(repair.id, repair.state.value, cursor)
+            self.update_state(repair.id, repair.state.value, cursor)
             
-            conn.commit()
+            self.conn.commit()
             
         except Exception as e:
-            conn.rollback()
+            self.conn.rollback()
             raise e
         
         finally:
             cursor.close()
             
 
-    def delete(repair_id):
+    def delete(self, repair_id):
         """
         Deletes a repair by its ID.
         """
-        conn = Connection.connection()
-        
-        cursor = conn.cursor()
+        cursor = self.conn.cursor()
         try:
-            conn.start_transaction()
+            self.conn.start_transaction()
         
             cursor.execute("DELETE FROM repair WHERE id = %s", (repair_id,))
         
-            conn.commit()
+            self.conn.commit()
         
         except Exception as e:
-            conn.rollback()
+            self.conn.rollback()
             raise e
         
         finally:
             cursor.close()
 
 
-    def validate_foreign_keys(data):
+    def validate_foreign_keys(self, data):
         """
         Validates that the foreign key IDs in the imported data exist in their respective tables.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = self.conn.cursor(dictionary=True)
 
         try:
+            self.conn.start_transaction()
+            
             # Fetch all valid car IDs
             cursor.execute("SELECT id FROM car")
             valid_car_ids = {row["id"] for row in cursor.fetchall()}
@@ -298,6 +294,7 @@ class RepairController:
             cursor.execute("SELECT id FROM repair_type")
             valid_repair_type_ids = {row["id"] for row in cursor.fetchall()}
 
+            self.conn.commit()
             # Validate IDs in the data
             invalid_cars = set()
             invalid_employees = set()
@@ -321,11 +318,12 @@ class RepairController:
                 error_messages.append(f"Invalid Repair Type IDs: {', '.join(map(str, invalid_repair_types))}")
 
             if error_messages:
+                self.conn.rollback()
                 raise ValueError("\n".join(error_messages))
         finally:
             cursor.close()
 
-    def validate_import_data(data):
+    def validate_import_data(self, data):
         """
         Validates the imported repair data for required keys, data types, and value ranges.
 
@@ -354,7 +352,7 @@ class RepairController:
 
             date_started = row.get("date_started", "").strip()
             try:
-                datetime.stpftime(date_started, "%Y-%m-%d").date()
+                datetime.strptime(date_started, "%Y-%m-%d").date()
             except ValueError:
                 raise ValueError(f"Row {idx}: 'date_started' must be in YYYY-MM-DD format.")
 
@@ -381,21 +379,20 @@ class RepairController:
         print("Validation passed!")
         
 
-    def import_data(data):
+    def import_data(self, data):
         """
         Imports repair data into the database after validation.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor()
+        cursor = self.conn.cursor()
 
         try:
             # Validate required keys
-            RepairController.validate_import_data(data)
+            self.validate_import_data(data)
 
             # Validate foreign keys
-            RepairController.validate_foreign_keys(data)
+            self.validate_foreign_keys(data)
 
-            conn.start_transaction()
+            self.conn.start_transaction()
             for row in data:
                 cursor.execute(
                     """
@@ -404,33 +401,32 @@ class RepairController:
                     """,
                     (row['car_id'], row['employee_id'], row['repair_type_id'], row['date_started'], row['date_finished'], row['price'], row['state'])
                 )
-            conn.commit()
-            print("Repairs imported successfully!")
+            self.conn.commit()
+            print("Repair imported successfully!")
         except ValueError as ve:
-            conn.rollback()
+            self.conn.rollback()
             raise ve
         except Exception as e:
-            conn.rollback()
+            self.conn.rollback()
             raise e
         finally:
             cursor.close()
             
             
-    def export_data(file_path):
+    def export_data(self, file_path):
         """
         Exports all repairs to a CSV file.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = self.conn.cursor(dictionary=True)
 
         try:
-            conn.start_transaction()
+            self.conn.start_transaction()
 
             query = "SELECT * FROM all_repairs"
             cursor.execute(query)
             rows = cursor.fetchall()
 
-            conn.commit()
+            self.conn.commit()
 
             # Write data to CSV
             with open(file_path, 'w', newline='', encoding='utf-8') as file:
@@ -444,7 +440,7 @@ class RepairController:
 
             print(f"Repairs exported successfully to {file_path}.")
         except Exception as e:
-            conn.rollback()
+            self.conn.rollback()
             raise e
         finally:
             cursor.close()

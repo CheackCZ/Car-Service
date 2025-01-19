@@ -25,6 +25,10 @@ class ImportExport(ctk.CTkFrame):
         """
         super().__init__(parent, **kwargs)
         self.get_active_table_callback = get_active_table_callback
+        
+        self.car_controller = CarController()
+        self.employee_controller = EmployeeController()
+        self.repair_controller = RepairController()
 
         # Import Button
         self.import_button = ctk.CTkButton(self, text="Import", command=self.import_data, border_width=2, border_color="#3B8ED0", fg_color="transparent", corner_radius=20)
@@ -145,9 +149,9 @@ class ImportExport(ctk.CTkFrame):
 
     def get_controller(self, table_name):
         controllers = {
-            "car": CarController,
-            "employee": EmployeeController,
-            "repair": RepairController,
+            "car": self.car_controller,
+            "employee": self.employee_controller,
+            "repair": self.repair_controller,
         }
         
         if table_name not in controllers:

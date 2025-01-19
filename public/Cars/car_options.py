@@ -29,6 +29,8 @@ class CarsOptions(ctk.CTkFrame):
         self.configure(fg_color="transparent")
         
         self.session_id = session_id
+        
+        self.car_controller = CarController()
 
         # Label with "Options" 
         self.db_name_label = ctk.CTkLabel(self, text="Options:", font=("Poppins", 14), text_color="gray", wraplength=160, justify="left")
@@ -84,7 +86,7 @@ class CarsOptions(ctk.CTkFrame):
             )
 
             # Save the car
-            CarController.insert(new_car)
+            self.car_controller.insert(new_car)
             CTkMessagebox(title="Success", message="Car added successfully.", icon="info")
         except Exception as e:
             print(e)
@@ -106,7 +108,7 @@ class CarsOptions(ctk.CTkFrame):
         :param car_id (int): ID of the car to edit.
         """
         try:
-            car = CarController.fetch_by_id(car_id)
+            car = self.car_controller.fetch_by_id(car_id)
             if not car:
                 print("Car not found.")
                 return
@@ -139,7 +141,7 @@ class CarsOptions(ctk.CTkFrame):
                 registration_date=car_data["registration_date"],
                 model=car_data["model"]
             )
-            CarController.update(updated_car)
+            self.car_controller.update(updated_car)
             CTkMessagebox(title="Success", message="Car updated successfully.", icon="info")
         except Exception as e:
             print(e)
@@ -166,7 +168,7 @@ class CarsOptions(ctk.CTkFrame):
         :param car_id (int): ID of the car to remove.
         """
         try:
-            CarController.delete(car_id)
+            self.car_controller.delete(car_id)
             CTkMessagebox(title="Success", message="Car deleted successfully.", icon="info")
         except Exception as e:
             CTkMessagebox(title="Error", message=f"{e}", icon="warning")

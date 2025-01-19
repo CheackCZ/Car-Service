@@ -28,12 +28,20 @@ class Tables(ctk.CTkScrollableFrame):
         self.active_button = None
         
         # Adding buttons with dynamic show_data method
-        self.add_table_button("repair", lambda: self.show_data(RepairController, "repair"))
-        self.add_table_button("employee", lambda: self.show_data(EmployeeController, "employee"))
-        self.add_table_button("car", lambda: self.show_data(CarController, "car"))
-        self.add_table_button("client", lambda: self.show_data(ClientController, "client"))
-        self.add_table_button("repair_type", lambda: self.show_data(RepairTypeController, "repair_type"))
-        self.add_table_button("brand", lambda: self.show_data(BrandController, "brand"))
+        self.repair_controller = RepairController()
+        self.employee_controller = EmployeeController()
+        self.car_controller = CarController()
+        self.client_controller = ClientController()
+        self.repair_type_controller = RepairTypeController()
+        self.brand_controller = BrandController()
+
+        # Add table buttons with instance references
+        self.add_table_button("repair", lambda: self.show_data(self.repair_controller, "repair"))
+        self.add_table_button("employee", lambda: self.show_data(self.employee_controller, "employee"))
+        self.add_table_button("car", lambda: self.show_data(self.car_controller, "car"))
+        self.add_table_button("client", lambda: self.show_data(self.client_controller, "client"))
+        self.add_table_button("repair_type", lambda: self.show_data(self.repair_type_controller, "repair_type"))
+        self.add_table_button("brand", lambda: self.show_data(self.brand_controller, "brand"))
         
         
     def add_table_button(self, text, command):

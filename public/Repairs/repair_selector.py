@@ -25,6 +25,8 @@ class RepairSelector(ctk.CTkToplevel):
         self.selected_repair_id = None
         self.on_submit_callback = on_submit_callback
 
+        self.repair_controller = RepairController()
+
         # Window properties
         self.title(title)
         self.geometry("260x180")
@@ -49,7 +51,7 @@ class RepairSelector(ctk.CTkToplevel):
         Load repairs from the database and populate the combobox.
         """
         try:
-            repairs = RepairController.fetch_all()
+            repairs = self.repair_controller.fetch_all()
 
             self.repair_data = {
                 f"({repair.id}) {repair.repair_type.name}": repair.id

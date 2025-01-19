@@ -39,6 +39,12 @@ class RepairDialog(ctk.CTkToplevel):
 
         self.parent = parent
         self.on_submit_callback = on_submit_callback
+        
+        # Create instances of controllers
+        self.repair_type_controller = RepairTypeController()
+        self.employee_controller = EmployeeController()
+        self.car_controller = CarController()
+        
 
         # Title Label
         self.title_label = ctk.CTkLabel(self, text=title_text, font=("Poppins", 16, "bold"), text_color="white")
@@ -110,15 +116,15 @@ class RepairDialog(ctk.CTkToplevel):
         """
         try:
             # Load repair types
-            repair_types = RepairTypeController.fetch_all()
+            repair_types = self.repair_type_controller.fetch_all()
             self.repair_type_combobox.configure(values=[f"({rt.id}) {rt.name}" for rt in repair_types])
 
     	    # Load employees
-            employees = EmployeeController.fetch_all()
+            employees = self.employee_controller.fetch_all()
             self.employee_combobox.configure(values=[f"({emp.id}) {emp.name} {emp.last_name}" for emp in employees])
             
             # Load cars
-            cars = CarController.fetch_all()
+            cars = self.car_controller.fetch_all()
             self.car_combobox.configure(values=[f"({car.id}) {car.brand.name} {car.model} - {car.registration_number}" for car in cars])
 
             # Load states from the State enum

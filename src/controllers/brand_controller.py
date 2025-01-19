@@ -5,89 +5,90 @@ class BrandController:
     """
     Handles database operations for 'Brand' - instances of class Brand.
     """
+    def __init__(self):
+        self.conn = Connection.connection()
     
-    def fetch_all():
+    def fetch_all(self):
         """
         Retrieves all brands from the database.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = self.conn.cursor(dictionary=True)
         try:
-            conn.start_transaction()
+            self.conn.start_transaction()
 
             cursor.execute("SELECT * FROM brand")
             rows = cursor.fetchall()
 
-            conn.commit()
+            self.conn.commit()
 
             return [Brand(row['id'], row['name']) for row in rows]
         except Exception as e:
-            conn.rollback()
+            self.conn.rollback()
             raise e
         finally:
             cursor.close()
 
-    def fetch_by_id(brand_id):
+    def fetch_by_id(self, brand_id):
         """
         Fetches a brand by its ID.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor(dictionary=True)
+        self.conn = Connection.connection()
+        cursor = self.conn.cursor(dictionary=True)
         try:
-            conn.start_transaction()
+            self.conn.start_transaction()
 
             cursor.execute("SELECT * FROM brand WHERE id = %s", (brand_id,))
             row = cursor.fetchone()
 
-            conn.commit()
+            self.conn.commit()
 
             return Brand(row['id'], row['name']) if row else None
         except Exception as e:
-            conn.rollback()
+            self.conn.rollback()
             raise e
         finally:
             cursor.close()
 
-    def save(brand: Brand):
+    def save(self, brand: Brand):
         """
         Saves a brand to the database.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor()
+        self.conn = Connection.connection()
+        cursor = self.conn.cursor()
         try:
-            conn.start_transaction()
+            self.conn.start_transaction()
            
             if brand.id is None:
                 cursor.execute(
                     "INSERT INTO brand (name) VALUES (%s)",
                     (brand.name,)
                 )
-                conn.commit()
+                self.conn.commit()
                 brand.id = cursor.lastrowid
             else:
                 cursor.execute(
                     "UPDATE brand SET name = %s WHERE id = %s",
                     (brand.name, brand.id)
                 )
-                conn.commit()
+                self.conn.commit()
         except Exception as e:
-            conn.rollback()
+            self.conn.rollback()
             raise e
         finally:
             cursor.close()
 
-    def delete(brand_id):
+    def delete(self, brand_id):
         """
         Deletes a brand by its ID.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor()
+        self.conn = Connection.connection()
+        cursor = self.conn.cursor()
         try:
-            conn.start_transaction()
+            self.conn.start_transaction()
             cursor.execute("DELETE FROM brand WHERE id = %s", (brand_id,))
-            conn.commit()
+            self.conn.commit()
         except Exception as e:
-            conn.rollback()
+            self.conn.rollback()
             raise e
         finally:
             cursor.close()

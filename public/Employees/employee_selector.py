@@ -30,6 +30,8 @@ class EmployeeSelector(ctk.CTkToplevel):
         self.parent = parent
         self.on_submit_callback = on_submit_callback
         
+        self.employee_controller = EmployeeController()
+        
         # Label for employee selection
         self.label = ctk.CTkLabel(self, text="Employee Selection", text_color="white", font=("Poppins", 16, "bold"))
         self.label.place(relx = 0.5, y = 30, anchor="center")
@@ -49,7 +51,7 @@ class EmployeeSelector(ctk.CTkToplevel):
         Load employees from the database and populate the combobox.
         """
         try:
-            employees = EmployeeController.fetch_all()
+            employees = self.employee_controller.fetch_all()
             
             self.employee_data = {
                 f"({employee.id}) {employee.name} {employee.middle_name} {employee.last_name}": employee.id

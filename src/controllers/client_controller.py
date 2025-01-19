@@ -5,61 +5,62 @@ class ClientController:
     """
     Handles database operations for 'Client' - instances of class Client.
     """
-    
-    def fetch_all():
+    def __init__(self):
+        self.conn = Connection.connection()
+        
+    def fetch_all(self):
         """
         Retrieves all client from the database.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = self.conn.cursor(dictionary=True)
         
         try:
-            conn.start_transaction()
+            self.conn.start_transaction()
         
             cursor.execute("SELECT * FROM client")
             rows = cursor.fetchall()
 
-            conn.commit()
+            self.conn.commit()
 
             return [Client(row['id'], row['name'], row['middle_name'], row['last_name'], row['phone'], row['email']) for row in rows]
         except Exception as e:
-            conn.rollback()
+            self.conn.rollback()
             raise e
         finally:
             cursor.close()
 
-    def fetch_by_id(client_id):
+    def fetch_by_id(self, client_id):
         """
         Fetches a client by their ID.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor(dictionary=True)
+        self.conn = Connection.connection()
+        cursor = self.conn.cursor(dictionary=True)
         
         try:
-            conn.start_transaction()
+            self.conn.start_transaction()
         
             cursor.execute("SELECT * FROM client WHERE id = %s", (client_id,))
             row = cursor.fetchone()
         
-            conn.commit()
+            self.conn.commit()
             
             return Client(row['id'], row['name'], row['middle_name'], row['last_name'], row['phone'], row['email']) if row else None
         except Exception as e:
-            conn.rollback()
+            self.conn.rollback()
             raise e
         finally:
             cursor.close()
 
     @staticmethod
-    def save(client: Client):
+    def save(self, client: Client):
         """
         Saves the current Client instance to the database.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor()
+        self.conn = Connection.connection()
+        cursor = self.conn.cursor()
         
         try:
-            conn.start_transaction()
+            self.conn.start_transaction()
         
             if client.id is None:
                 cursor.execute(
@@ -72,29 +73,29 @@ class ClientController:
                     "UPDATE client SET name = %s, middle_name = %s, last_name = %s, phone = %s, email = %s WHERE id = %s",
                     (client.name, client.middle_name, client.last_name, client.phone, client.email, client.id)
                 )
-            conn.commit()
+            self.conn.commit()
         except Exception as e:
-            conn.rollback()
+            self.conn.rollback()
             raise e
         finally:
             cursor.close()
 
     @staticmethod
-    def delete(client_id):
+    def delete(self, client_id):
         """
         Deletes a client by their ID.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor()
+        self.conn = Connection.connection()
+        cursor = self.conn.cursor()
         
         try:
-            conn.start_transaction()
+            self.conn.start_transaction()
         
             cursor.execute("DELETE FROM client WHERE id = %s", (client_id,))
         
-            conn.commit()
+            self.conn.commit()
         except Exception as e:
-            conn.rollback()
+            self.conn.rollback()
             raise e
         finally:
             cursor.close()

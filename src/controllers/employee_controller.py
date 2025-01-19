@@ -9,21 +9,22 @@ class EmployeeController:
     """
     Handles database operations for employee.
     """
+    def __init__(self):
+        self.conn = Connection.connection()
     
-    def fetch_all():
+    def fetch_all(self):
         """
         Retrieves all employees from the database.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = self.conn.cursor(dictionary=True)
         
         try:
-            conn.start_transaction()
+            self.conn.start_transaction()
 
             cursor.execute("SELECT * FROM employee")
             rows = cursor.fetchall()
 
-            conn.commit()
+            self.conn.commit()
             
             return [
                 Employee(
@@ -39,26 +40,25 @@ class EmployeeController:
             ]
         
         except Exception as e:
-            conn.rollback()
+            self.conn.rollback()
             raise e
         
         finally:
             cursor.close()
 
-    def fetch_by_id(employee_id):
+    def fetch_by_id(self, employee_id):
         """
         Fetches an employee by their ID.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = self.conn.cursor(dictionary=True)
         
         try:
-            conn.start_transaction()
+            self.conn.start_transaction()
             
             cursor.execute("SELECT * FROM employee WHERE id = %s", (employee_id,))
             row = cursor.fetchone()
             
-            conn.commit()
+            self.conn.commit()
             
             return Employee(
                 id=row['id'],
@@ -71,21 +71,20 @@ class EmployeeController:
             ) if row else None
         
         except Exception as e:
-            conn.rollback()
+            self.conn.rollback()
             raise e
         
         finally:
             cursor.close()
 
-    def insert(employee: Employee):
+    def insert(self, employee: Employee):
         """
         Inserts a new employee into the database.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor()
+        cursor = self.conn.cursor()
 
         try:
-            conn.start_transaction()
+            self.conn.start_transaction()
             
             print("Inserting new employee into the database.") 
             cursor.execute(
@@ -96,27 +95,26 @@ class EmployeeController:
                 (employee.name, employee.middle_name, employee.last_name, employee.phone, employee.email, employee.is_free)
             )
             
-            conn.commit()
+            self.conn.commit()
             
             employee.id = cursor.lastrowid
         
         except Exception as e:
             print(f"Error during insert operation: {e}") 
-            conn.rollback()
+            self.conn.rollback()
             raise e
         
         finally:
             cursor.close()
 
-    def update(employee: Employee):
+    def update(self, employee: Employee):
         """
         Updates an existing employee in the database.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor()
+        cursor = self.conn.cursor()
 
         try:
-            conn.start_transaction()
+            self.conn.start_transaction()
             
             cursor.execute(
                 """
@@ -127,25 +125,24 @@ class EmployeeController:
                 (employee.name, employee.middle_name, employee.last_name, employee.phone, employee.email, employee.is_free, employee.id)
             )
             
-            conn.commit()
+            self.conn.commit()
             
         except Exception as e:
             print(f"Error during update operation: {e}")
-            conn.rollback()
+            self.conn.rollback()
             raise e
         
         finally:
             cursor.close()
 
-    def delete(employee_id):
+    def delete(self, employee_id):
         """
         Deletes an employee by their ID after ensuring it is not used as a foreign key.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = self.conn.cursor(dictionary=True)
 
         try:
-            conn.start_transaction()
+            self.conn.start_transaction()
 
             # Check if the employee ID is referenced in other tables
             cursor.execute(
@@ -162,17 +159,17 @@ class EmployeeController:
                 raise ValueError(f"Cannot delete employee ID {employee_id}: It is referenced in {result['ref_count']} repair(s).")
 
             cursor.execute("DELETE FROM employee WHERE id = %s", (employee_id,))
-            conn.commit()
+            self.conn.commit()
             
             print(f"Employee ID {employee_id} deleted successfully.")
             
         except ValueError as ve:
-            conn.rollback()
+            self.conn.rollback()
             print(ve)
             raise ve
         
         except Exception as e:
-            conn.rollback()
+            self.conn.rollback()
             print(f"Error during delete operation: {e}")
             raise e
         
@@ -180,7 +177,7 @@ class EmployeeController:
             cursor.close()
 
 
-    def validate_import_data(data):
+    def validate_import_data(self, data):
         """
         Validates the imported employee data for name, middle_name, last_name, phone, email, and is_free.
 
@@ -232,17 +229,16 @@ class EmployeeController:
             # Ensure 'is_free' is stored as a boolean in the row
             row["is_free"] = is_free
 
-    def import_data(data):
+    def import_data(self, data):
         """
         Imports employee data into the database after validating keys.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor()
+        cursor = self.conn.cursor()
 
         try:
-            EmployeeController.validate_import_data(data)
+            self.validate_import_data(data)
             
-            conn.start_transaction()
+            self.conn.start_transaction()
             
             for row in data:
                 cursor.execute(
@@ -253,35 +249,34 @@ class EmployeeController:
                     (row['name'], row.get('middle_name', ''), row['last_name'], row['phone'], row['email'], row['is_free'])
                 )
             
-            conn.commit()
+            self.conn.commit()
         
         except ValueError as ve:
-            conn.rollback()
+            self.conn.rollback()
             raise ve
         
         except Exception as e:
-            conn.rollback()
+            self.conn.rollback()
             raise e
         
         finally:
             cursor.close()
             
 
-    def export_data(file_path):
+    def export_data(self, file_path):
         """
         Exports all employees to a CSV file.
         :param file_path: The path to save the CSV file.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = self.conn.cursor(dictionary=True)
 
         try:
-            conn.start_transaction()
+            self.conn.start_transaction()
 
             cursor.execute("SELECT * FROM employee")
             rows = cursor.fetchall()
 
-            conn.commit()
+            self.conn.commit()
 
             with open(file_path, 'w', newline='', encoding='utf-8') as file:
                 if not rows:
@@ -294,7 +289,7 @@ class EmployeeController:
 
             print(f"Data exported successfully to {file_path}.")
         except Exception as e:
-            conn.rollback()
+            self.conn.rollback()
             raise e
         finally:
             cursor.close()

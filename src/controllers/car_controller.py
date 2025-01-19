@@ -13,22 +13,23 @@ class CarController:
     """
     Handles database operations for car.
     """
-
-    def fetch_all():
+    def __init__(self):
+        self.conn = Connection.connection()
+        
+    def fetch_all(self):
         """
         Retrieves all cars from the database.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = self.conn.cursor(dictionary=True)
         
         try:
-            conn.start_transaction()
+            self.conn.start_transaction()
 
             query = "SELECT * FROM all_cars"
             cursor.execute(query)
             rows = cursor.fetchall()
 
-            conn.commit()
+            self.conn.commit()
 
             return [
                 Car(
@@ -52,20 +53,19 @@ class CarController:
                 for row in rows
             ]
         except Exception as e:
-            conn.rollback()
+            self.conn.rollback()
             raise e
         finally:
             cursor.close()
 
-    def fetch_by_id(car_id):
+    def fetch_by_id(self, car_id):
         """
         Fetches a car by its ID.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = self.conn.cursor(dictionary=True)
 
         try:
-            conn.start_transaction()
+            self.conn.start_transaction()
 
             query = """
                 SELECT car.id AS car_id, car.registration_number, car.registration_date, car.model, 
@@ -80,7 +80,7 @@ class CarController:
             cursor.execute(query, (car_id,))
             row = cursor.fetchone()
 
-            conn.commit()
+            self.conn.commit()
 
             if row:
                 return Car(
@@ -103,47 +103,45 @@ class CarController:
                 )
             return None
         except Exception as e:
-            conn.rollback()
+            self.conn.rollback()
             raise e
         finally:
             cursor.close()
 
-    def fetch_brand_id_by_name(brand_name):
+    def fetch_brand_id_by_name(self, brand_name):
         """
         Fetches the brand ID from the database based on the brand name.
         :param brand_name: The name of the brand.
         :return: The ID of the brand.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = self.conn.cursor(dictionary=True)
 
         try:
-            conn.start_transaction()
+            self.conn.start_transaction()
 
             query = "SELECT id FROM brand WHERE name = %s"
             cursor.execute(query, (brand_name,))
             result = cursor.fetchone()
 
-            conn.commit()
+            self.conn.commit()
 
             if result:
                 return result["id"]
             else:
                 raise ValueError(f"Brand '{brand_name}' not found in the database.")
         except Exception as e:
-            conn.rollback()
+            self.conn.rollback()
             raise e
         finally:
             cursor.close()
 
-    def insert(car: Car):
+    def insert(self, car: Car):
         """
         Inserts a new car into the database.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor()
+        cursor = self.conn.cursor()
         try:
-            conn.start_transaction()
+            self.conn.start_transaction()
             cursor.execute(
                 """
                 INSERT INTO car (client_id, brand_id, registration_number, registration_date, model) 
@@ -151,23 +149,22 @@ class CarController:
                 """,
                 (car.client.id, car.brand.id, car.registration_number, car.registration_date, car.model)
             )
-            conn.commit()
+            self.conn.commit()
             car.id = cursor.lastrowid  # Update the car's ID with the newly inserted row ID
         except Exception as e:
-            conn.rollback()
+            self.conn.rollback()
             raise e
         finally:
             cursor.close()
 
 
-    def update(car: Car):
+    def update(self, car: Car):
         """
         Updates an existing car in the database.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor()
+        cursor = self.conn.cursor()
         try:
-            conn.start_transaction()
+            self.conn.start_transaction()
             cursor.execute(
                 """
                 UPDATE car 
@@ -176,22 +173,21 @@ class CarController:
                 """,
                 (car.client.id, car.brand.id, car.registration_number, car.registration_date, car.model, car.id)
             )
-            conn.commit()
+            self.conn.commit()
         except Exception as e:
-            conn.rollback()
+            self.conn.rollback()
             raise e
         finally:
             cursor.close()
 
-    def delete(car_id):
+    def delete(self, car_id):
         """
         Deletes a car by its ID after ensuring it is not used as a foreign key in the repair table.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = self.conn.cursor(dictionary=True)
 
         try:
-            conn.start_transaction()
+            self.conn.start_transaction()
 
             # Check if the car ID is referenced in the repair table
             cursor.execute(
@@ -208,21 +204,21 @@ class CarController:
 
             # Proceed with deletion if no references are found
             cursor.execute("DELETE FROM car WHERE id = %s", (car_id,))
-            conn.commit()
+            self.conn.commit()
             print(f"Car ID {car_id} deleted successfully.")
         except ValueError as ve:
-            conn.rollback()
+            self.conn.rollback()
             print(ve)
             raise ve
         except Exception as e:
-            conn.rollback()
+            self.conn.rollback()
             print(f"Error during delete operation: {e}")
             raise e
         finally:
             cursor.close()
 
                 
-    def validate_import_data(data):
+    def validate_import_data(self, data):
         """
         Validates the imported car data for registration_number, registration_date, and model.
 
@@ -257,12 +253,11 @@ class CarController:
             elif not re.match(r"^[a-zA-Z0-9á-žÁ-Ž\s]+$", model):
                 raise ValueError(f"Row {idx}: 'model' contains invalid characters. Only letters, numbers, and spaces are allowed.")
 
-    def validate_client_and_brand_ids(data):
+    def validate_client_and_brand_ids(self, data):
         """
         Validates if client_ids and brand_ids in the data exist in the database.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = self.conn.cursor(dictionary=True)
 
         try:
             cursor.execute("SELECT id FROM client")
@@ -292,20 +287,19 @@ class CarController:
             cursor.close()
 
 
-    def import_data(data):
+    def import_data(self, data):
         """
         Imports car data into the database after validating keys, client_ids, and brand_ids.
         Shows a CTkMessagebox error if validation fails.
         """
-        conn = Connection.connection()
-        cursor = conn.cursor()
+        cursor = self.conn.cursor()
 
         try:
-            CarController.validate_import_data(data)
+            self.validate_import_data(data)
 
-            CarController.validate_client_and_brand_ids(data)
+            self.validate_client_and_brand_ids(data)
 
-            conn.start_transaction()
+            self.conn.start_transaction()
 
             for row in data:
                 cursor.execute(
@@ -316,14 +310,14 @@ class CarController:
                     (row['client_id'], row['brand_id'], row['registration_number'], row['registration_date'], row['model'])
                 )
 
-            conn.commit()
+            self.conn.commit()
 
             print("Data imported successfully!")
         except ValueError as ve:
             print(f"Validation Error: {ve}")
-            conn.rollback()
+            self.conn.rollback()
         except Exception as e:
             print(f"Exception: {e}")
-            conn.rollback()
+            self.conn.rollback()
         finally:
             cursor.close()

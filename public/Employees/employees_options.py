@@ -27,6 +27,8 @@ class EmployeesOptions(ctk.CTkFrame):
         
         self.session_id = session_id
         
+        self.employee_controller = EmployeeController()
+        
         # Label with "Tables" 
         self.db_name_label = ctk.CTkLabel(self, text="Options:", font=("Poppins", 14), text_color="gray", wraplength=160, justify="left")
         self.db_name_label.place(x=10, y=10)
@@ -78,7 +80,7 @@ class EmployeesOptions(ctk.CTkFrame):
                 is_free=True  
             )
 
-            EmployeeController.insert(new_employee)
+            self.employee_controller.insert(new_employee)
             CTkMessagebox(title="Success", message="Employee added successfully.", icon="info")
         except ValueError as ve:
             CTkMessagebox(title="Validation Error", message=str(ve), icon="warning")
@@ -106,7 +108,7 @@ class EmployeesOptions(ctk.CTkFrame):
         
         :param employee_id (int): ID of the employee to edit.
         """
-        employee = EmployeeController.fetch_by_id(employee_id)
+        employee = self.employee_controller.fetch_by_id(employee_id)
         
         if not employee:
             CTkMessagebox(title="Error", message="Employee not found.", icon="warning")
@@ -144,7 +146,7 @@ class EmployeesOptions(ctk.CTkFrame):
                 is_free=updated_data.get("is_free", True),
             )
 
-            EmployeeController.update(updated_employee)
+            self.employee_controller.update(updated_employee)
             CTkMessagebox(title="Success", message="Employee updated successfully.", icon="info")
         except ValueError as ve:
             CTkMessagebox(title="Error", message=f"{ve}", icon="warning")    
@@ -179,7 +181,7 @@ class EmployeesOptions(ctk.CTkFrame):
         )
         if confirm.get() == "Yes":
             try:
-                EmployeeController.delete(employee_id)
+                self.employee_controller.delete(employee_id)
                 CTkMessagebox(title="Success", message="Employee deleted successfully.", icon="info")
             except Exception as e:
                 CTkMessagebox(title="Error", message=f"{e}", icon="warning")

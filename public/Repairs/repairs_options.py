@@ -35,6 +35,8 @@ class RepairsOptions(ctk.CTkFrame):
         self.configure(fg_color="transparent")
 
         self.session_id = session_id
+        
+        self.repair_controller = RepairController()
 
         # Label with "Options" 
         self.db_name_label = ctk.CTkLabel(self, text="Options:", font=("Poppins", 14), text_color="gray", wraplength=160, justify="left")
@@ -107,7 +109,7 @@ class RepairsOptions(ctk.CTkFrame):
             )
 
             # Insert the repair into the database
-            RepairController.insert(new_repair)
+            self.repair_controller.insert(new_repair)
             CTkMessagebox(title="Success", message="Repair added successfully.", icon="info")
         except ValueError as ve:
             print(f"Validation Error: {ve}")
@@ -133,7 +135,7 @@ class RepairsOptions(ctk.CTkFrame):
         :param repair_id (int): ID of the repair to edit.
         """
         try:
-            repair = RepairController.fetch_by_id(repair_id)
+            repair = self.repair_controller.fetch_by_id(repair_id)
             if not repair:
                 CTkMessagebox(title="Error", message="Repair not found.", icon="warning")
                 return
@@ -176,7 +178,7 @@ class RepairsOptions(ctk.CTkFrame):
                 state=state_enum             
             )
             
-            RepairController.update(updated_repair)
+            self.repair_controller.update(updated_repair)
             CTkMessagebox(title="Success", message="Repair updated successfully.", icon="info")
         except Exception as e:
             print(e)
@@ -198,7 +200,7 @@ class RepairsOptions(ctk.CTkFrame):
         :param repair_id (int): ID of the repair to remove.
         """
         try:
-            repair = RepairController.fetch_by_id(repair_id)
+            repair = self.repair_controller.fetch_by_id(repair_id)
             if not repair:
                 raise ValueError("Repair not found.")
             
@@ -206,7 +208,7 @@ class RepairsOptions(ctk.CTkFrame):
             if repair.state not in [State.COMPLETED, State.CANCELED]:
                 raise ValueError("Only repairs marked as 'Completed' or 'Canceled' can be deleted.")
             
-            RepairController.delete(repair_id)
+            self.repair_controller.delete(repair_id)
             CTkMessagebox(title="Success", message="Repair deleted successfully.", icon="info")
         except Exception as e:
             CTkMessagebox(title="Success", message=f"{e}", icon="info")

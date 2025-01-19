@@ -19,6 +19,8 @@ class CarSelector(ctk.CTkToplevel):
         :param kwargs: Additional arguments for the CTkFrame.
         """
         super().__init__(parent, **kwargs)
+        
+        self.car_controller = CarController()
 
         self.car_data = {}
         self.selected_car_id = None
@@ -49,7 +51,7 @@ class CarSelector(ctk.CTkToplevel):
         Load cars from the database and populate the combobox.
         """
         try:
-            cars = CarController.fetch_all()
+            cars = self.car_controller.fetch_all()
 
             self.car_data = {
                 f"({car.id}) {car.brand.name} {car.model} - {car.registration_number}": car.id
