@@ -23,7 +23,7 @@ class RepairsOptions(ctk.CTkFrame):
     A frame providing options for managing repairs, such as adding, editing, and removing repairs.
     """
     
-    def __init__(self, parent, session_id, **kwargs):
+    def __init__(self, parent, session_id, controller, **kwargs):
         """
         Initialize the RepairsOptions frame.
         
@@ -36,7 +36,7 @@ class RepairsOptions(ctk.CTkFrame):
 
         self.session_id = session_id
         
-        self.repair_controller = RepairController()
+        self.repair_controller = controller
 
         # Label with "Options" 
         self.db_name_label = ctk.CTkLabel(self, text="Options:", font=("Poppins", 14), text_color="gray", wraplength=160, justify="left")

@@ -13,8 +13,8 @@ class CarController:
     """
     Handles database operations for car.
     """
-    def __init__(self):
-        self.conn = Connection.connection()
+    def __init__(self, connection):
+        self.conn = connection
         
     def fetch_all(self):
         """

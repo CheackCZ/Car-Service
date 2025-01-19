@@ -15,7 +15,7 @@ class ImportExport(ctk.CTkFrame):
     Class that provides import and export functionality for table data in the Car Service application.
     """
     
-    def __init__(self, parent, get_active_table_callback, **kwargs):
+    def __init__(self, parent, get_active_table_callback, repair_controller, employee_controller, car_controller, **kwargs):
         """
         Initialize the ImportExport frame.
 
@@ -26,9 +26,9 @@ class ImportExport(ctk.CTkFrame):
         super().__init__(parent, **kwargs)
         self.get_active_table_callback = get_active_table_callback
         
-        self.car_controller = CarController()
-        self.employee_controller = EmployeeController()
-        self.repair_controller = RepairController()
+        self.repair_controller = repair_controller
+        self.employee_controller = employee_controller
+        self.car_controller = car_controller
 
         # Import Button
         self.import_button = ctk.CTkButton(self, text="Import", command=self.import_data, border_width=2, border_color="#3B8ED0", fg_color="transparent", corner_radius=20)

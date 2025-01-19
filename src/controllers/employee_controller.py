@@ -9,8 +9,8 @@ class EmployeeController:
     """
     Handles database operations for employee.
     """
-    def __init__(self):
-        self.conn = Connection.connection()
+    def __init__(self, connection):
+        self.conn = connection
     
     def fetch_all(self):
         """

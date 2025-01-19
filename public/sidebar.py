@@ -17,7 +17,7 @@ class Sidebar(ctk.CTkFrame):
     Class representing the sidebar of the Car Service application with table selection, report generation and exit button.
     """
     
-    def __init__(self, master, session_id, **kwargs):
+    def __init__(self, master, session_id, repair_controller, employee_controller, car_controller, client_controller, repair_type_controller, brand_controller, **kwargs):
         """
         Initialize the sidebar.
 
@@ -28,12 +28,21 @@ class Sidebar(ctk.CTkFrame):
         
         self.session_id = session_id
         
+        self.repair_controller = repair_controller
+        self.employee_controller = employee_controller
+        self.car_controller = car_controller
+        self.client_controller = client_controller
+        self.repair_type_controller = repair_type_controller
+        self.brand_controller = brand_controller
+        
+        
         # Label with database name
         self.db_name_label = ctk.CTkLabel(self, text="Service", font=("Poppins", 16, "bold"), text_color="white", wraplength=160, justify="left")
         self.db_name_label.place(x=10, y=20)
         
         # Scrollable frame with all tables in given database
-        self.tables_container = Tables(master=self)
+        self.tables_container = Tables(master=self, session_id=self.session_id, repair_controller=self.repair_controller, employee_controller=self.employee_controller, 
+                               car_controller=self.car_controller, client_controller=self.client_controller, repair_type_controller=self.repair_type_controller, brand_controller=self.brand_controller)
         self.tables_container.place(x = 10, y = 50)
         
         # Report button

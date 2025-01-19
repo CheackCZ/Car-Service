@@ -7,8 +7,6 @@ from src.models.car import Car
 from src.models.client import Client
 from src.models.brand import Brand
 
-from src.controllers.car_controller import CarController
-
 from public.Cars.car_dialog import CarDialog
 from public.Cars.car_selector import CarSelector
 
@@ -17,7 +15,7 @@ class CarsOptions(ctk.CTkFrame):
     A frame providing options for managing cars, such as adding, editing, and removing cars.
     """
     
-    def __init__(self, parent, session_id, **kwargs):
+    def __init__(self, parent, session_id, controller, brand_controller, client_controller, **kwargs):
         """
         Initialize the CarsOptions frame.
         
@@ -30,7 +28,9 @@ class CarsOptions(ctk.CTkFrame):
         
         self.session_id = session_id
         
-        self.car_controller = CarController()
+        self.car_controller = controller
+        self.brand_controller = brand_controller
+        self.client_controller = client_controller
 
         # Label with "Options" 
         self.db_name_label = ctk.CTkLabel(self, text="Options:", font=("Poppins", 14), text_color="gray", wraplength=160, justify="left")
@@ -62,7 +62,7 @@ class CarsOptions(ctk.CTkFrame):
         """
         Opens the dialog to add a new car.
         """
-        dialog = CarDialog(self, on_submit_callback=self.handle_add_car, mode="add")
+        dialog = CarDialog(self, on_submit_callback=self.handle_add_car, mode="add", controller=self.car_controller, brand_controller=self.brand_controller, client_controller=self.client_controller)
         dialog.grab_set()
         dialog.lift()
 
@@ -97,7 +97,7 @@ class CarsOptions(ctk.CTkFrame):
         """
         Opens the car selector to choose a car for editing.
         """
-        selector = CarSelector(parent=self, on_submit_callback=self.open_edit_car_dialog, title="Edit Car", button_text="Edit Car")
+        selector = CarSelector(parent=self, on_submit_callback=self.open_edit_car_dialog, title="Edit Car", button_text="Edit Car", controller=self.car_controller)
         selector.grab_set()
         selector.lift()
 
@@ -114,7 +114,7 @@ class CarsOptions(ctk.CTkFrame):
                 return
 
             car_data = car.to_dict()
-            dialog = CarDialog(self, on_submit_callback=self.handle_edit_car, mode="edit", car_data=car_data)
+            dialog = CarDialog(self, on_submit_callback=self.handle_edit_car, controller=self.car_controller, mode="edit", car_data=car_data, brand_controller=self.brand_controller, client_controller=self.client_controller)
             dialog.grab_set()
             dialog.lift()
         except Exception as e:
@@ -156,7 +156,8 @@ class CarsOptions(ctk.CTkFrame):
             parent=self,
             on_submit_callback=self.handle_remove_car,
             title="Remove Car",
-            button_text="Remove Car"
+            button_text="Remove Car",
+            controller=self.car_controller
         )
         selector.lift()
         selector.grab_set()

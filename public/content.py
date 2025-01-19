@@ -5,20 +5,13 @@ from public.import_and_export import ImportExport
 from public.options import Options
 from public.frame import Frame
 
-from src.controllers.repair_controller import RepairController
-from src.controllers.repair_type_controller import RepairTypeController
-from src.controllers.brand_controller import BrandController
-from src.controllers.car_controller import CarController
-from src.controllers.client_controller import ClientController
-from src.controllers.employee_controller import EmployeeController
-
 
 class Content(ctk.CTkFrame):
     """
     Class representing the main content area of the Car Service application.
     """
     
-    def __init__(self, master, session_id, **kwargs):
+    def __init__(self, master, repair_controller, employee_controller, car_controller, client_controller, repair_type_controller, brand_controller, session_id, **kwargs):
         """
         Initialize the Content frame.
         
@@ -30,14 +23,13 @@ class Content(ctk.CTkFrame):
         self.active_table = None
         self.all_data = []
         
-        # Create instances of controllers
-        self.repair_controller = RepairController()
-        self.employee_controller = EmployeeController()
-        self.car_controller = CarController()
-        self.client_controller = ClientController()
-        self.repair_type_controller = RepairTypeController()
-        self.brand_controller = BrandController()
-
+        self.repair_controller = repair_controller
+        self.employee_controller = employee_controller
+        self.car_controller = car_controller
+        self.client_controller = client_controller
+        self.repair_type_controller = repair_type_controller
+        self.brand_controller = brand_controller
+        
         # Map table names to controller instances
         self.controller_map = {
             "repair": self.repair_controller,
@@ -54,11 +46,11 @@ class Content(ctk.CTkFrame):
         self.frame.place(x = 10, y = 10)
 
         # Options with button from chosen Table
-        self.options = Options(self, session_id=session_id, width=160, height=240)
+        self.options = Options(self, session_id=session_id, repair_controller=self.repair_controller, employee_controller = self.employee_controller, car_controller=self.car_controller, brand_controller=self.brand_controller, client_controller=self.client_controller, width=160, height=240)
         self.options.place(x=690, y=10)
         
         # Import/Export frame
-        self.import_export_frame = ImportExport(self, get_active_table_callback=self.get_active_table, width=160, height=90)
+        self.import_export_frame = ImportExport(self, get_active_table_callback=self.get_active_table, repair_controller=self.repair_controller, employee_controller = self.employee_controller, car_controller=self.car_controller, width=160, height=90)
         self.import_export_frame.place(x=690, y=260)
         
         # Searchbar to search for given value in (database) table 

@@ -8,7 +8,7 @@ class EmployeeSelector(ctk.CTkToplevel):
     A class for displaying a dropdown (combobox) of employees with their IDs.
     """
     
-    def __init__(self, parent, on_submit_callback, title="Choose Employee", button_text="Submit",**kwargs):
+    def __init__(self, parent, on_submit_callback, controller, title="Choose Employee", button_text="Submit", **kwargs):
         """
         Initialize the EmployeeSelector window.
         
@@ -22,6 +22,8 @@ class EmployeeSelector(ctk.CTkToplevel):
         self.selected_employee_id = None
         self.on_submit_callback = on_submit_callback
         
+        self.employee_controller = controller
+        
         # Credentials
         self.title(title)
         self.geometry("260x180")
@@ -29,8 +31,6 @@ class EmployeeSelector(ctk.CTkToplevel):
         
         self.parent = parent
         self.on_submit_callback = on_submit_callback
-        
-        self.employee_controller = EmployeeController()
         
         # Label for employee selection
         self.label = ctk.CTkLabel(self, text="Employee Selection", text_color="white", font=("Poppins", 16, "bold"))

@@ -14,9 +14,9 @@ class RepairController:
     """
     Handles database operations for repair.
     """  
-    def __init__(self):
-        self.conn = Connection.connection()
-    
+    def __init__(self, connection):
+        self.conn = connection
+        
     def fetch_all(self):
         """
         Retrieves all repairs from the database.
@@ -218,7 +218,7 @@ class RepairController:
             cursor.close()
 
             
-    def update(self, repair: Repair):
+    def update(self, repair: Repair, do_commit):
         """
         Updates an existing repair in the database.
         """
@@ -243,7 +243,8 @@ class RepairController:
             # Update state-specific logic
             self.update_state(repair.id, repair.state.value, cursor)
             
-            self.conn.commit()
+            if do_commit:
+                self.conn.commit()
             
         except Exception as e:
             self.conn.rollback()
@@ -251,6 +252,9 @@ class RepairController:
         
         finally:
             cursor.close()
+            
+    def commit(self):
+        self.conn.commit()
             
 
     def delete(self, repair_id):

@@ -5,8 +5,8 @@ class BrandController:
     """
     Handles database operations for 'Brand' - instances of class Brand.
     """
-    def __init__(self):
-        self.conn = Connection.connection()
+    def __init__(self, connection):
+        self.conn = connection
     
     def fetch_all(self):
         """

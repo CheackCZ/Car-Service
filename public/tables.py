@@ -1,19 +1,11 @@
 import customtkinter as ctk
 
-from src.controllers.repair_controller import RepairController
-from src.controllers.employee_controller import EmployeeController
-from src.controllers.brand_controller import BrandController
-from src.controllers.repair_type_controller import RepairTypeController
-from src.controllers.car_controller import CarController
-from src.controllers.client_controller import ClientController
-
-
 class Tables(ctk.CTkScrollableFrame):
     """
     Class representing a scrollable frame containing buttons to navigate and display data for different tables in the Car Service application.
     """
     
-    def __init__(self, master, **kwargs):
+    def __init__(self, master, repair_controller, employee_controller, car_controller, client_controller, repair_type_controller, brand_controller, session_id, **kwargs):
         """
         Initialize the Tables frame.
 
@@ -28,13 +20,13 @@ class Tables(ctk.CTkScrollableFrame):
         self.active_button = None
         
         # Adding buttons with dynamic show_data method
-        self.repair_controller = RepairController()
-        self.employee_controller = EmployeeController()
-        self.car_controller = CarController()
-        self.client_controller = ClientController()
-        self.repair_type_controller = RepairTypeController()
-        self.brand_controller = BrandController()
-
+        self.repair_controller = repair_controller
+        self.employee_controller = employee_controller
+        self.car_controller = car_controller
+        self.client_controller = client_controller
+        self.repair_type_controller = repair_type_controller
+        self.brand_controller = brand_controller
+        
         # Add table buttons with instance references
         self.add_table_button("repair", lambda: self.show_data(self.repair_controller, "repair"))
         self.add_table_button("employee", lambda: self.show_data(self.employee_controller, "employee"))

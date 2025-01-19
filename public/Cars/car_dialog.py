@@ -3,16 +3,13 @@ from datetime import datetime, date
 import customtkinter as ctk
 from CTkMessagebox import CTkMessagebox
 
-from src.controllers.client_controller import ClientController
-from src.controllers.brand_controller import BrandController
-
 class CarDialog(ctk.CTkToplevel):
     """
     A dialog window for adding or editing car details. 
     The form includes fields for the client, brand, registration number, registration date, and model, with options to submit the data.
     """
     
-    def __init__(self, parent, on_submit_callback, mode="add", car_data=None, **kwargs):
+    def __init__(self, parent, on_submit_callback, controller, brand_controller, client_controller, mode="add", car_data=None, **kwargs):
         """
         Initialize the CarDialog. 
     
@@ -26,6 +23,10 @@ class CarDialog(ctk.CTkToplevel):
 
         self.mode = mode
         self.car_data = car_data if car_data else {}
+        
+        self.car_controller = controller
+        self.brand_controller = brand_controller
+        self.client_controller = client_controller
 
         # Set title and window properties
         title_text = "Add Car" if self.mode == "add" else "Edit Car"
@@ -85,12 +86,12 @@ class CarDialog(ctk.CTkToplevel):
         Fetch clients and brands from the database and populate the comboboxes with them.
         """
         try:
-            clients = ClientController.fetch_all()
+            clients = self.client_controller.fetch_all()
             client_values = [f"({client.id}) {client.name} {client.middle_name} {client.last_name}" for client in clients]
             
             self.client_combobox.configure(values=client_values)
 
-            brands = BrandController.fetch_all()
+            brands = self.brand_controller.fetch_all()
             brand_values = [f"({brand.id}) {brand.name}" for brand in brands]
             
             self.brand_combobox.configure(values=brand_values)

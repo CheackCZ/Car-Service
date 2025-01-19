@@ -7,14 +7,13 @@ from public.Employees.employee_dialog import EmployeeDialog
 from public.Employees.employee_selector import EmployeeSelector
 
 from src.models.employee import Employee
-from src.controllers.employee_controller import EmployeeController
 
 class EmployeesOptions(ctk.CTkFrame):
     """ 
     A frame providing options for managing employees, such as adding, editing, and removing employees.
     """
     
-    def __init__(self, parent, session_id, **kwargs):
+    def __init__(self, parent, session_id, controller, **kwargs):
         """
         Initialize the EmployeesOptions frame.
         
@@ -27,7 +26,7 @@ class EmployeesOptions(ctk.CTkFrame):
         
         self.session_id = session_id
         
-        self.employee_controller = EmployeeController()
+        self.employee_controller = controller
         
         # Label with "Tables" 
         self.db_name_label = ctk.CTkLabel(self, text="Options:", font=("Poppins", 14), text_color="gray", wraplength=160, justify="left")
@@ -97,7 +96,8 @@ class EmployeesOptions(ctk.CTkFrame):
             parent=self,
             on_submit_callback=self.open_edit_employee_dialog,
             title="Edit Employee",
-            button_text="Edit Employee"
+            button_text="Edit Employee",
+            controller=self.employee_controller
         )
         selector.grab_set()
         selector.lift()
@@ -162,7 +162,8 @@ class EmployeesOptions(ctk.CTkFrame):
             parent=self,
             on_submit_callback=self.confirm_delete_employee,
             title="Remove Employee",
-            button_text="Remove Employee"
+            button_text="Remove Employee",
+            controller=self.employee_controller
         )
         selector.grab_set()
         selector.lift()

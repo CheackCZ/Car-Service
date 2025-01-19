@@ -5,8 +5,8 @@ class RepairTypeController:
     """
     Handles database operations for repair types.
     """
-    def __init__(self):
-        self.conn = Connection.connection()
+    def __init__(self, connection):
+        self.conn = connection
 
     def fetch_all(self):
         """
