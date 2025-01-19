@@ -17,17 +17,18 @@ class DirtyReadingController:
         try:
             conn.start_transaction()
 
-            cursor.execute("SELECT * FROM dirty_reading where table_name = %s", table_name)
+            cursor.execute("SELECT * FROM dirty_reading where table_name = %s", (table_name, ))
             row = cursor.fetchone()
 
             conn.commit()
             
-            return [
-                DirtyReading (
-                    table_name=row['table_name'],
-                    session_id=row['session_id']
-                ) 
-            ]
+            if row:
+                return [
+                    DirtyReading (
+                        table_name=row['table_name'],
+                        session_id=row['session_id']
+                    ) 
+                ]
         
         except Exception as e:
             conn.rollback()
@@ -40,14 +41,15 @@ class DirtyReadingController:
         """
         Inserts new record for dirty_reading in the database.
         """
+        str(dirty_reading.session_id)
+        
         conn = Connection.connection()
         cursor = conn.cursor(dictionary=True)
         
         try:
             conn.start_transaction()
 
-            cursor.execute("INSERT INTO dirty_reading (table_name, session_id) values (%s, %s)", dirty_reading.table_name, dirty_reading.session_id)
-
+            cursor.execute("INSERT INTO dirty_reading (table_name, session_id) VALUES (%s, %s)",(dirty_reading.table_name, str(dirty_reading.session_id)))
             conn.commit()
             
         except Exception as e:
@@ -67,7 +69,7 @@ class DirtyReadingController:
         try:
             conn.start_transaction()
 
-            cursor.execute("DELETE FROM dirty_reading WHERE table_name = %s", table_name)
+            cursor.execute("DELETE FROM dirty_reading WHERE table_name = %s", (table_name, ))
 
             conn.commit()
             
@@ -77,6 +79,7 @@ class DirtyReadingController:
         
         finally:
             cursor.close()
+            
             
     def set_transaction_level(state):
         """

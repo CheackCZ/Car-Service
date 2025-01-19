@@ -9,4 +9,4 @@ class DirtyReading():
         self.session_id = session_id
     
     def __str__(self):
-        return f"Dirty reading for {self.table_name} is {'ON' if self.is_dirty_reading_on else 'OFF'}"
+        return f"Dirty reading for {self.table_name}: ({self.session_id})"

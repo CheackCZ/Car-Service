@@ -28,11 +28,11 @@ class Dashboard(ctk.CTk):
         self.resizable(False, False)
         
         # Sidebar on the left with the tables menu 
-        self.sidebar = Sidebar(master=self)
+        self.sidebar = Sidebar(master=self, session_id=self.SESSION_ID)
         self.sidebar.place(x = 0, y = 0)
 
         # Main content on the right side
-        self.content = Content(master=self)
+        self.content = Content(master=self, session_id=self.SESSION_ID)
         self.content.place(x = 200, y = 20)
         
 

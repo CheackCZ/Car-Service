@@ -18,7 +18,7 @@ class Content(ctk.CTkFrame):
     Class representing the main content area of the Car Service application.
     """
     
-    def __init__(self, master, **kwargs):
+    def __init__(self, master, session_id, **kwargs):
         """
         Initialize the Content frame.
         
@@ -35,7 +35,7 @@ class Content(ctk.CTkFrame):
         self.frame.place(x = 10, y = 10)
 
         # Options with button from chosen Table
-        self.options = Options(self, width=160, height=240)
+        self.options = Options(self, session_id=session_id, width=160, height=240)
         self.options.place(x=690, y=10)
         
         # Import/Export frame

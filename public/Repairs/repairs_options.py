@@ -23,7 +23,7 @@ class RepairsOptions(ctk.CTkFrame):
     A frame providing options for managing repairs, such as adding, editing, and removing repairs.
     """
     
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, session_id, **kwargs):
         """
         Initialize the RepairsOptions frame.
         
@@ -33,6 +33,8 @@ class RepairsOptions(ctk.CTkFrame):
         super().__init__(parent, **kwargs)
         
         self.configure(fg_color="transparent")
+
+        self.session_id = session_id
 
         # Label with "Options" 
         self.db_name_label = ctk.CTkLabel(self, text="Options:", font=("Poppins", 14), text_color="gray", wraplength=160, justify="left")
@@ -55,8 +57,8 @@ class RepairsOptions(ctk.CTkFrame):
         self.separator.place(x=10, y=180, width=140)
 
         # Toggle Switch for Dirty Reading
-        self.switch_var = ctk.StringVar(value=False)
-        self.switch = ctk.CTkSwitch(self, text="Dirty Reading", variable=self.switch_var, onvalue=True, offvalue=False, command=self.toggle_dirty_reading)
+        self.switch_var = ctk.StringVar(value=self.get_dirty_reading_value("repair"))
+        self.switch = ctk.CTkSwitch(self, text="Dirty R/W", variable=self.switch_var, onvalue='1', offvalue='0', command=self.toggle_dirty_reading)
         self.switch.place(x=20, y=200)
         
 
@@ -173,6 +175,7 @@ class RepairsOptions(ctk.CTkFrame):
                 price=repair_data["price"],
                 state=state_enum             
             )
+            
             RepairController.update(updated_repair)
             CTkMessagebox(title="Success", message="Repair updated successfully.", icon="info")
         except Exception as e:
@@ -210,11 +213,47 @@ class RepairsOptions(ctk.CTkFrame):
             
     
     def toggle_dirty_reading(self):
-        
         state = self.switch_var.get() == str(1)
         
         DirtyReadingController.set_transaction_level(state)
         print(f"Dirty Reading is {'enabled' if state else 'disabled'}.")
         
-        if state:
-            DirtyReadingController.insert(DirtyReading("repair"))
+        record = DirtyReadingController.fetch_by_table_name("repair")
+        
+        if record:
+            if record[0].session_id != str(self.session_id):
+                if state == True:
+                    self.switch_var.set('0')
+                else:
+                    self.switch_var.set('1')
+                self.switch.configure(state="disabled")
+                CTkMessagebox(title="Error", message="You can not do that! Permitted only to the user, who turned it on / off.", icon="warning")
+                
+            else:
+                if not state:
+                    DirtyReadingController.delete("repair")
+                else: 
+                    DirtyReadingController.insert(DirtyReading("repair", session_id=self.session_id))        
+        
+        else:
+            DirtyReadingController.insert(DirtyReading("repair", session_id=self.session_id))
+            
+    
+    def get_dirty_reading_value(self, table_name):
+        """
+        Fetch the default value for the switch from the database based on table name.
+        
+        :param table_name: The name of the table to check.
+        
+        :return: "on" if a matching record exists, otherwise "off".
+        """
+        try:
+            record = DirtyReadingController.fetch_by_table_name(table_name)
+
+            if record:
+                return '1'
+            else:
+                return '0'
+        except Exception as e:
+            print(f"Error fetching dirty reading value: {e}")
+            return '0'

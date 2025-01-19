@@ -94,10 +94,8 @@ create table repair (
 -- Vytvoření dodatkové tabulky pro dirty reading
 create table dirty_reading (
 	table_name varchar(50) primary key not null,
-    session_id char(36) unique key,
-    is_dirty_reading_on bit
+    session_id char(36) unique key
 );
-
 
 
 -- Vložení dat do tabulky zaměstannců (employee)

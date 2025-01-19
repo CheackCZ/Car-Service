@@ -7,6 +7,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 
 from src.report_generator import ReportGenerator
+from src.controllers.dirty_reading_controller import DirtyReadingController
 
 from public.tables import Tables
 
@@ -16,7 +17,7 @@ class Sidebar(ctk.CTkFrame):
     Class representing the sidebar of the Car Service application with table selection, report generation and exit button.
     """
     
-    def __init__(self, master, **kwargs):
+    def __init__(self, master, session_id, **kwargs):
         """
         Initialize the sidebar.
 
@@ -24,6 +25,8 @@ class Sidebar(ctk.CTkFrame):
         :param kwargs: Additional keyword arguments for the CTkFrame.
         """
         super().__init__(master, width=180, height=560, **kwargs)
+        
+        self.session_id = session_id
         
         # Label with database name
         self.db_name_label = ctk.CTkLabel(self, text="Service", font=("Poppins", 16, "bold"), text_color="white", wraplength=160, justify="left")
@@ -163,4 +166,9 @@ class Sidebar(ctk.CTkFrame):
         """
         Exits the application.
         """
+        record = DirtyReadingController.fetch_by_table_name("repair")
+        
+        if record and record[0].session_id == str(self.session_id):
+            DirtyReadingController.delete("repair")
+        
         self.master.destroy()

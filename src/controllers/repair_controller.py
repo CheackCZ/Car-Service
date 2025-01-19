@@ -14,6 +14,8 @@ class RepairController:
     """
     Handles database operations for repair.
     """
+    conn1 = Connection.connection()
+
 
     def fetch_all():
         """
@@ -245,11 +247,14 @@ class RepairController:
             RepairController.update_state(repair.id, repair.state.value, cursor)
             
             conn.commit()
+            
         except Exception as e:
             conn.rollback()
             raise e
+        
         finally:
             cursor.close()
+            
 
     def delete(repair_id):
         """

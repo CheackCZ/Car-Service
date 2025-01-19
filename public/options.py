@@ -10,7 +10,7 @@ class Options(ctk.CTkFrame):
     Class with frame displaying table-specific options in the Car Service application.
     """
         
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, session_id, **kwargs):
         """
         Initialize the Options frame.
 
@@ -18,6 +18,8 @@ class Options(ctk.CTkFrame):
         :param kwargs: Additional keyword arguments for the CTkFrame.
         """
         super().__init__(parent, **kwargs)
+            
+        self.session_id = session_id
             
         self.current_options = None 
         self.options_mapping = {
@@ -40,7 +42,7 @@ class Options(ctk.CTkFrame):
         options_class = self.options_mapping.get(table_name)
         
         if options_class is not None:
-            self.current_options = options_class(self, width=160, height=240)
+            self.current_options = options_class(self, width=160, height=240, session_id = self.session_id)
             self.current_options.place(x=0, y=0)
         else:
             label = ctk.CTkLabel(self, text=f"No options frame defined for {table_name}.", wraplength=150, anchor="w")

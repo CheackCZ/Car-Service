@@ -14,7 +14,7 @@ class EmployeesOptions(ctk.CTkFrame):
     A frame providing options for managing employees, such as adding, editing, and removing employees.
     """
     
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, session_id, **kwargs):
         """
         Initialize the EmployeesOptions frame.
         
@@ -24,6 +24,8 @@ class EmployeesOptions(ctk.CTkFrame):
         super().__init__(parent, **kwargs)
         
         self.configure(fg_color="transparent")
+        
+        self.session_id = session_id
         
         # Label with "Tables" 
         self.db_name_label = ctk.CTkLabel(self, text="Options:", font=("Poppins", 14), text_color="gray", wraplength=160, justify="left")

@@ -8,6 +8,7 @@ from src.models.repair import State
 from src.controllers.repair_type_controller import RepairTypeController
 from src.controllers.employee_controller import EmployeeController
 from src.controllers.car_controller import CarController
+from src.controllers.dirty_reading_controller import DirtyReadingController
 
 class RepairDialog(ctk.CTkToplevel):
     """
@@ -94,8 +95,9 @@ class RepairDialog(ctk.CTkToplevel):
         self.submit_button.place(relx=0.5, y=410, anchor="center")
         
         # Update button (When dirty reading turned on)
-        if mode == "edit":
-            self.update_button = ctk.CTkButton(self, text="Update", command=None, fg_color="transparent", text_color="gray", height=10, width=0, cursor="hand2")
+        record = DirtyReadingController.fetch_by_table_name("repair")
+        if mode == "edit" and record:
+            self.update_button = ctk.CTkButton(self, text="Commit", command=self.submit_form, fg_color="transparent", text_color="gray", height=10, width=0, cursor="hand2")
             self.update_button.place(relx=0.5, y=440, anchor="center")
 
         self.load_comboboxes()
