@@ -6,6 +6,7 @@
 - [Instalace](#instalace)
 - [Spuštění Projektu](#spuštění-projektu)
 - [Struktura projektu](#struktura-projektu)
+   - [Databáze](#databáze)
 - [Testování](#testování)
 - [Deployment a odevzdání](#deployment-a-odevzdání)
 - [Zdroje](#zdroje)
@@ -98,6 +99,65 @@ Projekt je navržen jako modulární aplikace se strukturovanými komponentami:
 ├── README.md                    # Dokumentace
 └── .env.example                 # Příklad .env souboru
 ```
+
+### Databáze
+__Tabulka Employee__
+| Column       | Data Type    | Description          |
+|--------------|--------------|----------------------|
+| id           | INT(11)      | Primary key          |
+| name         | VARCHAR(50)  | Employee's name      |
+| middle_name  | VARCHAR(50)  | Employee's middle name |
+| last_name    | VARCHAR(50)  | Employee's last name |
+| phone        | VARCHAR(13)  | Phone number         |
+| email        | VARCHAR(100) | Email address        |
+| is_free      | BIT(1)       | Availability (0 or 1)|
+
+__Tabulka Repair__
+| Column         | Data Type     | Description                 |
+|----------------|---------------|-----------------------------|
+| id             | INT(11)       | Primary key                 |
+| car_id         | INT(11)       | Foreign key to `car.id`     |
+| employee_id    | INT(11)       | Foreign key to `employee.id`|
+| repair_type_id | INT(11)       | Foreign key to `repair_type.id`|
+| date_started   | DATETIME      | Repair start date           |
+| date_finished  | DATETIME      | Repair finish date          |
+| price          | INT(11)       | Repair cost                 |
+| state          | ENUM(...)     | Current repair state        |
+
+__Tabulka Car__
+| Column               | Data Type    | Description               |
+|----------------------|--------------|---------------------------|
+| id                   | INT(11)      | Primary key               |
+| client_id            | INT(11)      | Foreign key to `client.id`|
+| brand_id             | INT(11)      | Foreign key to `brand.id` |
+| registration_number  | VARCHAR(20)  | Car registration number   |
+| registration_date    | DATETIME     | Registration date         |
+| model                | VARCHAR(50)  | Car model                 |
+
+__Tabulka Repair Type__
+| Column       | Data Type    | Description          |
+|--------------|--------------|----------------------|
+| id           | INT(11)      | Primary key          |
+| name         | VARCHAR(50)  | Repair type name     |
+| description  | VARCHAR(250) | Repair type details  |
+
+__Tabulka Brand__
+| Column       | Data Type    | Description          |
+|--------------|--------------|----------------------|
+| id           | INT(11)      | Primary key          |
+| name         | VARCHAR(50)  | Brand name           |
+
+__Tabulka Client__
+| Column       | Data Type    | Description          |
+|--------------|--------------|----------------------|
+| id           | INT(11)      | Primary key          |
+| name         | VARCHAR(50)  | Client's first name  |
+| middle_name  | VARCHAR(50)  | Client's middle name |
+| last_name    | VARCHAR(50)  | Client's last name   |
+| phone        | VARCHAR(13)  | Phone number         |
+| email        | VARCHAR(100) | Email address        |
+---
+
 
 ### Použité knihovny
 - CustomTkinter: Pro tvorbu GUI.
