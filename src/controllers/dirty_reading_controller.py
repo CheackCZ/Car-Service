@@ -89,6 +89,6 @@ class DirtyReadingController:
         cursor = conn.cursor(dictionary=True)
         
         if state:
-            cursor.execute("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;")            
+            cursor.execute("SET GLOBAL TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;")            
         else:
-            cursor.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ")
+            cursor.execute("SET GLOBAL TRANSACTION ISOLATION LEVEL REPEATABLE READ")

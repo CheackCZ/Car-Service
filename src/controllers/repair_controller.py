@@ -1,5 +1,3 @@
-from src.connection import Connection
-
 from datetime import datetime, date
 
 import csv
@@ -250,8 +248,8 @@ class RepairController:
             self.conn.rollback()
             raise e
         
-        finally:
-            cursor.close()
+        #finally:
+            #cursor.close()
             
     def commit(self):
         self.conn.commit()

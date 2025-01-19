@@ -10,7 +10,7 @@ class Options(ctk.CTkFrame):
     Class with frame displaying table-specific options in the Car Service application.
     """
         
-    def __init__(self, parent, session_id, repair_controller, employee_controller, car_controller, brand_controller, client_controller, **kwargs):
+    def __init__(self, parent, session_id, repair_controller, repair_type_controller, employee_controller, car_controller, brand_controller, client_controller, **kwargs):
         """
         Initialize the Options frame.
 
@@ -26,6 +26,7 @@ class Options(ctk.CTkFrame):
         self.car_controller = car_controller
         self.brand_controller = brand_controller 
         self.client_controller= client_controller
+        self.repair_type_controller = repair_type_controller
                 
         # Mapping table names to their respective options class and controller
         self.options_mapping = {
@@ -63,6 +64,17 @@ class Options(ctk.CTkFrame):
                     controller=controller, 
                     brand_controller=self.brand_controller,
                     client_controller=self.client_controller
+                )
+            elif table_name == "repair":
+                self.current_options = options_class(
+                    self, 
+                    width=160, 
+                    height=240, 
+                    session_id=self.session_id, 
+                    controller=controller, 
+                    car_controller=self.car_controller,
+                    employee_controller=self.employee_controller,
+                    repair_type_controller=self.repair_type_controller
                 )
             else:
                 # Instantiate the options frame with the appropriate controller

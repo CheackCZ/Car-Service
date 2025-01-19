@@ -46,7 +46,7 @@ class Content(ctk.CTkFrame):
         self.frame.place(x = 10, y = 10)
 
         # Options with button from chosen Table
-        self.options = Options(self, session_id=session_id, repair_controller=self.repair_controller, employee_controller = self.employee_controller, car_controller=self.car_controller, brand_controller=self.brand_controller, client_controller=self.client_controller, width=160, height=240)
+        self.options = Options(self, session_id=session_id, repair_controller=self.repair_controller, repair_type_controller=self.repair_type_controller, employee_controller = self.employee_controller, car_controller=self.car_controller, brand_controller=self.brand_controller, client_controller=self.client_controller, width=160, height=240)
         self.options.place(x=690, y=10)
         
         # Import/Export frame

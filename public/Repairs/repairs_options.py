@@ -11,7 +11,6 @@ from src.models.car import Car
 from src.models.repair import Repair, State
 from src.models.dirty_reading import DirtyReading
 
-from src.controllers.repair_controller import RepairController
 from src.controllers.dirty_reading_controller import DirtyReadingController
 
 from public.Repairs.repair_dialog import RepairDialog
@@ -23,7 +22,7 @@ class RepairsOptions(ctk.CTkFrame):
     A frame providing options for managing repairs, such as adding, editing, and removing repairs.
     """
     
-    def __init__(self, parent, session_id, controller, **kwargs):
+    def __init__(self, parent, session_id, controller, car_controller, employee_controller, repair_type_controller, **kwargs):
         """
         Initialize the RepairsOptions frame.
         
@@ -37,6 +36,9 @@ class RepairsOptions(ctk.CTkFrame):
         self.session_id = session_id
         
         self.repair_controller = controller
+        self.employee_controller = employee_controller
+        self.car_controller = car_controller
+        self.repair_type_controller = repair_type_controller
 
         # Label with "Options" 
         self.db_name_label = ctk.CTkLabel(self, text="Options:", font=("Poppins", 14), text_color="gray", wraplength=160, justify="left")
@@ -68,7 +70,7 @@ class RepairsOptions(ctk.CTkFrame):
         """
         Opens the dialog to add a new repair.
         """
-        dialog = RepairDialog(self, on_submit_callback=self.handle_add_repair, mode="add")
+        dialog = RepairDialog(self, on_submit_callback=self.handle_add_repair, mode="add", controller=self.repair_controller, car_controller=self.car_controller, employee_controller=self.employee_controller, repair_type_controller=self.repair_type_controller)
         dialog.grab_set()
         dialog.lift()
 
@@ -123,7 +125,7 @@ class RepairsOptions(ctk.CTkFrame):
         """
         Opens the repair selector to choose a repair for editing.
         """
-        selector = RepairSelector(parent=self, on_submit_callback=self.open_edit_repair_dialog, title="Edit Repair", button_text="Edit Repair")
+        selector = RepairSelector(parent=self, on_submit_callback=self.open_edit_repair_dialog, title="Edit Repair", button_text="Edit Repair", controller=self.repair_controller)
         selector.grab_set()
         selector.lift()
         
@@ -141,7 +143,7 @@ class RepairsOptions(ctk.CTkFrame):
                 return
 
             repair_data = repair.to_dict()
-            dialog = RepairDialog(self, on_submit_callback=self.handle_edit_repair, mode="edit", repair_data=repair_data)
+            dialog = RepairDialog(self, on_submit_callback=self.handle_edit_repair, controller=self.repair_controller, car_controller=self.car_controller, employee_controller=self.employee_controller, repair_type_controller=self.repair_type_controller, mode="edit", repair_data=repair_data)
             dialog.grab_set()
             dialog.lift()
             
@@ -178,7 +180,12 @@ class RepairsOptions(ctk.CTkFrame):
                 state=state_enum             
             )
             
-            self.repair_controller.update(updated_repair)
+            record = DirtyReadingController.fetch_by_table_name("repair")
+            if record:
+                self.repair_controller.update(updated_repair, False)
+            else:
+                self.repair_controller.update(updated_repair,True)
+    
             CTkMessagebox(title="Success", message="Repair updated successfully.", icon="info")
         except Exception as e:
             print(e)
@@ -189,7 +196,7 @@ class RepairsOptions(ctk.CTkFrame):
         """
         Opens the repair selector to choose a repair for removal.
         """
-        selector = RepairSelector(parent=self, on_submit_callback=self.handle_remove_repair, title="Remove Repair", button_text="Remove Repair")
+        selector = RepairSelector(parent=self, on_submit_callback=self.handle_remove_repair, title="Remove Repair", button_text="Remove Repair", controller=self.repair_controller)
         selector.grab_set()
         selector.lift()
 

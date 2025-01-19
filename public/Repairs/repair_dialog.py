@@ -17,7 +17,7 @@ class RepairDialog(ctk.CTkToplevel):
     The form includes fields for repair type, employee, car, start date, end date, price, and repair state, with options to submit the data.
     """
     
-    def __init__(self, parent, on_submit_callback, mode="add", repair_data=None, **kwargs):
+    def __init__(self, parent, on_submit_callback, controller, car_controller, employee_controller, repair_type_controller, mode="add", repair_data=None, **kwargs):
         """
         Initialize the RepairDialog.
         
@@ -32,7 +32,10 @@ class RepairDialog(ctk.CTkToplevel):
         self.mode = mode
         self.repair_data = repair_data if repair_data else {}
         
-        self.repair_controller = RepairController()
+        self.repair_controller = controller
+        self.employee_controller = employee_controller
+        self.car_controller = car_controller
+        self.repair_type_controller=repair_type_controller
 
         # Set title and window properties
         title_text = "Add Repair" if self.mode == "add" else "Edit Repair"
@@ -42,11 +45,6 @@ class RepairDialog(ctk.CTkToplevel):
 
         self.parent = parent
         self.on_submit_callback = on_submit_callback
-        
-        # Create instances of controllers
-        self.repair_type_controller = RepairTypeController()
-        self.employee_controller = EmployeeController()
-        self.car_controller = CarController()
         
 
         # Title Label
@@ -232,7 +230,9 @@ class RepairDialog(ctk.CTkToplevel):
             return
 
         # Close the dialog on successful submission
-        self.destroy()
+        record = DirtyReadingController.fetch_by_table_name("repair")
+        if not record:
+            self.destroy()
 
 
     def fill_entries(self):

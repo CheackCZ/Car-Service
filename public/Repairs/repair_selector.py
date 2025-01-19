@@ -1,15 +1,13 @@
 import customtkinter as ctk
 from CTkMessagebox import CTkMessagebox
 
-from src.controllers.repair_controller import RepairController
-
 
 class RepairSelector(ctk.CTkToplevel):
     """
     A class for displaying a dropdown (combobox) of repairs with their IDs.
     """
     
-    def __init__(self, parent, on_submit_callback, title="Choose Repair", button_text="Submit", **kwargs):
+    def __init__(self, parent, on_submit_callback, controller, title="Choose Repair", button_text="Submit", **kwargs):
         """
         Initialize the RepairSelector window.
 
@@ -25,7 +23,7 @@ class RepairSelector(ctk.CTkToplevel):
         self.selected_repair_id = None
         self.on_submit_callback = on_submit_callback
 
-        self.repair_controller = RepairController()
+        self.repair_controller = controller
 
         # Window properties
         self.title(title)
