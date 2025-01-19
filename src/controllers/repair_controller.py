@@ -100,6 +100,7 @@ class RepairController:
         try:
             conn.start_transaction()
 
+            # Validate that car is not used somewhere else currently
             cursor.execute(
                 """
                 SELECT COUNT(*) AS ref_count
@@ -111,8 +112,9 @@ class RepairController:
             
             car_check = cursor.fetchone()
             if car_check["ref_count"] > 0:
-                raise ValueError(f"Car ID {repair.car.id} is already under repair.")
+                raise ValueError(f"Car ID {repair.car.id} is already under (different) repair.")
 
+            # Validate that employee is not used somewhere else currently
             cursor.execute(
                 """
                 SELECT is_free 
@@ -124,8 +126,9 @@ class RepairController:
             
             employee = cursor.fetchone()
             if not employee or not employee["is_free"]:
-                raise ValueError(f"Employee ID {repair.employee.id} is not free and cannot be assigned to this repair.")
-
+                raise ValueError(f"Employee ID {repair.employee.id} is currently working on other repair and cannot be assigned to this repair.")
+            
+            
             # Insert the repair into the database
             cursor.execute(
                 """
@@ -144,17 +147,21 @@ class RepairController:
             )
 
             # Update the employee's status to not free
-            cursor.execute(
-                """
-                UPDATE employee
-                SET is_free = FALSE
-                WHERE id = %s
-                """,
-                (repair.employee.id,)
-            )
+            if not repair.state.value.capitalize() in ["Completed", "Canceled"]:
+                cursor.execute(
+                    """
+                    UPDATE employee
+                    SET is_free = FALSE
+                    WHERE id = %s
+                    """,
+                    (repair.employee.id,)
+                )
 
             conn.commit()
             print(f"Repair added successfully, and Employee ID {repair.employee.id} marked as not free.")
+            
+        except ValueError as ve:
+            print(f"{ve}")
             
         except Exception as e:
             conn.rollback()
@@ -220,13 +227,18 @@ class RepairController:
         
         try:
             conn.start_transaction()
+            
+            if type(repair.date_finished) == date:
+                date_finished = str(repair.date_finished)
+            date_finished = repair.date_finished
+            
             cursor.execute(
                 """
                 UPDATE repair 
                 SET car_id = %s, employee_id = %s, repair_type_id = %s, date_started = %s, date_finished = %s, price = %s, state = %s 
                 WHERE id = %s
                 """,
-                (repair.car.id, repair.employee.id, repair.repair_type.id, str(repair.date_started), str(repair.date_finished), repair.price, repair.state.value, repair.id)
+                (repair.car.id, repair.employee.id, repair.repair_type.id, str(repair.date_started), date_finished, repair.price, repair.state.value, repair.id)
             )
             
             # Update state-specific logic
@@ -244,14 +256,19 @@ class RepairController:
         Deletes a repair by its ID.
         """
         conn = Connection.connection()
+        
         cursor = conn.cursor()
         try:
             conn.start_transaction()
+        
             cursor.execute("DELETE FROM repair WHERE id = %s", (repair_id,))
+        
             conn.commit()
+        
         except Exception as e:
             conn.rollback()
             raise e
+        
         finally:
             cursor.close()
 

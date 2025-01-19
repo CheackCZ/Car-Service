@@ -33,7 +33,7 @@ class RepairDialog(ctk.CTkToplevel):
         # Set title and window properties
         title_text = "Add Repair" if self.mode == "add" else "Edit Repair"
         self.title(title_text)
-        self.geometry("360x440")
+        self.geometry("360x480")
         self.resizable(False, False)
 
         self.parent = parent
@@ -92,6 +92,11 @@ class RepairDialog(ctk.CTkToplevel):
         # Submit Button
         self.submit_button = ctk.CTkButton(self, text=title_text, command=self.submit_form)
         self.submit_button.place(relx=0.5, y=410, anchor="center")
+        
+        # Update button (When dirty reading turned on)
+        if mode == "edit":
+            self.update_button = ctk.CTkButton(self, text="Update", command=None, fg_color="transparent", text_color="gray", height=10, width=0, cursor="hand2")
+            self.update_button.place(relx=0.5, y=440, anchor="center")
 
         self.load_comboboxes()
         self.fill_entries()
@@ -126,6 +131,7 @@ class RepairDialog(ctk.CTkToplevel):
         Collects data from the form and invokes the callback to handle submission.
         """
         try:
+            # Extract and validate employee ID
             repair_type_text = self.repair_type_combobox.get().strip()
             if repair_type_text:
                 try:
@@ -158,18 +164,6 @@ class RepairDialog(ctk.CTkToplevel):
             except ValueError:
                 raise ValueError("Start date must be in the format YYYY-MM-DD.")
 
-            # Validate and parse date_ended (optional)
-            date_ended = self.date_ended_entry.get().strip()
-            if date_ended:
-                try:
-                    date_ended = datetime.strptime(date_ended, "%Y-%m-%d").date()
-                    if date_ended < date_started:
-                        raise ValueError("End date cannot be earlier than the start date.")
-                except ValueError:
-                    raise ValueError("End date must be in the format YYYY-MM-DD.")
-            else:
-                date_ended = None
-
             # Validate price
             try:
                 price = float(self.price_entry.get().strip())
@@ -182,10 +176,30 @@ class RepairDialog(ctk.CTkToplevel):
             state = self.state_combobox.get().strip()
             if state not in [s.value for s in State]:
                 raise ValueError("Please select a valid state.")
+            
+             # Validate and parse date_ended (optional)
+            date_ended = self.date_ended_entry.get().strip()
+            if date_ended and date_ended != "N/A":
+                try:
+                    date_ended = datetime.strptime(date_ended, "%Y-%m-%d").date()
+                except ValueError:
+                    raise ValueError("End date must be in the format YYYY-MM-DD.")
+
+                if date_ended < date_started:
+                    raise ValueError("End date cannot be earlier than the start date.")
+
+                # If date_ended is provided, state must be "Canceled" or "Completed"
+                if state not in ["Canceled", "Completed"]:
+                    raise ValueError("State must be 'Canceled' or 'Completed' when an end date is provided.")
+            else:
+                # If date_ended is not provided, state must be "Pending" or "In process"
+                if state not in ["Pending", "In process"]:
+                    raise ValueError("State must be 'Pending' or 'In process' when no end date is provided.")
+                date_ended = ""
 
             # Build repair data
             repair_data = {
-                "id": self.repair_data.get("id", None),  # Use existing ID or None for new repairs
+                "id": self.repair_data.get("id", None),  
                 "repair_type_id": repair_type_id,
                 "employee_id": employee_id,
                 "car_id": car_id,
@@ -197,6 +211,10 @@ class RepairDialog(ctk.CTkToplevel):
 
             # Pass the data to the callback
             self.on_submit_callback(repair_data)
+
+        except ValueError as ve:
+            CTkMessagebox(title="Error", message=str(ve), icon="warning")
+            return
 
         except Exception as e:
             CTkMessagebox(title="Error", message=str(e), icon="warning")

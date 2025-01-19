@@ -54,7 +54,7 @@ class RepairsOptions(ctk.CTkFrame):
 
         # Toggle Switch for Dirty Reading
         self.switch_var = ctk.StringVar(value="off")
-        self.switch = ctk.CTkSwitch(self, text="Dirty Reading", variable=self.switch_var, onvalue="on", offvalue="off")
+        self.switch = ctk.CTkSwitch(self, text="Dirty Reading", variable=self.switch_var, onvalue="on", offvalue="off", command=self.toggle_dirty_reading)
         self.switch.place(x=20, y=200)
         
 
@@ -155,13 +155,19 @@ class RepairsOptions(ctk.CTkFrame):
             
             state_enum = State(repair_data["state"])
             
+             # Parse date_ended, handle "N/A" or None
+            if repair_data["date_ended"] and repair_data["date_ended"] != "N/A":
+                date_finished = datetime.strptime(repair_data["date_ended"], "%Y-%m-%d").date()
+            else:
+                date_finished = None
+            
             updated_repair = Repair(
                 id=repair_data["id"],
                 repair_type=RepairType(id=repair_type_id),
                 employee=Employee(id=employee_id),
                 car=Car(id=car_id),
                 date_started=datetime.strptime(repair_data["date_started"], "%Y-%m-%d").date(),
-                date_finished=datetime.strptime(repair_data["date_ended"], "%Y-%m-%d").date(),
+                date_finished=date_finished,
                 price=repair_data["price"],
                 state=state_enum             
             )
@@ -187,7 +193,26 @@ class RepairsOptions(ctk.CTkFrame):
         :param repair_id (int): ID of the repair to remove.
         """
         try:
+            repair = RepairController.fetch_by_id(repair_id)
+            if not repair:
+                raise ValueError("Repair not found.")
+            
+            # Check the repair state
+            if repair.state not in [State.COMPLETED, State.CANCELED]:
+                raise ValueError("Only repairs marked as 'Completed' or 'Canceled' can be deleted.")
+            
             RepairController.delete(repair_id)
             CTkMessagebox(title="Success", message="Repair deleted successfully.", icon="info")
         except Exception as e:
-            CTkMessagebox(title="Success", message="Failed to delete repair.", icon="info")
+            CTkMessagebox(title="Success", message=f"{e}", icon="info")
+            
+            
+    def toggle_dirty_reading(self):
+        state = self.switch_var.get()
+
+        if state == "on":
+            # Allow dirty reading
+            self.cursor.execute("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;")
+        else:
+            # Prevent dirty reading
+            self.cursor.execute("SET TRANSACTION ISOLATION LEVEL READ COMMITED;")

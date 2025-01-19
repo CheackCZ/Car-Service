@@ -85,7 +85,7 @@ create table repair (
             
     date_started date not null,
 	date_finished date,
-		check (date_started <= date_finished),
+		check (date_finished is null or date_started <= date_finished),
     
     price float not null,
     state enum('Pending', 'In process', 'Completed', 'Canceled') not null default 'Pending'

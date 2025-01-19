@@ -49,9 +49,9 @@ class CarsOptions(ctk.CTkFrame):
         self.separator.place(x=10, y=180, width=140)
 
         # Toggle Switch for Dirty Reading
-        self.switch_var = ctk.StringVar(value="off")
-        self.switch = ctk.CTkSwitch(self, text="Dirty Reading", variable=self.switch_var, onvalue="on", offvalue="off")
-        self.switch.place(x=20, y=200)
+        # self.switch_var = ctk.StringVar(value="off")
+        # self.switch = ctk.CTkSwitch(self, text="Dirty Reading", variable=self.switch_var, onvalue="on", offvalue="off")
+        # self.switch.place(x=20, y=200)
         
 
     def open_add_car_dialog(self):
